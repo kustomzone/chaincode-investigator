@@ -15,6 +15,7 @@ $(document).ready(function(){
 		buildGoFunc(bag.cc.details);															//populate custom go functions panel
 		if(bag && bag.cc && bag.cc.details) {
 			build_peer_options(bag.cc.details.peers);											//populate drop down peer select box
+			build_user_options(bag.cc.details.users);
 			
 			$("#peer").html(bag.cc.details.peers[sel].name);								//populate status panel
 			$("#name").html(bag.cc.details.deployed_name.substring(0,32) + '...');
@@ -125,6 +126,8 @@ $(document).ready(function(){
 	
 	$("#peers").change(function(){
 		sel = $(this).val();
+		$("#peer").html(bag.cc.details.peers[sel].name);								//populate status panel
+		build_user_options(bag.cc.details.users);
 		console.log('Selected: ', bag.cc.details.peers[sel].api_host, bag.cc.details.peers[sel].api_port);
 	});
 	
@@ -175,7 +178,7 @@ $(document).ready(function(){
 		rest_get_cc(hash);
 	});
 	
-	$(document).on("click", "#newcc", function(){
+	$(document).on("click", "#loadManual", function(){
 		if($("#newccWrap").is(":visible")){
 			$("#newccWrap").fadeOut();
 		}
@@ -184,18 +187,16 @@ $(document).ready(function(){
 		}
 	});
 	
-	$(document).on("click", "#customcc, #loadText", function(){
+	$(document).on("click", "#loadText", function(){
 		if($("#chaincodeDetailsWrap").is(":visible")){
 			$("#chaincodeDetailsWrap").fadeOut();
 		}
 		else{
+			$("#jsonarea").html('');
 			$("#chaincodeDetailsWrap").fadeIn();
 		}
 	});
 	
-	$(document).on("click", "#loadText", function(){
-		$("#jsonarea").html('');
-	});
 	
 	$("#parsecc").click(function(){
 		rest_parse_cc();
@@ -524,8 +525,6 @@ $(document).ready(function(){
 			html +=		'<div class="delcc fa fa-remove"></div>';
 			html += '</div>';
 		}
-		html += '<span class="fa fa-plus" id="newcc"></span>';
-		html += '<span class="fa fa-gear" id="customcc"></span>';
 		$("#chaincodes").html(html);
 	}
 	
@@ -542,5 +541,23 @@ $(document).ready(function(){
 			}
 			$("#peers").html(html);
 		}
+	}
+	
+	function build_user_options(users){															//user select options
+		var html  = '';
+		html += '<option>' + bag.cc.details.peers[sel].user + '</option>';
+		
+		if(users){
+			users.sort(function(a, b) {															//alpha sort me
+				var textA = a.username.toUpperCase();
+				var textB = b.username.toUpperCase();
+				return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+			});
+
+			for(var i in users){
+				html += '<option>' + users[i].username + '</option>';
+			}
+		}
+		$("#users").html(html);
 	}
 });

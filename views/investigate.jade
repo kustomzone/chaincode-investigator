@@ -31,8 +31,8 @@ block content
 		span#chaincodes
 			.ccSummary ...
 		button(type="button").loadButton#loadText Summary <br/> Text
-		button(type="button").loadButton Summary <br/> File
-		button(type="button").loadButton Manually
+		button(type="button").loadButton#loadFile Summary <br/> File
+		button(type="button").loadButton#loadManual Manually
 		
 		#chaincodeDetailsWrap(hidden)
 			br
@@ -65,8 +65,13 @@ block content
 		.stepNumberClosed 2.
 		
 	#networkPanel.subPanel.ready
-		span.legend Peer:
-		select(style="margin-left:0;")#peers
+		p
+			span.legend Peer:
+			select(style="margin-left:0;")#peers
+		
+		p
+			span.legend User:
+			select(style="margin-left:0;")#users
 	
 	
 	// ---------------- Chaincode Panel ----------------- //

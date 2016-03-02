@@ -235,13 +235,6 @@ body {
   color: inherit;
   margin: 0 5px; }
 
-#customcc, #newcc {
-  padding: 10px; }
-
-#customcc:hover, #newcc:hover {
-  color: #ccc;
-  cursor: pointer; }
-
 #jsonarea {
   width: 100%;
   max-width: 100%;
@@ -294,28 +287,16 @@ body {
   top: -2px;
   right: -6px;
   padding: 5px 4px 5px 8px;
-  font-size: 12px;
-  color: orange; }
+  font-size: 12px; }
 
 .delcc:hover {
   cursor: pointer;
   color: #fff; }
 
-#blockdate {
-  position: absolute;
-  top: 30px;
-  right: 10px;
-  color: orange;
-  font-weight: bold; }
-
 .hint {
   font-size: 12px;
   font-weight: bold;
   color: #646B73; }
-
-#workarea {
-  text-align: left;
-  color: #fff; }
 
 .tool {
   display: inline-block;
