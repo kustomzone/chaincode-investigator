@@ -18,11 +18,10 @@ block content
 	br
 	p.hint(style="font-size:13px;") This is a tool to help debug/examine running chaincode.
 	p.hint(style="font-size:13px;")	First load the chaincode summary you want, next selet a peer to hit, finally invoke your chaincode functions!
-
 		
 		
 	// ---------------- Loading Panel ----------------- //
-	.tool.toolClosed(show="loadPanel")
+	.tool.toolClosed(show="loadPanel")#loadPanelNav
 		span.fa.fa-wrench
 		.toollegend.toollegendClosed Load
 		.stepNumberClosed 1.
@@ -74,7 +73,7 @@ block content
 	
 	
 	// ---------------- Chaincode Panel ----------------- //
-	.tool.toolClosed(show='chaincodePanel')
+	.tool.toolClosed(show='chaincodePanel')#chaincodePanelNav
 		span.fa.fa-terminal
 		.toollegend.toollegendClosed Chaincode
 		.stepNumberClosed 3.

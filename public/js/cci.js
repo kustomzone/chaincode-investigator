@@ -141,6 +141,14 @@ $(document).ready(function(){
 				bag.cc = bag.ls[i];
 				lets_do_this();
 				$("#jsonarea").html(JSON.stringify(bag.cc, null, 4));
+				
+				if(!$("#jsonarea").is(":visible")){
+					//$(this).addClass("selectedCC");
+					setTimeout(function(){
+						toggle_panel($("#loadPanelNav"));
+						show($("#chaincodePanelNav"));
+					}, 300);
+				}
 				break;
 			}
 		}
@@ -170,19 +178,27 @@ $(document).ready(function(){
 	});
 	
 	$(".tool").click(function(){
-		if($(this).hasClass("toolClosed")){
-			$(this).removeClass("toolClosed").addClass("toolOpen");
-			$(this).find(".toollegendClosed").removeClass("toollegendClosed").addClass("toollegendOpen");
-			$("#" + $(this).attr("show")).fadeIn().css("display","inline-block");
-			$(this).find(".stepNumberClosed").removeClass("stepNumberClosed").addClass("stepNumberOpen");
+		toggle_panel(this);
+	});
+	
+	function toggle_panel(me){
+		if($(me).hasClass("toolClosed")){
+			show(me);
 		}
 		else{
-			$(this).removeClass("toolOpen").addClass("toolClosed");
-			$(this).find(".toollegendOpen").removeClass("toollegendOpen").addClass("toollegendClosed");
-			$("#" + $(this).attr("show")).hide();
-			$(this).find(".stepNumberOpen").removeClass("stepNumberOpen").addClass("stepNumberClosed");
+			$(me).removeClass("toolOpen").addClass("toolClosed");
+			$(me).find(".toollegendOpen").removeClass("toollegendOpen").addClass("toollegendClosed");
+			$("#" + $(me).attr("show")).hide();
+			$(me).find(".stepNumberOpen").removeClass("stepNumberOpen").addClass("stepNumberClosed");
 		}
-	});
+	}
+	
+	function show(me){
+		$(me).removeClass("toolClosed").addClass("toolOpen");
+		$(me).find(".toollegendClosed").removeClass("toollegendClosed").addClass("toollegendOpen");
+		$("#" + $(me).attr("show")).fadeIn().css("display","inline-block");
+		$(me).find(".stepNumberClosed").removeClass("stepNumberClosed").addClass("stepNumberOpen");
+	}
 	
 	
 	// ===============================================================================================================

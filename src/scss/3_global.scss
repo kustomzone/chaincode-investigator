@@ -60,9 +60,12 @@ body{
 	float:none;
 }
 
-.sel, .ccSummary:hover{
+.selectedCC, .ccSummary:hover{
 	cursor:pointer;
 	border:1px #41719C solid;
+}
+.selectedCC{
+	border:1px yellow  solid;
 }
 
 .legend{
