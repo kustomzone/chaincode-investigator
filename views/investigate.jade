@@ -29,7 +29,6 @@ block content
 		
 	#loadPanel.subPanel
 		span#chaincodes
-			.ccSummary ...
 		button(type="button").loadButton#loadText Summary <br/> Text
 		button(type="button").loadButton#loadFile Summary <br/> File
 		button(type="button").loadButton#loadManual Manually
@@ -140,10 +139,10 @@ block content
 					
 					
 	// ---------------- Log Panel ----------------- //
-	.tool.toolClosed.accent(show='logPanel')
+	.tool.toolOpen.accent(show='logPanel')
 		span.fa.fa-file-text
-		.toollegend.toollegendClosed Logs
-		.stepNumberClosed 4.
+		.toollegend.toollegendOpen Logs
+		.stepNumberOpen 4.
 		
 	#logPanel.subPanel.ready
-		textarea(disabled="disabled")#logs logs here
+		textarea(disabled="disabled")#logs [logs here]

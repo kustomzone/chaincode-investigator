@@ -9,52 +9,20 @@ $(document).ready(function(){
 	// ===============================================================================================================
 	// 												On Start Up
 	// ================================================================================================================
-	on_start();
+	lets_do_this();
+	//localStorage.clear();
 	
-	function on_start(){
-		buildGoFunc(bag.cc.details);															//populate custom go functions panel
+	function lets_do_this(){
+		load_from_ls();
+		build_ccs(bag.ls);
 		if(bag && bag.cc && bag.cc.details) {
+			buildGoFunc(bag.cc.details);														//populate custom go functions panel
 			build_peer_options(bag.cc.details.peers);											//populate drop down peer select box
 			build_user_options(bag.cc.details.users);
 			
-			$("#peer").html(bag.cc.details.peers[sel].name);								//populate status panel
+			$("#peer").html(bag.cc.details.peers[sel].name);									//populate status panel
 			$("#name").html(bag.cc.details.deployed_name.substring(0,32) + '...');
 		}
-		//$("#jsonarea").html(JSON.stringify(bag.cc, null, 4));
-
-		//localStorage.clear();
-		//var obj = load_ls();
-		//if(obj && obj.cc && obj.cc.names){
-		//	build_cc(bag.cc);
-		//}
-		rest_get_cc_names();
-	}
-	
-	function load_ls(){
-		if(window.localStorage) {
-			var str = window.localStorage.getItem(lsKey);
-			var obj = {};
-			if(str){
-				obj = JSON.parse(str);
-				//console.log('local storage', obj);
-				return obj;
-			}
-		}
-	}
-	
-	function store_cc_name(name){
-		var str = window.localStorage.getItem(lsKey);
-		var obj = {};
-		if(!str){
-			obj.cc = {names: []};
-		}
-		else{
-			obj = JSON.parse(str);
-		}
-		
-		if(name && !in_array(name, obj.cc.names)) obj.cc.names.push(name);			//only add if it doesn't exist yet
-		window.localStorage.setItem(lsKey, JSON.stringify(obj));					//save new one
-		//build_cc(obj.cc);
 	}
 	
 	// ===============================================================================================================
@@ -124,39 +92,32 @@ $(document).ready(function(){
 		}
 	});
 	
+	$(document).on("click", ".delcc", function(){
+		delete_from_ls($(this).parent().attr('hash'));
+		console.log('deleted cc');
+		bag.cc = {};
+		lets_do_this();
+		return false;
+	});
+	
 	$("#peers").change(function(){
 		sel = $(this).val();
 		$("#peer").html(bag.cc.details.peers[sel].name);								//populate status panel
 		build_user_options(bag.cc.details.users);
-		console.log('Selected: ', bag.cc.details.peers[sel].api_host, bag.cc.details.peers[sel].api_port);
+		console.log('Selected peer: ', bag.cc.details.peers[sel].api_host, bag.cc.details.peers[sel].api_port);
 	});
-	
-	/*$(".delcc").click(function(){
-		var obj = load_ls();
-		var name = bag.cc.details.deployed_name;
-		if(name && name.length > 1){
-			for(var i in obj.cc.names){
-				if(obj.cc.names[i] == name){
-					console.log('removing', name);
-					obj.cc.names.splice(i, 1);
-					window.localStorage.setItem(lsKey, JSON.stringify(obj));
-					
-					//build_cc(obj.cc);
-					break;
-				}
-			}
-		}
-	});*/
 	
 	$("#loadjson").click(function(){
 		try{
 			bag.cc = JSON.parse($("#jsonarea").val());
-			on_start();
-			$("#chaincodeDetailsWrap").fadeOut();
 		}
 		catch(e){
 			console.log('Error, invalid json');
+			return;
 		}
+		store_to_ls(bag.cc);
+		lets_do_this();
+		$("#chaincodeDetailsWrap").fadeOut();
 	});
 	
 	
@@ -174,8 +135,15 @@ $(document).ready(function(){
 	
 	$(document).on("click", ".ccSummary", function(){
 		var hash = $(this).attr("hash");
-		console.log('Selected: ', hash);
-		rest_get_cc(hash);
+		console.log('Selected cc: ', hash);
+		for(var i in bag.ls){
+			if(i == hash){
+				bag.cc = bag.ls[i];
+				lets_do_this();
+				$("#jsonarea").html(JSON.stringify(bag.cc, null, 4));
+				break;
+			}
+		}
 	});
 	
 	$(document).on("click", "#loadManual", function(){
@@ -197,9 +165,8 @@ $(document).ready(function(){
 		}
 	});
 	
-	
 	$("#parsecc").click(function(){
-		rest_parse_cc();
+
 	});
 	
 	$(".tool").click(function(){
@@ -222,7 +189,7 @@ $(document).ready(function(){
 	// 												HTTP Functions
 	// ================================================================================================================
 	function rest_read(name, lvl, cb){
-		console.log("reading var", name);
+		log.log("Reading var", name);
 		var host = bag.cc.details.peers[sel].api_host;
 		var port = bag.cc.details.peers[sel].api_port;
 		var data = {
@@ -246,18 +213,18 @@ $(document).ready(function(){
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
-				console.log('Success - read', JSON.stringify(json));
+				log.log('Success - read', JSON.stringify(json));
 				if(cb) cb(null, json);
 			},
 			error: function(e){
-				console.log('Error - read', e);
+				log.log('Error - read', e);
 				if(cb) cb(e, null);
 			}
 		});
 	}
 	
 	function rest_write(name, value, cb){
-		console.log("writing var", name);
+		log.log("Writing var", name);
 		var host = bag.cc.details.peers[sel].api_host;
 		var port = bag.cc.details.peers[sel].api_port;
 		var data = {
@@ -279,18 +246,18 @@ $(document).ready(function(){
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
-				console.log('Success - write', json);
+				log.log('Success - write', json);
 				if(cb) cb(null, json);
 			},
 			error: function(e){
-				console.log('Error - write', e);
+				log.log('Error - write', e);
 				if(cb) cb(e, null);
 			}
 		});
 	}
 	
 	function rest_deploy(cb){
-		console.log("deploying chaincode");
+		log.log("Deploying chaincode");
 		var host = bag.cc.details.peers[sel].api_host;
 		var port = bag.cc.details.peers[sel].api_port;
 		var data = 	{
@@ -304,7 +271,7 @@ $(document).ready(function(){
 						},
 						"secureContext": bag.cc.details.peers[sel].user
 					};
-		console.log(data);
+		//console.log(data);
 		
 		$.ajax({
 			method: 'POST',
@@ -312,12 +279,11 @@ $(document).ready(function(){
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
-				console.log('Success - deploy (you should still wait for go)', json);
-
+				log.log('Success - deploy (you should still wait for go)', json);
 				if(cb) setTimeout(function(){ cb(null, json); }, 60000);
 			},
 			error: function(e){
-				console.log('Error - deploy', e);
+				log.log('Error - deploy', e);
 
 				if(cb) cb(e, null);
 			}
@@ -325,7 +291,7 @@ $(document).ready(function(){
 	}
 	
 	function rest_read_all_peers(name, lvl, cb){
-		console.log("reading var", name);
+		log.log("Reading var", name);
 		var data = {
 						"chaincodeSpec": {
 							"type": "GOLANG",
@@ -336,12 +302,13 @@ $(document).ready(function(){
 								"function": "query",
 								"args": [name]
 							},
-							"secureContext": bag.cc.details.peers[sel].user
+							"secureContext": 'set later'										//set this in the loop
 						}
 					};
 		//console.log(data);
 		
 		for(var i in bag.cc.details.peers){
+			data.chaincodeSpec.secureContext = bag.cc.details.peers[i].user;					//get the right user for this peer
 			$.ajax({
 				method: 'POST',
 				url: 'http://' + bag.cc.details.peers[i].api_host + ':' + bag.cc.details.peers[i].api_port + '/devops/query',
@@ -349,11 +316,11 @@ $(document).ready(function(){
 				peer_name: bag.cc.details.peers[i].name,
 				contentType: 'application/json',
 				success: function(json){
-					console.log('Success - read all', this.peer_name, JSON.stringify(json));
+					log.log('Success - read all', this.peer_name, JSON.stringify(json));
 					if(cb) cb(null, json);
 				},
 				error: function(e){
-					console.log('Error - read all', this.peer_name, e);
+					log.log('Error - read all', this.peer_name, e);
 					if(cb) cb(e, null);
 				}
 			});
@@ -361,7 +328,7 @@ $(document).ready(function(){
 	}
 	
 	function rest_remove(){
-		console.log("removing");
+		log.log("Removing");
 		var host = bag.cc.details.peers[sel].api_host;
 		var port = bag.cc.details.peers[sel].api_port;				
 		var data = {
@@ -384,16 +351,16 @@ $(document).ready(function(){
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
-				console.log('Success - remove', json);
+				log.log('Success - remove', json);
 			},
 			error: function(e){
-				console.log('Error - remove', e);
+				log.log('Error - remove', e);
 			}
 		});
 	}
 	
 	function rest_init(){
-		console.log("init");
+		log.log("init");
 		var host = bag.cc.details.peers[sel].api_host;
 		var port = bag.cc.details.peers[sel].api_port;
 		var data = {
@@ -416,17 +383,18 @@ $(document).ready(function(){
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
-				console.log('Success - init', json);
+				log.log('Success - init', json);
 			},
 			error: function(e){
-				console.log('Error - init', e);
+				log.log('Error - init', e);
 			}
 		});
 	}
 	
 	function rest_barebones(){
+		log.log("custom", $("input[name='func_name']").val());
 		var host = bag.cc.details.peers[sel].api_host;
-		var port = bag.cc.details.peers[sel].api_port;				
+		var port = bag.cc.details.peers[sel].api_port;
 		var data = {
 						"chaincodeSpec": {
 							"type": "GOLANG",
@@ -447,57 +415,17 @@ $(document).ready(function(){
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
-				console.log('Success', json);
+				log.log('Success', json);
 			},
 			error: function(e){
-				console.log('Error', e);
+				log.log('Error', e);
 			}
 		});
 	}
-	
-	function rest_get_cc_names(){
-		//console.log("getting cc summary files");
-		$.ajax({
-			method: 'GET',
-			url: 'http://' + bag.setup.SERVER.EXTURI + '/cc/summary',
-			contentType: 'application/json',
-			success: function(json){
-				console.log('Success - get cc summaries');
-				build_cc(json);
-			},
-			error: function(e){
-				console.log('Error - get cc summaries', e);
-			}
-		});
-	}
-	
-	function rest_get_cc(hash){
-		//console.log("getting a cc summary file");
-		$.ajax({
-			method: 'GET',
-			url: 'http://' + bag.setup.SERVER.EXTURI + '/cc/summary/' + hash,
-			contentType: 'application/json',
-			success: function(json){
-				console.log('Success - get a cc summary');
-				bag.cc = json;
-				$("#jsonarea").html(JSON.stringify(json, null, 4));
-				on_start();
-			},
-			error: function(e){
-				console.log('Error - get cc summary', e);
-			}
-		});
-	}
-	
-	function rest_parse_cc(){
-		//console.log("getting a cc summary file");
-		
-	}
-	
 	
 	// ===============================================================================================================
 	// 												Build UI Fun
-	// ================================================================================================================
+	// ===============================================================================================================
 	function buildGoFunc(cc){
 		var skip = ['write', 'read', 'delete', 'init'];
 		var html = '';
@@ -515,20 +443,21 @@ $(document).ready(function(){
 		}
 	}
 	
-	function build_cc(names){														//chaincode select options
+	function build_ccs(ccs){																	//chaincode select options
 		var html = '';
-		for(var i in names){
-			var css_sel = '';
-			if(bag.cc.details && names[i].indexOf(bag.cc.details.deployed_name) >= 0) css_sel = 'sel';
-			html += '<div class="ccSummary ' + css_sel + '" hash="' + names[i] +'">';
-			html += 		names[i].substring(0, 3);
-			html +=		'<div class="delcc fa fa-remove"></div>';
-			html += '</div>';
+		//console.log('building cc', ccs);
+		for(var i in ccs){
+			if(ccs[i].details){
+				html += '<div class="ccSummary" hash="' + ccs[i].details.deployed_name +'">';
+				html += 		ccs[i].details.deployed_name.substring(0, 3);
+				html +=		'<div class="delcc fa fa-remove"></div>';
+				html += '</div>';
+			}
 		}
 		$("#chaincodes").html(html);
 	}
 	
-	function build_peer_options(peers){														//peer select options
+	function build_peer_options(peers){															//peer select options
 		if(peers){
 			peers.sort(function(a, b) {															//alpha sort me
 				var textA = a.id.toUpperCase();
@@ -560,4 +489,69 @@ $(document).ready(function(){
 		}
 		$("#users").html(html);
 	}
+	
+	
+// ===============================================================================================================
+// 												Helper Fun
+// ===============================================================================================================
+	function load_from_ls(){
+		if(window.localStorage) {
+			var str = window.localStorage.getItem(lsKey);
+			if(str){
+				bag.ls = JSON.parse(str);
+				//console.log('local storage', bag.ls);
+				return bag.ls;
+			}
+		}
+	}
+	
+	function store_to_ls(cc){
+		if(!bag) bag = {};
+		if(!bag.ls) bag.ls = {};
+		
+		load_from_ls();
+		if(cc.details && cc.details.deployed_name){
+			bag.ls[cc.details.deployed_name] = cc;									//store this cc
+		}
+		window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save new one
+	}
+	
+	function delete_from_ls(deployed_name){
+		if(!bag) bag = {};
+		if(!bag.ls) bag.ls = {};
+		
+		load_from_ls();
+		if(bag.ls && deployed_name){
+			console.log('removing', deployed_name);
+			delete bag.ls[deployed_name];											//remove this cc
+		}
+		window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save
+	}
+	
+	
+
+
 });
+
+
+function pretty_print(str){
+	if(str.constructor === Object || str.constructor === Array){
+		return JSON.stringify(str, null, 4);
+	}
+	else{
+		return str + " ";
+	}
+}
+
+var log = 	{
+				log: function log(str1, str2, str3){
+					if(str1 && str2 && str3) console.log(str1, str2, str3);		//stupid print
+					else if(str1 && str2) console.log(str1, str2);
+					else console.log(str1);
+					
+					$("#logs").append("\n");
+					if(str1) $("#logs").append(pretty_print(str1));
+					if(str2) $("#logs").append(pretty_print(str2));
+					if(str3) $("#logs").append(pretty_print(str3));
+			}
+};

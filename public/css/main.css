@@ -182,7 +182,8 @@ input[type="text"], input[type="password"], select {
 textarea {
   background: #111;
   color: #fff;
-  font-family: Courier New, Courier, monospace; }
+  font-family: Courier New, Courier, monospace;
+  padding: 5px; }
 
 small {
   font-size: 10pt; }
@@ -395,7 +396,7 @@ body {
   width: 100%;
   text-align: center; }
 
-#loadPanel, #networkPanel, #chaincodePanel, #logPanel {
+#loadPanel, #networkPanel, #chaincodePanel {
   display: none; }
 
 .subPanel {
