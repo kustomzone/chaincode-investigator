@@ -1,0 +1,56 @@
+-////////////////////////////////////////////////// Functions //////////////////////////////////////////////////
+-//Print Object Out Formatted
+mixin debug(variable)
+	br
+	br
+	pre #{JSON.stringify(variable, null, "\t")}
+
+-////////////////////////////////////////////////// HTML //////////////////////////////////////////////////
+-//Begin HTML
+doctype html
+html
+	//Built by: Me
+	//ETI Labs
+	//Copyright 2016  - IBM
+	head
+		title #{title}
+		meta(name="viewport" content="initial-scale=1.0, user-scalable=no")
+		link(rel="icon", type="image/png", href="/imgs/favicon.ico")
+		link(rel="stylesheet" href="/css/font-awesome-4.5.0/css/font-awesome.min.css")
+		link(type="text/css" rel="stylesheet" href="/css/main.min.css")
+		script(src='/js/util/jquery-1.11.1.min.js')
+		//script(src='/js/util/jquery-ui-1.11.4/jquery-ui.min.js')
+		script(src='/js/util/jquery.ui.touch-punch.min.js')
+		script(src='/js/funk.js')
+		script(src='/js/blockchain.js')
+		script(src='/js/cci.js')
+		script(type='text/javascript').
+			var bag = !{JSON.stringify(bag)};						//throw jade json over to JS
+			console.log('bag', bag);
+			$(document).ready(function(){
+				//Blockchain panel toggle
+				$("#viewBCWrap").click(function(){
+					if($("#footerWrap").is(":visible")){
+						$("#footerWrap").slideUp();
+					}
+					else{
+						$("#footerWrap").slideDown();
+					}
+				});
+			});
+		block custom_header
+		
+		body
+			#navPanel
+				block navpanel
+			
+			#mainPanel
+				#error404(hidden).panel 
+					br
+					center
+						p Error 404
+				
+				block content
+				
+			#footerPanel
+				block footer

@@ -1,0 +1,135 @@
+extends ./template/layout.jade
+
+block content
+	#statuspanel.
+		<div id="name">
+			<span class="fa fa-file-text"></span>
+			242342aslfasflkaj2l32l4s
+		</div>
+		<div id="peer">
+			<span class="fa fa-child"></span>
+			VP1
+		</div>
+		<div id="blocknumber">
+			<span class="fa fa-sort-amount-desc"></span>
+			69
+		</div>
+	
+	h1 ChainCode Investigator
+	br
+		
+		
+	// ---------------- Loading Panel ----------------- //
+	.tool.toolClosed(show="loadPanel")
+		span.fa.fa-wrench
+		.toollegend.toollegendClosed Load
+		
+	#loadPanel.subPanel
+		span#chaincodes
+			.ccSummary ...
+		button(type="button").loadButton Summary <br/> Text
+		button(type="button").loadButton Summary <br/> File
+		button(type="button").loadButton Manually
+		
+		#chaincodeDetailsWrap(hidden)
+			span.legend Custom:
+			span (you can click a chaincode above to copy its details)
+			textarea#jsonarea stuff
+			center
+				button(type="button" style="float:none")#loadjson Load CC 
+				span &nbsp;&nbsp;
+				
+		#newccWrap(hidden)
+			span.legend New:
+			p
+				input(type="text" placeholder="Git Clone URL" name="git_url").newInput
+			p
+				input(type="text" placeholder="Git Zip URL" name="zip_url").newInput
+			p
+				input(type="text" placeholder="Unzipped Directory/Path" name="unzip_dir").newInput
+			center
+				button(type="button" style="float:none")#parsecc SDK Parse CC 
+				span &nbsp;&nbsp;
+	
+	
+	// ---------------- Network Panel ----------------- //	
+	.tool.toolClosed.accent(show='networkPanel')
+		span.fa.fa-gears
+		.toollegend.toollegendClosed Network
+		
+	#networkPanel.subPanel.ready
+		span.legend Peer:
+		select(style="margin-left:0;")#peers
+	
+	
+	// ---------------- Chaincode Panel ----------------- //
+	.tool.toolClosed(show='chaincodePanel')
+		span.fa.fa-terminal
+		.toollegend.toollegendClosed Chaincode
+
+	#chaincodePanel.subPanel.ready
+		
+		form#ccWrap
+			.func 
+				span Read (
+				input(type="text" name="read_name" placeholder="var name")
+				span ); 
+				button(type="button")#read 
+					span Run
+					span.fa.fa-fire
+				button(type="button" style="margin-right:10px;")#readall
+					span Run All
+					span.fa.fa-th
+			
+			.func 
+				span Write (
+				input(type="text" name="write_name" placeholder="var name")
+				input(type="text" name="write_val" placeholder="value")
+				span ); 
+				button(type="button")#write
+					span Run
+					span.fa.fa-fire
+				
+			.func 
+				span Remove (
+				input(type="text" name="remove_name" placeholder="var name")
+				span ); 
+				button(type="button")#remove
+					span Run
+					span.fa.fa-fire
+			
+			.func 
+				span Init ([
+				input(type="text" name="init_args" placeholder="array of strings" value='"72"' style="width:100px;")
+				span ]); 
+				span#giturl(style="font-size:11px; margin-left:10px;") none
+				button(type="button")#init
+					span Run
+					span.fa.fa-fire
+				button(type="button" style="margin-right:10px;")#deploy
+					span Deploy
+					span.fa.fa-chevron-right
+					
+			br
+			
+			#customgowrap
+			
+			br
+			
+			.func 
+				input(type="text" name="func_name" placeholder="func name")
+				span (
+				input(type="text" name="func_val" placeholder="argument")
+				span ); 
+				button(type="button")#barebones
+					span Run
+					span.fa.fa-fire
+					
+					
+	// ---------------- Log Panel ----------------- //
+	.tool.toolClosed.accent(show='logPanel')
+		span.fa.fa-file-text
+		.toollegend.toollegendClosed Logs
+		
+	#logPanel.subPanel.ready
+		textarea(disabled="disabled")#logs logs here

@@ -1,0 +1,240 @@
+@import 'color_theme';
+
+// --------- Main Layout ---------
+hr{
+	background:#41719c;
+}
+
+body{
+	margin:0 auto;
+	position: initial;
+	font-size: 14px;
+	background:$main_bg2;
+	color:$hi_color2;
+	text-align: center;
+	width:100%;
+}
+
+
+
+
+.fa{
+	color: inherit;
+	margin:0 5px;
+}
+#customcc, #newcc{
+	padding:10px;
+}
+#customcc:hover, #newcc:hover{
+	color:#ccc;
+	cursor:pointer;
+}
+
+#delccname{
+	cursor:pointer;
+	padding:6px;
+}
+
+
+#jsonarea{
+	width: 100%;
+	max-width:100%;
+	padding:5px;
+	height:300px;
+}
+
+#mainPanel{
+	padding: 15px;
+}
+#ccWrap{
+	width:700px;
+}
+.ccSummary, .loadButton{
+	width:85px;
+	height: 85px;
+	font-size: 35px;
+	font-family: Courier New;
+	background:$main_bg2;
+	border: 1px $acc_color2 solid;
+	display:inline-block;
+	margin-right: 10px;
+	vertical-align:middle;
+	text-align: center;
+	line-height:85px;
+	color: $acc_color4;
+	border-radius: 3px;
+}
+.loadButton{
+	line-height: initial;
+	font-size: 14px;
+	padding: 0;
+	font-family: inherit;
+	float:none;
+}
+
+.sel, .ccSummary:hover{
+	cursor:pointer;
+	border:1px #41719C solid;
+}
+
+.legend{
+	display:inline-block;
+	width:100px;
+	text-align:left;
+}
+
+.newInput{
+	width:100%;
+}
+
+// --------- common ---------
+#blockdate{
+	position: absolute;
+	top:30px;
+	right:10px;
+	color: $hi_color1;
+	font-weight:bold;
+}
+
+.hint{
+	font-size:12px;
+	font-weight:bold;
+	color:$acc_color2;
+}
+
+#workarea{
+	text-align: left;
+	color:#fff;
+}
+
+
+// common tool
+.tool{
+	display:inline-block;
+	text-align:center;
+	border:1px #555 solid;
+	margin-top:10px;
+}
+.tool:hover{
+	border-bottom:solid 1px #fff;
+	cursor:pointer;
+}
+.accent{
+	color: $acc_color4;
+}
+
+
+// open tool
+.toolOpen{
+	width:200px;
+	padding:45px 15px;
+	font-size:20px;
+	line-height:87px;
+	font-size: 87px;
+	position: relative;
+}
+.toollegendOpen{
+	position: absolute;
+	right:10px;
+	top:95px;
+	font-size: 16px;
+		
+	/* Safari */
+	-webkit-transform: rotate(-50deg);
+
+	/* Firefox */
+	-moz-transform: rotate(-80deg);
+
+	/* IE */
+	-ms-transform: rotate(-50deg);
+
+	/* Opera */
+	-o-transform: rotate(-50deg);
+
+	/* Internet Explorer */
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+//closed tool
+.toolClosed{
+	padding: 10px 5px;
+	font-size: 16px;
+	width: 92%;
+	line-height: initial;
+}
+.toollegendClosed{
+	display: inline-block;
+	position: initial;
+	top: initial;
+	-webkit-transform: rotate(0deg);
+
+	/* Firefox */
+	-moz-transform: rotate(0deg);
+
+	/* IE */
+	-ms-transform: rotate(0deg);
+
+	/* Opera */
+	-o-transform: rotate(0deg);
+
+	/* Internet Explorer */
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0);
+}
+
+#statuspanel{
+	position: fixed;
+	top:0;
+	height:25px;
+	color:#fff;
+	background:$hi_color2;
+	width:98%;
+	margin:auto;
+	left:1%;
+	z-index:9;
+	font-size:14px;
+	line-height: 23px;
+}
+
+#mainPanel{
+	position: relative;
+	top:30px;
+}
+
+#blocknumber{
+	float:right;
+	margin-right:10px;
+}
+
+#name{
+	float:left;
+	margin-left:15px;
+}
+#peer{
+	position: absolute;
+	width:100%;
+	text-align: center;
+}
+
+
+#loadPanel, #networkPanel, #chaincodePanel, #logPanel{
+	display:none;
+}
+.subPanel{
+	width: 75%;
+	display: inline-block;
+	text-align: left;
+	margin-left: 10px;
+	vertical-align: top;
+	margin-top:10px;
+}
+
+.func{
+	//font-size: 14px;
+}
+
+#logs{
+	width: 90%;
+	background:$main_bg2;
+	color:#fff;
+	min-height: 500px;
+}
