@@ -1,21 +1,20 @@
 extends ./template/layout.jade
 
 block content
-	#statuspanel.
-		<div id="name">
-			<span class="fa fa-file-text"></span>
-			242342aslfasflkaj2l32l4s
-		</div>
-		<div id="peer">
-			<span class="fa fa-child"></span>
-			VP1
-		</div>
-		<div id="blocknumber">
-			<span class="fa fa-sort-amount-desc"></span>
-			69
-		</div>
+	#statusPanel
+		#nameWrap
+			span.fa.fa-file-text
+			span#name ...
+		
+		#peerWrap
+			span.fa.fa-child
+			span#peer ...
+
+		#blockheightWrap
+			span.fa.fa-sort-amount-desc
+			span#blockheight69 0
 	
-	h1 ChainCode Investigator
+	h1 Chaincode Investigator
 	br
 	p.hint(style="font-size:13px;") This is a tool to help debug/examine running chaincode.
 	p.hint(style="font-size:13px;")	First load the chaincode summary you want, next selet a peer to hit, finally invoke your chaincode functions!
@@ -31,17 +30,20 @@ block content
 	#loadPanel.subPanel
 		span#chaincodes
 			.ccSummary ...
-		button(type="button").loadButton Summary <br/> Text
+		button(type="button").loadButton#loadText Summary <br/> Text
 		button(type="button").loadButton Summary <br/> File
 		button(type="button").loadButton Manually
 		
 		#chaincodeDetailsWrap(hidden)
-			span.legend Custom:
-			span (you can click a chaincode above to copy its details)
-			textarea#jsonarea stuff
-			center
-				button(type="button" style="float:none")#loadjson Load CC 
-				span &nbsp;&nbsp;
+			br
+			br
+			span Load Chaincode Summary:&nbsp;
+			span.hint (you can also click prev chaincode above to edit its details here)
+			button(type="button" style="margin-bottom:5px;")#loadjson Load Text
+			br
+			br
+			textarea#jsonarea {}
+				
 				
 		#newccWrap(hidden)
 			span.legend New:

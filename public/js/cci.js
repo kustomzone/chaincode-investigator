@@ -1,3 +1,5 @@
+/* global $ */
+/* global in_array */
 /* global bag */
 var ledger = [];
 var sel = 0;
@@ -8,10 +10,15 @@ $(document).ready(function(){
 	// 												On Start Up
 	// ================================================================================================================
 	on_start();
+	
 	function on_start(){
-
 		buildGoFunc(bag.cc.details);															//populate custom go functions panel
-		if(bag && bag.cc && bag.cc.details) build_peer_options(bag.cc.details.peers);			//populate drop down peer select box
+		if(bag && bag.cc && bag.cc.details) {
+			build_peer_options(bag.cc.details.peers);											//populate drop down peer select box
+			
+			$("#peer").html(bag.cc.details.peers[sel].name);								//populate status panel
+			$("#name").html(bag.cc.details.deployed_name.substring(0,32) + '...');
+		}
 		//$("#jsonarea").html(JSON.stringify(bag.cc, null, 4));
 
 		//localStorage.clear();
@@ -121,7 +128,7 @@ $(document).ready(function(){
 		console.log('Selected: ', bag.cc.details.peers[sel].api_host, bag.cc.details.peers[sel].api_port);
 	});
 	
-	$("#delccname").click(function(){
+	/*$(".delcc").click(function(){
 		var obj = load_ls();
 		var name = bag.cc.details.deployed_name;
 		if(name && name.length > 1){
@@ -136,17 +143,17 @@ $(document).ready(function(){
 				}
 			}
 		}
-	});
+	});*/
 	
 	$("#loadjson").click(function(){
 		try{
 			bag.cc = JSON.parse($("#jsonarea").val());
+			on_start();
+			$("#chaincodeDetailsWrap").fadeOut();
 		}
 		catch(e){
 			console.log('Error, invalid json');
 		}
-		on_start();
-		$("#chaincodeDetailsWrap").fadeOut();
 	});
 	
 	
@@ -177,13 +184,17 @@ $(document).ready(function(){
 		}
 	});
 	
-	$(document).on("click", "#customcc", function(){
+	$(document).on("click", "#customcc, #loadText", function(){
 		if($("#chaincodeDetailsWrap").is(":visible")){
 			$("#chaincodeDetailsWrap").fadeOut();
 		}
 		else{
 			$("#chaincodeDetailsWrap").fadeIn();
 		}
+	});
+	
+	$(document).on("click", "#loadText", function(){
+		$("#jsonarea").html('');
 	});
 	
 	$("#parsecc").click(function(){
@@ -508,7 +519,10 @@ $(document).ready(function(){
 		for(var i in names){
 			var css_sel = '';
 			if(bag.cc.details && names[i].indexOf(bag.cc.details.deployed_name) >= 0) css_sel = 'sel';
-			html += '<div class="ccSummary ' + css_sel + '" hash="' + names[i] +'">' + names[i].substring(0, 3) + '</div>';
+			html += '<div class="ccSummary ' + css_sel + '" hash="' + names[i] +'">';
+			html += 		names[i].substring(0, 3);
+			html +=		'<div class="delcc fa fa-remove"></div>';
+			html += '</div>';
 		}
 		html += '<span class="fa fa-plus" id="newcc"></span>';
 		html += '<span class="fa fa-gear" id="customcc"></span>';

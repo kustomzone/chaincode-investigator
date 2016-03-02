@@ -179,6 +179,11 @@ input[type="text"], input[type="password"], select {
   background: #343D48;
   min-width: 120px; }
 
+textarea {
+  background: #111;
+  color: #fff;
+  font-family: Courier New, Courier, monospace; }
+
 small {
   font-size: 10pt; }
 
@@ -237,10 +242,6 @@ body {
   color: #ccc;
   cursor: pointer; }
 
-#delccname {
-  cursor: pointer;
-  padding: 6px; }
-
 #jsonarea {
   width: 100%;
   max-width: 100%;
@@ -266,7 +267,8 @@ body {
   text-align: center;
   line-height: 85px;
   color: limegreen;
-  border-radius: 3px; }
+  border-radius: 3px;
+  position: relative; }
 
 .loadButton {
   line-height: initial;
@@ -286,6 +288,18 @@ body {
 
 .newInput {
   width: 100%; }
+
+.delcc {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  padding: 5px 4px 5px 8px;
+  font-size: 12px;
+  color: orange; }
+
+.delcc:hover {
+  cursor: pointer;
+  color: #fff; }
 
 #blockdate {
   position: absolute;
@@ -370,7 +384,7 @@ body {
   left: 10px;
   top: 10px; }
 
-#statuspanel {
+#statusPanel {
   position: fixed;
   top: 0;
   height: 25px;
@@ -387,15 +401,15 @@ body {
   position: relative;
   top: 30px; }
 
-#blocknumber {
+#blockheightWrap {
   float: right;
   margin-right: 10px; }
 
-#name {
+#nameWrap {
   float: left;
   margin-left: 15px; }
 
-#peer {
+#peerWrap {
   position: absolute;
   width: 100%;
   text-align: center; }
@@ -404,7 +418,7 @@ body {
   display: none; }
 
 .subPanel {
-  width: 75%;
+  width: 80%;
   display: inline-block;
   text-align: left;
   margin-left: 10px;
@@ -413,8 +427,6 @@ body {
 
 #logs {
   width: 90%;
-  background: #111;
-  color: #fff;
   min-height: 500px; }
 
 #blockWrap {
@@ -543,3 +555,10 @@ body {
     height: 10px;
     -moz-transform: translateZ(0); } }
 
+@media (max-width: 1250px) {
+  .subPanel {
+    width: 70%; } }
+
+@media (max-width: 850px) {
+  .subPanel {
+    width: 60%; } }
