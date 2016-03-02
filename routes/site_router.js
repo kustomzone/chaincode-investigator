@@ -50,7 +50,7 @@ router.route("/cci/:filename?").get(function(req, res){
 			console.log('error loading chaincode summary file', e);
 		};
 	}
-	res.render('investigate', {title: 'Investigator', bag: {cc: cc, setup: setup}} );
+	res.render('investigate', {title: 'Chaincode Investigator', bag: {cc: cc, setup: setup}} );
 });
 
 module.exports = router;

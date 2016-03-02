@@ -23,6 +23,7 @@ block content
 	.tool.toolClosed(show="loadPanel")
 		span.fa.fa-wrench
 		.toollegend.toollegendClosed Load
+		.stepNumberClosed 1.
 		
 	#loadPanel.subPanel
 		span#chaincodes
@@ -56,6 +57,7 @@ block content
 	.tool.toolClosed.accent(show='networkPanel')
 		span.fa.fa-gears
 		.toollegend.toollegendClosed Network
+		.stepNumberClosed 2.
 		
 	#networkPanel.subPanel.ready
 		span.legend Peer:
@@ -66,6 +68,7 @@ block content
 	.tool.toolClosed(show='chaincodePanel')
 		span.fa.fa-terminal
 		.toollegend.toollegendClosed Chaincode
+		.stepNumberClosed 3.
 
 	#chaincodePanel.subPanel.ready
 		
@@ -130,6 +133,7 @@ block content
 	.tool.toolClosed.accent(show='logPanel')
 		span.fa.fa-file-text
 		.toollegend.toollegendClosed Logs
+		.stepNumberClosed 4.
 		
 	#logPanel.subPanel.ready
 		textarea(disabled="disabled")#logs logs here

@@ -114,6 +114,7 @@ body{
 	text-align:center;
 	border:1px #555 solid;
 	margin-top:10px;
+	position: relative;
 }
 .tool:hover{
 	border-bottom:solid 1px #fff;
@@ -155,6 +156,12 @@ body{
 	/* Internet Explorer */
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
+.stepNumberOpen{
+	position: absolute;
+	left: 10px;
+	top: -25px;
+	font-size: 16px;
+}
 
 //closed tool
 .toolClosed{
@@ -175,6 +182,15 @@ body{
 	-o-transform: rotate(0deg);
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0);
 }
+.stepNumberClosed{
+	position: absolute;
+	left: 10px;
+	top: 10px;
+}
+
+
+
+
 
 #statuspanel{
 	position: fixed;

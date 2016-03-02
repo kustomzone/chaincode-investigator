@@ -195,11 +195,13 @@ $(document).ready(function(){
 			$(this).removeClass("toolClosed").addClass("toolOpen");
 			$(this).find(".toollegendClosed").removeClass("toollegendClosed").addClass("toollegendOpen");
 			$("#" + $(this).attr("show")).fadeIn().css("display","inline-block");
+			$(this).find(".stepNumberClosed").removeClass("stepNumberClosed").addClass("stepNumberOpen");
 		}
 		else{
 			$(this).removeClass("toolOpen").addClass("toolClosed");
 			$(this).find(".toollegendOpen").removeClass("toollegendOpen").addClass("toollegendClosed");
 			$("#" + $(this).attr("show")).hide();
+			$(this).find(".stepNumberOpen").removeClass("stepNumberOpen").addClass("stepNumberClosed");
 		}
 	});
 	
