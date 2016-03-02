@@ -312,8 +312,6 @@ $(document).ready(function(){
 	
 	function rest_read_all_peers(name, lvl, cb){
 		console.log("reading var", name);
-		var host = bag.cc.details.peers[sel].api_host;
-		var port = bag.cc.details.peers[sel].api_port;
 		var data = {
 						"chaincodeSpec": {
 							"type": "GOLANG",
@@ -479,26 +477,7 @@ $(document).ready(function(){
 	
 	function rest_parse_cc(){
 		//console.log("getting a cc summary file");
-		var data = 	{
-						zip_url: '',
-						git_url: '',
-						unzip_dir: ''
-					};
-		$.ajax({
-			method: 'POST',
-			url: 'http://' + bag.setup.SERVER.EXTURI + '/cc/summary/' + hash,
-			data: JSON.stringify(data),
-			contentType: 'application/json',
-			success: function(json){
-				console.log('Success - get a cc summary');
-				bag.cc = json;
-				$("#jsonarea").html(JSON.stringify(json, null, 4));
-				on_start();
-			},
-			error: function(e){
-				console.log('Error - get cc summary', e);
-			}
-		});
+		
 	}
 	
 	
@@ -512,7 +491,7 @@ $(document).ready(function(){
 		if(cc && cc.func){
 			for(var i in cc.func){
 				if(!in_array(cc.func[i].toLowerCase(), skip)){
-					html += '<div class="func">' + cc.func[i] + '([ ' + field + ']);'
+					html += '<div class="func">' + cc.func[i] + '([ ' + field + ']);';
 						html += '<button type="button" class="runButton" func="' + cc.func[i] + '"> Run <span class="fa fa-fire"></span> </button>&nbsp;&nbsp;';
 					html += '</div>';
 				}
@@ -526,7 +505,7 @@ $(document).ready(function(){
 		var html = '';
 		for(var i in names){
 			var css_sel = '';
-			if(bag.cc.details && names[i].indexOf(bag.cc.details.deployed_name) >= 0) css_sel = 'sel'
+			if(bag.cc.details && names[i].indexOf(bag.cc.details.deployed_name) >= 0) css_sel = 'sel';
 			html += '<div class="ccSummary ' + css_sel + '" hash="' + names[i] +'">' + names[i].substring(0, 3) + '</div>';
 		}
 		html += '<span class="fa fa-plus" id="newcc"></span>';
