@@ -9,6 +9,7 @@ $(document).ready(function(){
 	// ===============================================================================================================
 	// 												On Start Up
 	// ================================================================================================================
+	sizeMe($("#logPanelNav"));
 	lets_do_this();
 	//localStorage.clear();
 	
@@ -161,6 +162,8 @@ $(document).ready(function(){
 		else{
 			$("#newccWrap").fadeIn();
 		}
+		
+		sizeMe($("#loadPanelNav"));
 	});
 	
 	$(document).on("click", "#loadText", function(){
@@ -171,6 +174,8 @@ $(document).ready(function(){
 			$("#jsonarea").html('');
 			$("#chaincodeDetailsWrap").fadeIn();
 		}
+		
+		sizeMe($("#loadPanelNav"));
 	});
 	
 	$("#parsecc").click(function(){
@@ -190,6 +195,8 @@ $(document).ready(function(){
 			$(me).find(".toollegendOpen").removeClass("toollegendOpen").addClass("toollegendClosed");
 			$("#" + $(me).attr("show")).hide();
 			$(me).find(".stepNumberOpen").removeClass("stepNumberOpen").addClass("stepNumberClosed");
+			
+			$(me).css('height', 'initial').css('line-height', 'initial');
 		}
 	}
 	
@@ -198,6 +205,15 @@ $(document).ready(function(){
 		$(me).find(".toollegendClosed").removeClass("toollegendClosed").addClass("toollegendOpen");
 		$("#" + $(me).attr("show")).fadeIn().css("display","inline-block");
 		$(me).find(".stepNumberClosed").removeClass("stepNumberClosed").addClass("stepNumberOpen");
+	
+		sizeMe(me);
+	}
+	
+	function sizeMe(me){
+		var height = $("#" + $(me).attr("show")).css('height');
+		//var pos = height.indexOf('px');
+		//height = height.substring(0, pos) - 20 + 'px';
+		$(me).css('height', height).css('line-height', height);
 	}
 	
 	

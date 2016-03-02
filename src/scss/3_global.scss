@@ -11,7 +11,7 @@ body{
 	font-size: 14px;
 	background:$main_bg2;
 	color:$hi_color2;
-	text-align: center;
+	text-align: left;
 	width:100%;
 }
 
@@ -126,8 +126,9 @@ body{
 }
 .toollegendOpen{
 	position: absolute;
-	right:10px;
-	top:95px;
+	right:8px;
+	bottom: 28px;
+	line-height: initial;
 	font-size: 16px;
 	
 	transform: rotate(-50deg);
@@ -135,7 +136,7 @@ body{
 	-webkit-transform: rotate(-50deg);
 
 	/* Firefox */
-	-moz-transform: rotate(-80deg);
+	-moz-transform: rotate(-50deg);
 
 	/* IE */
 	-ms-transform: rotate(-50deg);
@@ -149,8 +150,9 @@ body{
 .stepNumberOpen{
 	position: absolute;
 	left: 10px;
-	top: -25px;
+	top: 12px;
 	font-size: 16px;
+	line-height: initial;
 }
 
 //closed tool
@@ -165,7 +167,7 @@ body{
 	position: initial;
 	top: initial;
 	
-	transform: rotate(-50deg);
+	transform: rotate(0deg);
 	-webkit-transform: rotate(0deg);
 	-moz-transform: rotate(0deg);
 	-ms-transform: rotate(0deg);
@@ -194,6 +196,8 @@ body{
 	z-index:9;
 	font-size:14px;
 	line-height: 23px;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
 }
 
 #mainPanel{
