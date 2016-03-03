@@ -71,11 +71,19 @@ $(document).ready(function(){
 	});
 	
 	$("#read").click(function(){
-		rest_read($("input[name='read_name']").val());
+		rest_read([$("input[name='read_name']").val()]);
 	});
 	
 	$("#readall").click(function(){
-		rest_read_all_peers($("input[name='read_name']").val());
+		rest_read_all_peers([$("input[name='read_name']").val()]);
+	});
+	
+	$("#query").click(function(){
+		rest_read(JSON.parse('[' + $("input[name='query_name']").val() + ']'));
+	});
+	
+	$("#queryall").click(function(){
+		rest_read_all_peers(JSON.parse('[' + $("input[name='query_name']").val() + ']'));
 	});
 	
 	$("#write").click(function(){
@@ -234,8 +242,8 @@ $(document).ready(function(){
 	// ===============================================================================================================
 	// 												HTTP Functions
 	// ================================================================================================================
-	function rest_read(name, lvl, cb){
-		log.log("Reading var", name);
+	function rest_read(arg, cb){
+		log.log("Reading var", arg);
 		var data = {
 						"chaincodeSpec": {
 							"type": "GOLANG",
@@ -244,7 +252,7 @@ $(document).ready(function(){
 							},
 							"ctorMsg": {
 								"function": "query",
-								"args": [name]
+								"args": arg
 							},
 							"secureContext": $("select[name='membershipUser']").val()
 						}
@@ -298,8 +306,8 @@ $(document).ready(function(){
 		});
 	}
 	
-	function rest_read_all_peers(name, lvl, cb){
-		log.log("Reading var", name);
+	function rest_read_all_peers(arg, lvl, cb){
+		log.log("Reading var", arg);
 		var data = {
 						"chaincodeSpec": {
 							"type": "GOLANG",
@@ -308,7 +316,7 @@ $(document).ready(function(){
 							},
 							"ctorMsg": {
 								"function": "query",
-								"args": [name]
+								"args": arg
 							},
 							"secureContext": 'set later'										//set this in the loop
 						}
