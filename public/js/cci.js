@@ -2,7 +2,7 @@
 /* global in_array */
 /* global bag */
 var ledger = [];
-var sel = 0;
+var selectedPeer = 0;
 var lsKey = 'cc_investigator';
 
 $(document).ready(function(){
@@ -21,7 +21,7 @@ $(document).ready(function(){
 			build_peer_options(bag.cc.details.peers);											//populate drop down peer select box
 			build_user_options(bag.cc.details.users);
 			
-			$("#peer").html(bag.cc.details.peers[sel].name);									//populate status panel
+			$("#peer").html(bag.cc.details.peers[selectedPeer].name);									//populate status panel
 			$("#name").html(bag.cc.details.deployed_name.substring(0,32) + '...');
 		}
 	}
@@ -30,8 +30,6 @@ $(document).ready(function(){
 	// 												jQuery Events
 	// ================================================================================================================
 	$(document).on("click", ".runButton", function(){
-		var host = bag.cc.details.peers[sel].api_host;
-		var port = bag.cc.details.peers[sel].api_port;
 		var func = $(this).attr('func').toLowerCase();
 		var args = $(this).prev().val();
 		
@@ -54,14 +52,14 @@ $(document).ready(function(){
 								"function": func,
 								"args": temp
 							},
-							"secureContext": bag.cc.details.peers[sel].user
+							"secureContext": $("select[name='membershipUser']").val()
 						}
 					};
 		
 		console.log("invoking func", func, data);
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + host + ':' + port + '/devops/invoke',
+			url: 'http://' + $("select[name='peer']").val() + '/devops/invoke',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
@@ -102,10 +100,16 @@ $(document).ready(function(){
 	});
 	
 	$("#peers").change(function(){
-		sel = $(this).val();
-		$("#peer").html(bag.cc.details.peers[sel].name);								//populate status panel
+		selectedPeer = 0;
+		for(var i in bag.cc.details.peers){
+			if(bag.cc.details.peers[i].api_host + ':' + bag.cc.details.peers[i].api_port == $(this).val()){
+				selectedPeer = i;
+				break;
+			}
+		}
+		$("#peer").html(bag.cc.details.peers[selectedPeer].name);								//populate status panel
 		build_user_options(bag.cc.details.users);
-		console.log('Selected peer: ', bag.cc.details.peers[sel].api_host, bag.cc.details.peers[sel].api_port);
+		console.log('Selected peer: ', bag.cc.details.peers[selectedPeer].name);
 	});
 	
 	$("#loadjson").click(function(){
@@ -152,7 +156,7 @@ $(document).ready(function(){
 					//$(this).addClass("selectedCC");
 					setTimeout(function(){
 						toggle_panel($("#loadPanelNav"));
-						show($("#chaincodePanelNav"));
+						showPanel($("#chaincodePanelNav"));
 					}, 300);
 				}
 				break;
@@ -186,7 +190,7 @@ $(document).ready(function(){
 						};
 			$("#chaincodeDetailsWrap").fadeOut();
 			$("#sdkInputWrap").fadeIn();
-			$("#sdkJsonArea").html(JSON.stringify(temp, null, 4));
+			$("#sdkJsonArea").val(JSON.stringify(temp, null, 4));
 		}
 		
 		sizeMe($("#loadPanelNav"));
@@ -215,7 +219,7 @@ $(document).ready(function(){
 	
 	function toggle_panel(me){
 		if($(me).hasClass("toolClosed")){
-			show(me);
+			showPanel(me);
 		}
 		else{
 			$(me).removeClass("toolOpen").addClass("toolClosed");
@@ -227,7 +231,7 @@ $(document).ready(function(){
 		}
 	}
 	
-	function show(me){
+	function showPanel(me){
 		$(me).removeClass("toolClosed").addClass("toolOpen");
 		$(me).find(".toollegendClosed").removeClass("toollegendClosed").addClass("toollegendOpen");
 		$("#" + $(me).attr("show")).fadeIn().css("display","inline-block");
@@ -237,11 +241,9 @@ $(document).ready(function(){
 	}
 	
 	function sizeMe(me){
-		
 		var height = $("#" + $(me).attr("show")).css('height');
 		//var pos = height.indexOf('px');
 		//height = height.substring(0, pos) - 20 + 'px';
-
 		console.log('resize', height);
 		$(me).css('height', height).css('line-height', height);
 	}
@@ -251,8 +253,6 @@ $(document).ready(function(){
 	// ================================================================================================================
 	function rest_read(name, lvl, cb){
 		log.log("Reading var", name);
-		var host = bag.cc.details.peers[sel].api_host;
-		var port = bag.cc.details.peers[sel].api_port;
 		var data = {
 						"chaincodeSpec": {
 							"type": "GOLANG",
@@ -263,14 +263,14 @@ $(document).ready(function(){
 								"function": "query",
 								"args": [name]
 							},
-							"secureContext": bag.cc.details.peers[sel].user
+							"secureContext": $("select[name='membershipUser']").val()
 						}
 					};
 		//console.log(data);
 		
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + host + ':' + port + '/devops/query',
+			url: 'http://' + $("select[name='peer']").val() + '/devops/query',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
@@ -286,8 +286,6 @@ $(document).ready(function(){
 	
 	function rest_write(name, value, cb){
 		log.log("Writing var", name);
-		var host = bag.cc.details.peers[sel].api_host;
-		var port = bag.cc.details.peers[sel].api_port;
 		var data = {
 						"chaincodeSpec": {
 							"type": "GOLANG",
@@ -298,12 +296,12 @@ $(document).ready(function(){
 								"function": "write",
 								"args": [name, value]
 							},
-							"secureContext": bag.cc.details.peers[sel].user
+							"secureContext": $("select[name='membershipUser']").val()
 						}
 					};
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + host + ':' + port + '/devops/invoke',
+			url: 'http://' + $("select[name='peer']").val() + '/devops/invoke',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
@@ -319,8 +317,6 @@ $(document).ready(function(){
 	
 	function rest_deploy(cb){
 		log.log("Deploying chaincode");
-		var host = bag.cc.details.peers[sel].api_host;
-		var port = bag.cc.details.peers[sel].api_port;
 		var data = 	{
 						type: "GOLANG",
 						chaincodeID: {
@@ -330,13 +326,13 @@ $(document).ready(function(){
 							function: "init",
 							"args": JSON.parse("[" + $("input[name='init_args']").val() + "]")
 						},
-						"secureContext": bag.cc.details.peers[sel].user
+						"secureContext": $("select[name='membershipUser']").val()
 					};
 		//console.log(data);
 		
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + host + ':' + port + '/devops/deploy',
+			url: 'http://' + $("select[name='peer']").val() + '/devops/deploy',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
@@ -390,8 +386,6 @@ $(document).ready(function(){
 	
 	function rest_remove(){
 		log.log("Removing");
-		var host = bag.cc.details.peers[sel].api_host;
-		var port = bag.cc.details.peers[sel].api_port;				
 		var data = {
 						"chaincodeSpec": {
 							"type": "GOLANG",
@@ -402,13 +396,13 @@ $(document).ready(function(){
 								"function": 'delete',
 								"args": [$("input[name='remove_name']").val()]
 							},
-							"secureContext": bag.cc.details.peers[sel].user
+							"secureContext": $("select[name='membershipUser']").val()
 						}
 					};
 
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + host + ':' + port + '/devops/invoke',
+			url: 'http://' + $("select[name='peer']").val() + '/devops/invoke',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
@@ -422,8 +416,6 @@ $(document).ready(function(){
 	
 	function rest_init(){
 		log.log("init");
-		var host = bag.cc.details.peers[sel].api_host;
-		var port = bag.cc.details.peers[sel].api_port;
 		var data = {
 						"chaincodeSpec": {
 							"type": "GOLANG",
@@ -434,13 +426,13 @@ $(document).ready(function(){
 								"function": "init",
 								"args": [name]
 							},
-							"secureContext": bag.cc.details.peers[sel].user
+							"secureContext": $("select[name='membershipUser']").val()
 						}
 					};
 		
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + host + ':' + port + '/devops/invoke',
+			url: 'http://' + $("select[name='peer']").val() + '/devops/invoke',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
@@ -454,8 +446,6 @@ $(document).ready(function(){
 	
 	function rest_barebones(){
 		log.log("custom", $("input[name='func_name']").val());
-		var host = bag.cc.details.peers[sel].api_host;
-		var port = bag.cc.details.peers[sel].api_port;
 		var data = {
 						"chaincodeSpec": {
 							"type": "GOLANG",
@@ -466,13 +456,13 @@ $(document).ready(function(){
 								"function": $("input[name='func_name']").val(),
 								"args": JSON.parse($("input[name='func_val']").val())
 							},
-							"secureContext": bag.cc.details.peers[sel].user
+							"secureContext": $("select[name='membershipUser']").val()
 						}
 					};
 
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + host + ':' + port + '/devops/invoke',
+			url: 'http://' + $("select[name='peer']").val() + '/devops/invoke',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
@@ -489,7 +479,7 @@ $(document).ready(function(){
 		var data = $("#sdkJsonArea").val();
 		
 		try{
-			JSON.parse(data);
+			JSON.parse(data);												//check if input is valid JSON
 		}
 		catch(e){
 			log.log("Error - Input is not JSON, go fish", e);
@@ -504,11 +494,11 @@ $(document).ready(function(){
 			contentType: 'application/json',
 			success: function(json){
 				log.log('Success - sending chaincode to sdk', json);
+				store_to_ls(json);
 				if(cb) cb(null, json);
 			},
 			error: function(e){
 				log.log('Error - sending chaincode to sdk', e);
-
 				if(cb) cb(e, null);
 			}
 		});
@@ -557,7 +547,7 @@ $(document).ready(function(){
 			});
 			var html = '';
 			for(var i in peers){
-				html += '<option value="' + i +'">' + peers[i].name + '</option>';
+				html += '<option value="' + peers[i].api_host +':' + peers[i].api_port +'">' + peers[i].name + '</option>';
 			}
 			$("#peers").html(html);
 		}
@@ -565,8 +555,6 @@ $(document).ready(function(){
 	
 	function build_user_options(users){															//user select options
 		var html  = '';
-		html += '<option>' + bag.cc.details.peers[sel].user + '</option>';
-		
 		if(users){
 			users.sort(function(a, b) {															//alpha sort me
 				var textA = a.username.toUpperCase();
@@ -575,7 +563,9 @@ $(document).ready(function(){
 			});
 
 			for(var i in users){
-				html += '<option>' + users[i].username + '</option>';
+				var selected = '';
+				if(i == selectedPeer) selected= 'selected="selected"';
+				html += '<option ' + selected + '>' + users[i].username + '</option>';
 			}
 		}
 		$("#users").html(html);
@@ -590,7 +580,7 @@ $(document).ready(function(){
 			var str = window.localStorage.getItem(lsKey);
 			if(str){
 				bag.ls = JSON.parse(str);
-				//console.log('local storage', bag.ls);
+				console.log('local storage', bag.ls);
 				return bag.ls;
 			}
 		}
@@ -599,9 +589,11 @@ $(document).ready(function(){
 	function store_to_ls(cc){
 		if(!bag) bag = {};
 		if(!bag.ls) bag.ls = {};
-		
+		console.log('?');
+					
 		load_from_ls();
 		if(cc.details && cc.details.deployed_name){
+			console.log('saving local storage');
 			bag.ls[cc.details.deployed_name] = cc;									//store this cc
 		}
 		window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save new one
@@ -618,10 +610,6 @@ $(document).ready(function(){
 		}
 		window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save
 	}
-	
-	
-
-
 });
 
 
@@ -653,8 +641,6 @@ function copyDetails2InputArea(cc){
 		if(cc.details.peers[i].ssl) cc.details.peers[i].api_url = 'https://';
 		else  cc.details.peers[i].api_url = 'http://';
 		cc.details.peers[i].api_url += cc.details.peers[i].api_host + ':' + cc.details.peers[i].api_port;
-		if(cc.details.peers[i].ssl) delete  cc.details.peers[i].ssl;
-		if(cc.details.peers[i].name) delete cc.details.peers[i].name;
 	}
 	var temp = {
 				"network": {
@@ -668,5 +654,5 @@ function copyDetails2InputArea(cc){
 				}
 			};
 	if(cc.details.deployed_name) temp.chaincode.deployed_name = cc.details.deployed_name;
-	$("#sdkJsonArea").html(JSON.stringify(temp, null, 4));
+	$("#sdkJsonArea").val(JSON.stringify(temp, null, 4));
 }

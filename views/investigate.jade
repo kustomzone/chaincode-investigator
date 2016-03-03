@@ -15,9 +15,11 @@ block content
 			span#blockheight69 0
 	
 	h1 Chaincode Investigator
+	
 	br
-	p.hint(style="font-size:13px;") This is a tool to help debug/examine running chaincode.
-	p.hint(style="font-size:13px;")	First load the chaincode summary you want, next selet a peer to hit, finally invoke your chaincode functions!
+	
+	p(style="font-size:13px;").hint This is a tool to help debug/examine running chaincode. 
+	p(style="font-size:13px;").hint First load the chaincode summary you want, next selet a peer to hit, finally invoke your chaincode functions! 
 		
 		
 	// ---------------- Loading Panel ----------------- //
@@ -63,11 +65,13 @@ block content
 	#networkPanel.subPanel.ready
 		p
 			span.legend Peer:
-			select(style="margin-left:0;")#peers
+			select(name="peer" style="margin-left:0;")#peers
+			span.hint select a peer on the blockchain
 		
 		p
 			span.legend User:
-			select(style="margin-left:0;")#users
+			select(name="membershipUser" style="margin-left:0;")#users
+			span.hint select a membership user for peer above
 	
 	
 	// ---------------- Chaincode Panel ----------------- //
