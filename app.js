@@ -86,6 +86,7 @@ app.use(function(err, req, res, next) {		// = development error handler, print s
 	console.log("Error Handeler -", req.url);
 	var errorCode = err.status || 500;
 	res.status(errorCode);
+	if(!req.bag) req.bag = {};
 	req.bag.error = {msg:err.stack, status:errorCode};
 	if(req.bag.error.status == 404) req.bag.error.msg = "Sorry, I cannot locate that file";
 	res.render('template/error', {bag:req.bag});

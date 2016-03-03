@@ -236,11 +236,14 @@ body {
   color: inherit;
   margin: 0 5px; }
 
-#jsonarea {
+#jsonarea, #sdkJsonArea {
   width: 100%;
   max-width: 100%;
   padding: 5px;
   height: 300px; }
+
+#sdkJsonArea {
+  height: 500px; }
 
 #mainPanel {
   padding: 15px; }

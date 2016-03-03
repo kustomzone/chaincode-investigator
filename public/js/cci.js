@@ -134,6 +134,10 @@ $(document).ready(function(){
 		rest_init();
 	});
 	
+	$("#sendjson").click(function(){
+		rest_post_chaincode();
+	});
+	
 	$(document).on("click", ".ccSummary", function(){								//load the selected cc
 		var hash = $(this).attr("hash");
 		console.log('Selected cc: ', hash);
@@ -142,8 +146,9 @@ $(document).ready(function(){
 				bag.cc = bag.ls[i];
 				lets_do_this();
 				$("#jsonarea").html(JSON.stringify(bag.cc, null, 4));
+				copyDetails2InputArea(bag.cc);
 				
-				if(!$("#jsonarea").is(":visible")){
+				if(!$("#jsonarea").is(":visible") && !$("#sdkJsonArea").is(":visible")){	//hold off on closing if these are open
 					//$(this).addClass("selectedCC");
 					setTimeout(function(){
 						toggle_panel($("#loadPanelNav"));
@@ -156,11 +161,32 @@ $(document).ready(function(){
 	});
 	
 	$(document).on("click", "#loadManual", function(){
-		if($("#newccWrap").is(":visible")){
-			$("#newccWrap").fadeOut();
+		if($("#sdkInputWrap").is(":visible")){
+			$("#sdkInputWrap").fadeOut();
 		}
 		else{
-			$("#newccWrap").fadeIn();
+			var temp = 	{
+							network:{
+								peers:   [{
+									"api_host": "xxx.xxx.xxx.xxx",
+									"api_port": "xxxxx",
+									"id": "xxxxxx-xxxx-xxx-xxx-xxxxxxxxxxxx_vpx",
+									"api_url": "http://xxx.xxx.xxx.xxx:xxxxx"
+								}],
+								users:  [{
+									"username": "user0_type0_xxxx",
+									"secret": "xxxxxxxx"
+								}]
+							},
+							chaincode:{
+								zip_url: 'https://github.com/ibm-blockchain/marbles-chaincode/archive/master.zip',
+								unzip_dir: 'marbles-chaincode-master/part2',
+								git_url: 'https://github.com/ibm-blockchain/marbles-chaincode/part2',
+							}
+						};
+			$("#chaincodeDetailsWrap").fadeOut();
+			$("#sdkInputWrap").fadeIn();
+			$("#sdkJsonArea").html(JSON.stringify(temp, null, 4));
 		}
 		
 		sizeMe($("#loadPanelNav"));
@@ -171,7 +197,8 @@ $(document).ready(function(){
 			$("#chaincodeDetailsWrap").fadeOut();
 		}
 		else{
-			$("#jsonarea").html('copy paste here!');
+			$("#jsonarea").html('paste json here!');
+			$("#sdkInputWrap").fadeOut();
 			$("#chaincodeDetailsWrap").fadeIn();
 		}
 		
@@ -210,12 +237,14 @@ $(document).ready(function(){
 	}
 	
 	function sizeMe(me){
+		
 		var height = $("#" + $(me).attr("show")).css('height');
 		//var pos = height.indexOf('px');
 		//height = height.substring(0, pos) - 20 + 'px';
+
+		console.log('resize', height);
 		$(me).css('height', height).css('line-height', height);
 	}
-	
 	
 	// ===============================================================================================================
 	// 												HTTP Functions
@@ -455,6 +484,36 @@ $(document).ready(function(){
 		});
 	}
 	
+	function rest_post_chaincode(cb){
+		log.log("Sending chaincode to SDK");
+		var data = $("#sdkJsonArea").val();
+		
+		try{
+			JSON.parse(data);
+		}
+		catch(e){
+			log.log("Error - Input is not JSON, go fish", e);
+			return;
+		}
+		//console.log(data);
+		
+		$.ajax({
+			method: 'POST',
+			url: window.location.origin + '/chaincode',
+			data: data,
+			contentType: 'application/json',
+			success: function(json){
+				log.log('Success - sending chaincode to sdk', json);
+				if(cb) cb(null, json);
+			},
+			error: function(e){
+				log.log('Error - sending chaincode to sdk', e);
+
+				if(cb) cb(e, null);
+			}
+		});
+	}
+	
 	// ===============================================================================================================
 	// 												Build UI Fun
 	// ===============================================================================================================
@@ -587,3 +646,27 @@ var log = 	{
 					if(str3) $("#logs").append(pretty_print(str3));
 			}
 };
+
+
+function copyDetails2InputArea(cc){
+	for(var i in cc.details.peers){
+		if(cc.details.peers[i].ssl) cc.details.peers[i].api_url = 'https://';
+		else  cc.details.peers[i].api_url = 'http://';
+		cc.details.peers[i].api_url += cc.details.peers[i].api_host + ':' + cc.details.peers[i].api_port;
+		if(cc.details.peers[i].ssl) delete  cc.details.peers[i].ssl;
+		if(cc.details.peers[i].name) delete cc.details.peers[i].name;
+	}
+	var temp = {
+				"network": {
+					"peers": cc.details.peers,
+					"users": cc.details.users
+				},
+				"chaincode": {
+					"zip_url": cc.details.zip_url,
+					"unzip_dir": cc.details.unzip_dir,
+					"git_url": cc.details.git_url
+				}
+			};
+	if(cc.details.deployed_name) temp.chaincode.deployed_name = cc.details.deployed_name;
+	$("#sdkJsonArea").html(JSON.stringify(temp, null, 4));
+}

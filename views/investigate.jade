@@ -28,32 +28,30 @@ block content
 		
 	#loadPanel.subPanel
 		span#chaincodes
-		button(type="button").loadButton#loadText Summary <br/> Text
-		button(type="button").loadButton#loadFile Summary <br/> File
-		button(type="button").loadButton#loadManual Manually
+		button(type="button").loadButton#loadText Load Summary<br/>from Text
+		button(type="button").loadButton#loadFile Load Summary<br/>from File
+		button(type="button").loadButton#loadManual Create Summary 
 		
 		#chaincodeDetailsWrap(hidden)
 			br
 			br
-			span Copy/Paste Chaincode Summary:&nbsp;
+			span Chaincode Summary File from Text:&nbsp;
 			span.hint (you can also click prev chaincode above to edit its details here)
-			button(type="button" style="margin-bottom:5px;")#loadjson Load Text
+			button(type="button" style="margin-bottom:5px;")#loadjson Load JSON
 			br
 			br
-			textarea#jsonarea {}
+			textarea#jsonarea(autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false") {}
 				
 				
-		#newccWrap(hidden)
-			span.legend New:
-			p
-				input(type="text" placeholder="Git Clone URL" name="git_url").newInput
-			p
-				input(type="text" placeholder="Git Zip URL" name="zip_url").newInput
-			p
-				input(type="text" placeholder="Unzipped Directory/Path" name="unzip_dir").newInput
-			center
-				button(type="button" style="float:none")#parsecc SDK Parse CC 
-				span &nbsp;&nbsp;
+		#sdkInputWrap(hidden)
+			br
+			br
+			span SDK Options:&nbsp;
+			span.hint (you can also click prev chaincode above to copy its details here)
+			button(type="button" style="margin-bottom:5px;")#sendjson Send to SDK
+			br
+			br
+			textarea#sdkJsonArea(autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false") {}
 	
 	
 	// ---------------- Network Panel ----------------- //	
