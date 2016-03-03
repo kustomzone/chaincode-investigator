@@ -83,14 +83,6 @@ $(document).ready(function(){
 		rest_write($("input[name='write_name']").val(), $("input[name='write_val']").val());
 	});
 	
-	$("#deploy").click(function(){
-		rest_deploy(cb_wait);
-		
-		function cb_wait(e, json){
-			console.log('go - deploy timer finished', json);
-		}
-	});
-	
 	$(document).on("click", ".delcc", function(){
 		delete_from_ls($(this).parent().attr('hash'));
 		console.log('deleted cc');
@@ -310,38 +302,6 @@ $(document).ready(function(){
 			},
 			error: function(e){
 				log.log('Error - write', e);
-				if(cb) cb(e, null);
-			}
-		});
-	}
-	
-	function rest_deploy(cb){
-		log.log("Deploying chaincode");
-		var data = 	{
-						type: "GOLANG",
-						chaincodeID: {
-							path: bag.cc.details.git_url
-						},
-						ctorMsg: {
-							function: "init",
-							"args": JSON.parse("[" + $("input[name='init_args']").val() + "]")
-						},
-						"secureContext": $("select[name='membershipUser']").val()
-					};
-		//console.log(data);
-		
-		$.ajax({
-			method: 'POST',
-			url: 'http://' + $("select[name='peer']").val() + '/devops/deploy',
-			data: JSON.stringify(data),
-			contentType: 'application/json',
-			success: function(json){
-				log.log('Success - deploy (you should still wait for go)', json);
-				if(cb) setTimeout(function(){ cb(null, json); }, 60000);
-			},
-			error: function(e){
-				log.log('Error - deploy', e);
-
 				if(cb) cb(e, null);
 			}
 		});
