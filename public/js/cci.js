@@ -32,13 +32,12 @@ $(document).ready(function(){
 	$(document).on("click", ".runButton", function(){
 		var func = $(this).attr('func').toLowerCase();
 		var args = $(this).prev().val();
-		
 		var temp = '';
-		try{
+		try{																		//test if its at least JSON
 			temp = JSON.parse("[" + args + "]");
 		}
 		catch(e){
-			console.log('ERROR you done messed up - body was not vaild json');
+			log.log('ERROR you done messed up - body was not vaild json');
 			return false;
 		}
 		
@@ -56,17 +55,17 @@ $(document).ready(function(){
 						}
 					};
 		
-		console.log("invoking func", func, data);
+		log.log("invoking func", func, data);
 		$.ajax({
 			method: 'POST',
 			url: 'http://' + $("select[name='peer']").val() + '/devops/invoke',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
-				console.log('Success', json);
+				log.log('Success', json);
 			},
 			error: function(e){
-				console.log('Error', e);
+				log.log('Error', e);
 			}
 		});
 	});
@@ -120,14 +119,6 @@ $(document).ready(function(){
 	
 	$("#barebones").click(function(){
 		rest_barebones();
-	});
-	
-	$("#remove").click(function(){
-		rest_remove();
-	});
-	
-	$("#init").click(function(){
-		rest_init();
 	});
 	
 	$("#sendjson").click(function(){
@@ -344,66 +335,6 @@ $(document).ready(function(){
 		}
 	}
 	
-	function rest_remove(){
-		log.log("Removing");
-		var data = {
-						"chaincodeSpec": {
-							"type": "GOLANG",
-							"chaincodeID": {
-								name: bag.cc.details.deployed_name,
-							},
-							"ctorMsg": {
-								"function": 'delete',
-								"args": [$("input[name='remove_name']").val()]
-							},
-							"secureContext": $("select[name='membershipUser']").val()
-						}
-					};
-
-		$.ajax({
-			method: 'POST',
-			url: 'http://' + $("select[name='peer']").val() + '/devops/invoke',
-			data: JSON.stringify(data),
-			contentType: 'application/json',
-			success: function(json){
-				log.log('Success - remove', json);
-			},
-			error: function(e){
-				log.log('Error - remove', e);
-			}
-		});
-	}
-	
-	function rest_init(){
-		log.log("init");
-		var data = {
-						"chaincodeSpec": {
-							"type": "GOLANG",
-							"chaincodeID": {
-								name: bag.cc.details.deployed_name,
-							},
-							"ctorMsg": {
-								"function": "init",
-								"args": [name]
-							},
-							"secureContext": $("select[name='membershipUser']").val()
-						}
-					};
-		
-		$.ajax({
-			method: 'POST',
-			url: 'http://' + $("select[name='peer']").val() + '/devops/invoke',
-			data: JSON.stringify(data),
-			contentType: 'application/json',
-			success: function(json){
-				log.log('Success - init', json);
-			},
-			error: function(e){
-				log.log('Error - init', e);
-			}
-		});
-	}
-	
 	function rest_barebones(){
 		log.log("custom", $("input[name='func_name']").val());
 		var data = {
@@ -414,7 +345,7 @@ $(document).ready(function(){
 							},
 							"ctorMsg": {
 								"function": $("input[name='func_name']").val(),
-								"args": JSON.parse($("input[name='func_val']").val())
+								"args": JSON.parse("[" + $("input[name='func_val']").val() + "]")
 							},
 							"secureContext": $("select[name='membershipUser']").val()
 						}
@@ -468,7 +399,7 @@ $(document).ready(function(){
 	// 												Build UI Fun
 	// ===============================================================================================================
 	function buildGoFunc(cc){
-		var skip = ['write', 'read', 'delete', 'init'];
+		var skip = ['write'];
 		var html = '';
 		var field = '<input class="arginput" type="text" placeholder="array of strings"/>';
 		if(cc && cc.func){
@@ -482,6 +413,14 @@ $(document).ready(function(){
 			$("#customgowrap").html(html);
 			$("#giturl").html(cc.git_url);
 		}
+		
+		for(var i in cc.func){																	//if no write() in cc then hide the ui
+			if(cc.func[i].toLowerCase() === 'write'){
+				$("#writeWrap").show();
+				return;
+			}
+		}
+		$("#writeWrap").hide();
 	}
 	
 	function build_ccs(ccs){																	//chaincode select options

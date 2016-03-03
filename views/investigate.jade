@@ -10,9 +10,9 @@ block content
 			span.fa.fa-child
 			span#peer ...
 
-		#blockheightWrap
-			span.fa.fa-sort-amount-desc
-			span#blockheight69 0
+		#gitUrlWrap
+			span.fa.fa-globe
+			span#giturl(style="font-size:11px; margin-left:10px;") -
 	
 	h1 Chaincode Investigator
 	
@@ -84,56 +84,51 @@ block content
 		
 		form#ccWrap
 			.func 
-				span Read (
+				span `Read (
 				input(type="text" name="read_name" placeholder="var name")
 				span ); 
+				span.hint aka Query(["abc"])
 				button(type="button")#read 
 					span Run
 					span.fa.fa-fire
 				button(type="button" style="margin-right:10px;")#readall
 					span Run All
 					span.fa.fa-th
-			
+					
 			.func 
-				span Write (
+				span Query ([
+				input(type="text" name="query_name" placeholder="array of strings")
+				span ]); 
+				button(type="button")#query 
+					span Run
+					span.fa.fa-fire
+				button(type="button" style="margin-right:10px;")#queryall
+					span Run All
+					span.fa.fa-th
+			
+			.func#writeWrap
+				span `Write (
 				input(type="text" name="write_name" placeholder="var name")
 				input(type="text" name="write_val" placeholder="value")
 				span ); 
 				button(type="button")#write
 					span Run
 					span.fa.fa-fire
-				
-			.func 
-				span Remove (
-				input(type="text" name="remove_name" placeholder="var name")
-				span ); 
-				button(type="button")#remove
-					span Run
-					span.fa.fa-fire
 			
 			.func 
-				span Init ([
-				input(type="text" name="init_args" placeholder="array of strings" value='"72"' style="width:100px;")
-				span ]); 
-				span#giturl(style="font-size:11px; margin-left:10px;") none
-				button(type="button")#init
-					span Run
-					span.fa.fa-fire
-					
-			br
-			
-			#customgowrap
-			
-			br
-			
-			.func 
+				span Invoke
 				input(type="text" name="func_name" placeholder="func name")
-				span (
-				input(type="text" name="func_val" placeholder="argument")
-				span ); 
+				span ([
+				input(type="text" name="func_val" placeholder="array of strings")
+				span ]); 
 				button(type="button")#barebones
 					span Run
 					span.fa.fa-fire
+			
+			
+
+			#customgowrap
+		
 					
 					
 	// ---------------- Log Panel ----------------- //
