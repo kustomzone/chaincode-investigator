@@ -1,6 +1,7 @@
 extends ./template/layout.jade
 
 block content
+	//--------- Status Panel Thing at top -----------/
 	#statusPanel
 		#nameWrap
 			span.fa.fa-file-text
@@ -14,6 +15,8 @@ block content
 			span.fa.fa-globe
 			span#giturl(style="font-size:11px; margin-left:10px;") -
 	
+	
+	//------------------ Title ----------------//
 	h1 Chaincode Investigator
 	
 	br
@@ -81,7 +84,6 @@ block content
 		.stepNumberClosed 3.
 
 	#chaincodePanel.subPanel.ready
-		
 		form#ccWrap
 			.func 
 				span `Read (
@@ -124,13 +126,10 @@ block content
 				button(type="button")#barebones
 					span Run
 					span.fa.fa-fire
-			
-			
 
 			#customgowrap
-		
-					
-					
+	
+	
 	// ---------------- Log Panel ----------------- //
 	.tool.toolOpen.accent(show='logPanel')#logPanelNav
 		span.fa.fa-file-text
