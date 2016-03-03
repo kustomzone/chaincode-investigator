@@ -266,7 +266,7 @@ $(document).ready(function(){
 							"secureContext": $("select[name='membershipUser']").val()
 						}
 					};
-		//console.log(data);
+		console.log(data);
 		
 		$.ajax({
 			method: 'POST',
@@ -556,15 +556,9 @@ $(document).ready(function(){
 	function build_user_options(users){															//user select options
 		var html  = '';
 		if(users){
-			users.sort(function(a, b) {															//alpha sort me
-				var textA = a.username.toUpperCase();
-				var textB = b.username.toUpperCase();
-				return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-			});
-
 			for(var i in users){
 				var selected = '';
-				if(i == selectedPeer) selected= 'selected="selected"';
+				if(bag.cc.details.peers[selectedPeer].user == users[i].username) selected= 'selected="selected"';
 				html += '<option ' + selected + '>' + users[i].username + '</option>';
 			}
 		}
@@ -612,7 +606,6 @@ $(document).ready(function(){
 	}
 });
 
-
 function pretty_print(str){
 	if(str.constructor === Object || str.constructor === Array){
 		return JSON.stringify(str, null, 4);
@@ -632,9 +625,9 @@ var log = 	{
 					if(str1) $("#logs").append(pretty_print(str1));
 					if(str2) $("#logs").append(pretty_print(str2));
 					if(str3) $("#logs").append(pretty_print(str3));
+					$("#logs").scrollTop($("#logs")[0].scrollHeight);
 			}
 };
-
 
 function copyDetails2InputArea(cc){
 	for(var i in cc.details.peers){
