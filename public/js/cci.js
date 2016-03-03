@@ -134,7 +134,7 @@ $(document).ready(function(){
 		rest_init();
 	});
 	
-	$(document).on("click", ".ccSummary", function(){
+	$(document).on("click", ".ccSummary", function(){								//load the selected cc
 		var hash = $(this).attr("hash");
 		console.log('Selected cc: ', hash);
 		for(var i in bag.ls){
