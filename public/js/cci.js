@@ -171,7 +171,7 @@ $(document).ready(function(){
 			$("#chaincodeDetailsWrap").fadeOut();
 		}
 		else{
-			$("#jsonarea").html('');
+			$("#jsonarea").html('copy paste here!');
 			$("#chaincodeDetailsWrap").fadeIn();
 		}
 		
