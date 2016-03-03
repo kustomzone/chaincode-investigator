@@ -36,8 +36,8 @@ router.route("/cci").get(function(req, res){
 // POST /chaincode
 // ============================================================================================================================
 router.route("/chaincode").post(function(req, res){
-	console.log('here');
 	var ibc = new Ibc1();
+	var chaincode = {};
 	ibc.load(req.body, cb_ready);																//parse/load chaincode
 
 	function cb_ready(err, cc){																	//response has chaincode functions
@@ -46,8 +46,25 @@ router.route("/chaincode").post(function(req, res){
 			res.status(err.code).json(err);
 		}
 		else{
-			console.log('made it?');
-			res.status(200).json(cc.details);
+			chaincode = cc;
+			if(!cc.details.deployed_name || cc.details.deployed_name === ""){					//decide if i need to deploy
+				cc.deploy('init', ['99'], null, cb_deployed);
+			}
+			else{
+				console.log('chaincode summary file indicates chaincode has been previously deployed');
+				cb_deployed();
+			}
+		}
+	}
+	
+	function cb_deployed(err, d){
+		if(err != null){
+			console.log('! looks like a deploy error', err);
+			res.status(err.code).json(err);
+		}
+		else{
+			console.log('------------------------------------------ Deployed ------------------------------------------');
+			res.status(200).json({details: chaincode.details});
 		}
 	}
 });
