@@ -123,7 +123,7 @@ $(document).ready(function(){
 		}
 		store_to_ls(bag.cc);
 		lets_do_this();
-		$("#chaincodeDetailsWrap").fadeOut();
+		$("#chaincodeDetailsWrap").hide();
 	});
 	
 	
@@ -159,7 +159,7 @@ $(document).ready(function(){
 	
 	$(document).on("click", "#loadManual", function(){
 		if($("#sdkInputWrap").is(":visible")){
-			$("#sdkInputWrap").fadeOut();
+			$("#sdkInputWrap").hide();
 		}
 		else{
 			var temp = 	{
@@ -181,7 +181,7 @@ $(document).ready(function(){
 								git_url: 'https://github.com/ibm-blockchain/marbles-chaincode/part2',
 							}
 						};
-			$("#chaincodeDetailsWrap").fadeOut();
+			$("#chaincodeDetailsWrap").hide();
 			$("#sdkInputWrap").fadeIn();
 			$("#sdkJsonArea").val(JSON.stringify(temp, null, 4));
 		}
@@ -191,11 +191,11 @@ $(document).ready(function(){
 	
 	$(document).on("click", "#loadText", function(){
 		if($("#chaincodeDetailsWrap").is(":visible")){
-			$("#chaincodeDetailsWrap").fadeOut();
+			$("#chaincodeDetailsWrap").hide();
 		}
 		else{
 			$("#jsonarea").html('paste json here!');
-			$("#sdkInputWrap").fadeOut();
+			$("#sdkInputWrap").hide();
 			$("#chaincodeDetailsWrap").fadeIn();
 		}
 		
