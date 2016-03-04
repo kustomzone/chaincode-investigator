@@ -37,7 +37,7 @@ body{
 	padding: 15px;
 }
 #ccWrap{
-	width:700px;
+	max-width:700px;
 }
 .ccSummary, .loadButton{
 	width:85px;
@@ -120,7 +120,7 @@ body{
 
 // open tool
 .toolOpen{
-	width:200px;
+	width:170px;
 	padding:45px 15px;
 	font-size:20px;
 	line-height:87px;
@@ -231,8 +231,11 @@ body{
 #loadPanel, #networkPanel, #chaincodePanel{
 	display:none;
 }
+#chaincodePanel{
+	min-height:220px;
+}
 .subPanel{
-	width: 80%;
+	width: 84%;
 	display: inline-block;
 	text-align: left;
 	margin-left: 10px;

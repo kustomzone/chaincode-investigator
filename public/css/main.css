@@ -249,7 +249,7 @@ body {
   padding: 15px; }
 
 #ccWrap {
-  width: 700px; }
+  max-width: 700px; }
 
 .ccSummary, .loadButton {
   width: 85px;
@@ -320,7 +320,7 @@ body {
   color: limegreen; }
 
 .toolOpen {
-  width: 200px;
+  width: 170px;
   padding: 45px 15px;
   font-size: 20px;
   line-height: 87px;
@@ -413,8 +413,11 @@ body {
 #loadPanel, #networkPanel, #chaincodePanel {
   display: none; }
 
+#chaincodePanel {
+  min-height: 220px; }
+
 .subPanel {
-  width: 80%;
+  width: 84%;
   display: inline-block;
   text-align: left;
   margin-left: 10px;
@@ -557,9 +560,25 @@ body {
     height: 10px;
     -moz-transform: translateZ(0); } }
 
+@media (max-width: 1375px) {
+  .subPanel {
+    width: 80%; } }
+
 @media (max-width: 1250px) {
   .subPanel {
     width: 70%; } }
+
+@media (max-width: 975px) {
+  button {
+    float: none;
+    margin-left: 10px;
+    width: 100%; }
+  .func {
+    margin-top: 4px; }
+  #gitUrlWrap {
+    display: none; }
+  #peerWrap {
+    text-align: right; } }
 
 @media (max-width: 850px) {
   .subPanel {

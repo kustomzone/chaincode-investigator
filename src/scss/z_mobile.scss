@@ -1,10 +1,34 @@
 @import 'color_theme';
 
+@media (max-width: 1375px) {
+	.subPanel{
+		width: 80%;
+	}
+}
+
 @media (max-width: 1250px) {
 	.subPanel{
 		width: 70%;
 	}
 }
+
+@media (max-width: 975px) {
+	button{
+		float: none;
+		margin-left:10px;
+		width: 100%;
+	}
+	.func{
+		margin-top:4px;
+	}
+	#gitUrlWrap{
+		display:none;
+	}
+	#peerWrap{
+		text-align: right;
+	}
+}
+
 
 @media (max-width: 850px) {
 	.subPanel{
