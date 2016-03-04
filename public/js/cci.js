@@ -159,7 +159,7 @@ $(document).ready(function(){
 	
 	$(document).on("click", "#loadManual", function(){
 		if($("#sdkInputWrap").is(":visible")){
-			$("#sdkInputWrap").hide();
+			hide_sdk_json_area();
 		}
 		else{
 			var temp = 	{
@@ -195,7 +195,7 @@ $(document).ready(function(){
 		}
 		else{
 			$("#jsonarea").html('paste json here!');
-			$("#sdkInputWrap").hide();
+			hide_sdk_json_area();
 			$("#chaincodeDetailsWrap").fadeIn();
 		}
 		
@@ -378,6 +378,7 @@ $(document).ready(function(){
 	
 	function rest_post_chaincode(cb){
 		log.log("Sending chaincode to SDK");
+		$("#sdkLoading").fadeIn();
 		var data = $("#sdkJsonArea").val();
 		
 		try{
@@ -396,11 +397,16 @@ $(document).ready(function(){
 			contentType: 'application/json',
 			success: function(json){
 				log.log('Success - sending chaincode to sdk', json);
+				$("#sdkLoading").fadeOut();
+				hide_sdk_json_area();
 				store_to_ls(json);
+				lets_do_this();
 				if(cb) cb(null, json);
 			},
 			error: function(e){
 				log.log('Error - sending chaincode to sdk', e);
+				$("#sdkLoading").fadeOut();
+				hide_sdk_json_area();
 				if(cb) cb(e, null);
 			}
 		});
@@ -439,7 +445,7 @@ $(document).ready(function(){
 		//console.log('building cc', ccs);
 		for(var i in ccs){
 			if(ccs[i].details){
-				html += '<div class="ccSummary" hash="' + ccs[i].details.deployed_name +'">';
+				html += '<div class="ccSummary" hash="' + ccs[i].details.deployed_name +'" title="' + ccs[i].details.git_url +'">';
 				html += 		ccs[i].details.deployed_name.substring(0, 3);
 				html +=		'<div class="delcc fa fa-remove" title="remove chaincode"></div>';
 				html += '</div>';
@@ -479,6 +485,11 @@ $(document).ready(function(){
 // ===============================================================================================================
 // 												Helper Fun
 // ===============================================================================================================
+	function hide_sdk_json_area(){
+		$("#sdkInputWrap").hide();
+		sizeMe($("#loadPanelNav"));
+	}
+	
 	function load_from_ls(){
 		if(window.localStorage) {
 			var str = window.localStorage.getItem(lsKey);

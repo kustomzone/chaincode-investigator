@@ -435,6 +435,9 @@ body {
   overflow-y: auto;
   word-wrap: break-word; }
 
+#sdkLoading {
+  display: none; }
+
 #blockWrap {
   position: relative;
   margin: 15px 25px; }
@@ -502,6 +505,14 @@ body {
 	<span></span>
 	<div></div>
 </div>
+
+.loadingdiv
+	span
+	span
+	span
+	span
+	span
+	div
 */
 .loadingdiv {
   height: 30px;
@@ -512,11 +523,10 @@ body {
   display: inline-block;
   vertical-align: middle;
   width: 4px;
-  background: #343D48;
-  border-radius: 3px;
+  background: orange;
+  margin: 1px;
   -webkit-animation: loading 0.8s infinite alternate;
-  -moz-animation: loading 0.8s infinite alternate;
-  box-shadow: 1px 1px 1px #343D48; }
+  -moz-animation: loading 0.8s infinite alternate; }
 
 .loadingdiv div {
   height: 30px;

@@ -8,6 +8,14 @@
 	<span></span>
 	<div></div>
 </div>
+
+.loadingdiv
+	span
+	span
+	span
+	span
+	span
+	div
 */
 
 .loadingdiv{
@@ -19,11 +27,12 @@
 	display: inline-block;
 	vertical-align: middle;
 	width: 4px;
-	background: $main_bg;
-	border-radius: 3px;
+	background: $hi_color1;
+	//border-radius: 3px;
+	margin: 1px;
 	-webkit-animation: loading 0.8s infinite alternate;
 	-moz-animation: loading 0.8s infinite alternate;
-	box-shadow:1px 1px 1px $main_bg;
+	//box-shadow:1px 1px 1px #fff;
 }
 .loadingdiv div{
 	height:30px;

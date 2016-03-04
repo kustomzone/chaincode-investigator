@@ -10,5 +10,6 @@ come back later!
 - [x] move cci into its own repo
 - [x] use the sdk to deploy
 - [x] auto size nav
-- [ ] allow user to set what funciton he wants called in deploy
-- [ ] load spin when deploying
+- [ ] allow user to set what function he wants called in deploy
+- [x] load spin when deploying
+- [ ] better naming of chaincode
