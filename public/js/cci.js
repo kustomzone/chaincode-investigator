@@ -21,7 +21,8 @@ $(document).ready(function(){
 			build_peer_options(bag.cc.details.peers);											//populate drop down peer select box
 			build_user_options(bag.cc.details.users);
 			
-			$("#peer").html(bag.cc.details.peers[selectedPeer].name);									//populate status panel
+			$("#peer").html(bag.cc.details.peers[selectedPeer].name).css("background", "#32CD32");//populate status panel
+			setTimeout(function(){$("#peer").css("background", "initial");}, 2000);
 			$("#name").html(bag.cc.details.deployed_name.substring(0,32) + '...');
 		}
 	}
@@ -106,7 +107,8 @@ $(document).ready(function(){
 				break;
 			}
 		}
-		$("#peer").html(bag.cc.details.peers[selectedPeer].name);								//populate status panel
+		$("#peer").html(bag.cc.details.peers[selectedPeer].name).css("background", "#32CD32");//populate status panel
+		setTimeout(function(){$("#peer").css("background", "initial");}, 2000);
 		build_user_options(bag.cc.details.users);
 		console.log('Selected peer: ', bag.cc.details.peers[selectedPeer].name);
 	});
@@ -233,10 +235,11 @@ $(document).ready(function(){
 	
 	function sizeMe(me){
 		var height = $("#" + $(me).attr("show")).css('height');
-		//var pos = height.indexOf('px');
-		//height = height.substring(0, pos) - 20 + 'px';
+		var pos = height.indexOf('px');
+		height = height.substring(0, pos);
+		if(height > 100) height = height - 92;
 		console.log('resize', height);
-		$(me).css('height', height).css('line-height', height);
+		$(me).css('height', height).css('line-height', height + 'px');
 	}
 	
 	// ===============================================================================================================
@@ -344,7 +347,7 @@ $(document).ready(function(){
 	}
 	
 	function rest_barebones(){
-		log.log("custom", $("input[name='func_name']").val());
+		log.log("Invoking Function " + $("input[name='func_name']").val());
 		var data = {
 						"chaincodeSpec": {
 							"type": "GOLANG",
@@ -528,8 +531,11 @@ var log = 	{
 					else if(str1 && str2) console.log(str1, str2);
 					else console.log(str1);
 					
-					$("#logs").append("\n");
-					if(str1) $("#logs").append(pretty_print(str1));
+					var style = "color: limegreen;";
+					if(str1.toLowerCase().indexOf('error') >= 0) style= "color: #cc0000;";
+					
+					$("#logs").append("<br/>");
+					if(str1) $("#logs").append('<span style="' + style +'">' + pretty_print(str1) + '</span>');
 					if(str2) $("#logs").append(pretty_print(str2));
 					if(str3) $("#logs").append(pretty_print(str3));
 					$("#logs").scrollTop($("#logs")[0].scrollHeight);

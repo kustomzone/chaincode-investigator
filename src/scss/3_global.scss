@@ -222,6 +222,10 @@ body{
 	width:100%;
 	text-align: center;
 }
+#peer{
+	padding: 5px;
+	border-radius: 8px;
+}
 
 
 #loadPanel, #networkPanel, #chaincodePanel{
@@ -238,5 +242,11 @@ body{
 
 #logs{
 	width: 90%;
-	min-height: 500px;
+	height: 400px;
+	background:$main_bg2;
+	border: 1px #555 solid;
+	color:#fff;
+	font-family: Courier New, Courier, monospace;
+	padding:5px;
+	overflow-y: auto;
 }

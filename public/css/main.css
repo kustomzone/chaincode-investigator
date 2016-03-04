@@ -406,6 +406,10 @@ body {
   width: 100%;
   text-align: center; }
 
+#peer {
+  padding: 5px;
+  border-radius: 8px; }
+
 #loadPanel, #networkPanel, #chaincodePanel {
   display: none; }
 
@@ -419,7 +423,13 @@ body {
 
 #logs {
   width: 90%;
-  min-height: 500px; }
+  height: 400px;
+  background: #111;
+  border: 1px #555 solid;
+  color: #fff;
+  font-family: Courier New, Courier, monospace;
+  padding: 5px;
+  overflow-y: auto; }
 
 #blockWrap {
   position: relative;
