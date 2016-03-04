@@ -433,10 +433,19 @@ body {
   font-family: Courier New, Courier, monospace;
   padding: 5px;
   overflow-y: auto;
-  word-wrap: break-word; }
+  word-wrap: break-word;
+  display: inline-block; }
 
 #sdkLoading {
   display: none; }
+
+#clearLogs {
+  padding: 5px;
+  vertical-align: top; }
+
+#clearLogs:hover {
+  cursor: pointer;
+  color: #fff; }
 
 #blockWrap {
   position: relative;
@@ -592,5 +601,11 @@ body {
     text-align: right; } }
 
 @media (max-width: 850px) {
+  .toolOpen {
+    width: 85px; }
+  .toollegendOpen {
+    display: none; } }
+
+@media (max-width: 475px) {
   .subPanel {
     width: 60%; } }

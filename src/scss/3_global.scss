@@ -253,8 +253,18 @@ body{
 	padding:5px;
 	overflow-y: auto;
 	word-wrap: break-word;
+	display: inline-block;
 }
 
 #sdkLoading{
 	display: none;
+}
+
+#clearLogs{
+	padding:5px;
+	vertical-align: top;
+}
+#clearLogs:hover{
+	cursor: pointer;
+	color:#fff;
 }

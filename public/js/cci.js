@@ -210,37 +210,14 @@ $(document).ready(function(){
 		toggle_panel(this);
 	});
 	
-	function toggle_panel(me){
-		if($(me).hasClass("toolClosed")){
-			showPanel(me);
-		}
-		else{
-			$(me).removeClass("toolOpen").addClass("toolClosed");
-			$(me).find(".toollegendOpen").removeClass("toollegendOpen").addClass("toollegendClosed");
-			$("#" + $(me).attr("show")).hide();
-			$(me).find(".stepNumberOpen").removeClass("stepNumberOpen").addClass("stepNumberClosed");
-			
-			$(me).css('height', 'initial').css('line-height', 'initial');
-		}
-	}
+	$("#clearLogs").click(function(){
+		$("#logs").html("");
+	});
 	
-	function showPanel(me){
-		$(me).removeClass("toolClosed").addClass("toolOpen");
-		$(me).find(".toollegendClosed").removeClass("toollegendClosed").addClass("toollegendOpen");
-		$("#" + $(me).attr("show")).fadeIn().css("display","inline-block");
-		$(me).find(".stepNumberClosed").removeClass("stepNumberClosed").addClass("stepNumberOpen");
-	
-		sizeMe(me);
-	}
-	
-	function sizeMe(me){
-		var height = $("#" + $(me).attr("show")).css('height');
-		var pos = height.indexOf('px');
-		height = height.substring(0, pos);
-		if(height > 100) height = height - 92;
-		console.log('resize', height);
-		$(me).css('height', height).css('line-height', height + 'px');
-	}
+	$(window).resize(function() {
+		sizeMe($("#loadPanelNav"));
+		sizeMe($("#chaincodePanelNav"));
+	});
 	
 	// ===============================================================================================================
 	// 												HTTP Functions
@@ -486,6 +463,39 @@ $(document).ready(function(){
 			}
 		}
 		$("#users").html(html);
+	}
+	
+	function toggle_panel(me){															//open/close the panel for this nav
+		if($(me).hasClass("toolClosed")){
+			showPanel(me);
+		}
+		else{
+			$(me).removeClass("toolOpen").addClass("toolClosed");
+			$(me).find(".toollegendOpen").removeClass("toollegendOpen").addClass("toollegendClosed");
+			$("#" + $(me).attr("show")).hide();
+			$(me).find(".stepNumberOpen").removeClass("stepNumberOpen").addClass("stepNumberClosed");
+			
+			$(me).css('height', 'initial').css('line-height', 'initial');
+		}
+	}
+	
+	function showPanel(me){																//show the panel for this nav
+		$(me).removeClass("toolClosed").addClass("toolOpen");
+		$(me).find(".toollegendClosed").removeClass("toollegendClosed").addClass("toollegendOpen");
+		$("#" + $(me).attr("show")).fadeIn().css("display","inline-block");
+		$(me).find(".stepNumberClosed").removeClass("stepNumberClosed").addClass("stepNumberOpen");
+		sizeMe(me);
+	}
+	
+	function sizeMe(me){
+		if($(me).hasClass("toolOpen")){													//only resize if its open
+			var height = $("#" + $(me).attr("show")).css('height');
+			var pos = height.indexOf('px');
+			height = height.substring(0, pos);
+			if(height > 100) height = height - 92;
+			console.log('resize', height);
+			$(me).css('height', height).css('line-height', height + 'px');
+		}
 	}
 	
 	

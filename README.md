@@ -12,4 +12,5 @@ come back later!
 - [x] auto size nav
 - [ ] allow user to set what function he wants called in deploy
 - [x] load spin when deploying
-- [ ] better naming of chaincode
+- [x] better naming of chaincode
+- [x] clear button in log panel

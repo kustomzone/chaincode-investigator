@@ -69,7 +69,7 @@ var default_options = 	{
 							include_headers: false
 						};
 
-//is the damn obj empty or not
+//is the obj empty or not
 function isEmpty(obj) {
 	for(var prop in obj) {
 		if(obj.hasOwnProperty(prop))
