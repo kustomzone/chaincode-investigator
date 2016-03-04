@@ -13,7 +13,7 @@ $(document).ready(function(){
 	lets_do_this();
 	//localStorage.clear();
 	
-	function lets_do_this(){
+	function lets_do_this(){																	//load from ls and build up ui
 		load_from_ls();
 		build_ccs(bag.ls);
 		if(bag && bag.cc && bag.cc.details) {
@@ -30,7 +30,7 @@ $(document).ready(function(){
 	// ===============================================================================================================
 	// 												jQuery Events
 	// ================================================================================================================
-	$(document).on("click", ".runButton", function(){
+	$(document).on("click", ".runButton", function(){								//invoke chaincode function
 		var func = $(this).attr('func').toLowerCase();
 		var args = $(this).prev().val();
 		var temp = '';
@@ -42,7 +42,7 @@ $(document).ready(function(){
 			return false;
 		}
 		
-		var data = {
+		var data = {																//build our body up
 						"chaincodeSpec": {
 							"type": "GOLANG",
 							"chaincodeID": {
@@ -75,7 +75,7 @@ $(document).ready(function(){
 		rest_read([$("input[name='read_name']").val()]);
 	});
 	
-	$("#readall").click(function(){
+	$("#readall").click(function(){													//read on all the things
 		rest_read_all_peers([$("input[name='read_name']").val()]);
 	});
 	
@@ -83,7 +83,7 @@ $(document).ready(function(){
 		rest_read(JSON.parse('[' + $("input[name='query_name']").val() + ']'));
 	});
 	
-	$("#queryall").click(function(){
+	$("#queryall").click(function(){												//query on all the things
 		rest_read_all_peers(JSON.parse('[' + $("input[name='query_name']").val() + ']'));
 	});
 	
@@ -91,7 +91,7 @@ $(document).ready(function(){
 		rest_write($("input[name='write_name']").val(), $("input[name='write_val']").val());
 	});
 	
-	$(document).on("click", ".delcc", function(){
+	$(document).on("click", ".delcc", function(){									//delete this cc from local storage
 		delete_from_ls($(this).parent().attr('hash'));
 		console.log('deleted cc');
 		bag.cc = {};
@@ -99,7 +99,7 @@ $(document).ready(function(){
 		return false;
 	});
 	
-	$("#peers").change(function(){
+	$("#peers").change(function(){													//select correct memership user for this peer
 		selectedPeer = 0;
 		for(var i in bag.cc.details.peers){
 			if(bag.cc.details.peers[i].api_host + ':' + bag.cc.details.peers[i].api_port == $(this).val()){
@@ -108,12 +108,12 @@ $(document).ready(function(){
 			}
 		}
 		$("#peer").html(bag.cc.details.peers[selectedPeer].name).css("background", "#32CD32");//populate status panel
-		setTimeout(function(){$("#peer").css("background", "initial");}, 2000);
+		setTimeout(function(){$("#peer").css("background", "initial");}, 2000);		//flashy flashy
 		build_user_options(bag.cc.details.users);
 		console.log('Selected peer: ', bag.cc.details.peers[selectedPeer].name);
 	});
 	
-	$("#loadjson").click(function(){
+	$("#loadjson").click(function(){												//load chaincode summary file from textarea
 		try{
 			bag.cc = JSON.parse($("#jsonarea").val());
 		}
@@ -126,12 +126,11 @@ $(document).ready(function(){
 		$("#chaincodeDetailsWrap").hide();
 	});
 	
-	
-	$("#barebones").click(function(){
+	$("#barebones").click(function(){												//custom invoke function that SDK did not pick up
 		rest_barebones();
 	});
 	
-	$("#sendjson").click(function(){
+	$("#sendjson").click(function(){												//send json to SDK for parsing
 		rest_post_chaincode();
 	});
 	
@@ -146,18 +145,15 @@ $(document).ready(function(){
 				copyDetails2InputArea(bag.cc);
 				
 				if(!$("#jsonarea").is(":visible") && !$("#sdkJsonArea").is(":visible")){	//hold off on closing if these are open
-					//$(this).addClass("selectedCC");
-					//setTimeout(function(){
-						toggle_panel($("#loadPanelNav"));
-						showPanel($("#chaincodePanelNav"));
-					//}, 300);
+					toggle_panel($("#loadPanelNav"));
+					showPanel($("#chaincodePanelNav"));
 				}
 				break;
 			}
 		}
 	});
 	
-	$(document).on("click", "#loadManual", function(){
+	$(document).on("click", "#showCreateTextarea", function(){								//show SDK input and init textarea
 		if($("#sdkInputWrap").is(":visible")){
 			hide_sdk_json_area();
 		}
@@ -189,7 +185,7 @@ $(document).ready(function(){
 		sizeMe($("#loadPanelNav"));
 	});
 	
-	$(document).on("click", "#loadText", function(){
+	$(document).on("click", "#showCCsummaryTextarea", function(){						//show chaincode summary input and init textarea
 		if($("#chaincodeDetailsWrap").is(":visible")){
 			$("#chaincodeDetailsWrap").hide();
 		}
@@ -202,19 +198,15 @@ $(document).ready(function(){
 		sizeMe($("#loadPanelNav"));
 	});
 	
-	$("#parsecc").click(function(){
-
-	});
-	
-	$(".tool").click(function(){
+	$(".tool").click(function(){														//open/close this nav's panel
 		toggle_panel(this);
 	});
 	
-	$("#clearLogs").click(function(){
+	$("#clearLogs").click(function(){													//wipe it out
 		$("#logs").html("");
 	});
 	
-	$(window).resize(function() {
+	$(window).resize(function() {														//resize nav
 		sizeMe($("#loadPanelNav"));
 		sizeMe($("#chaincodePanelNav"));
 	});
@@ -408,7 +400,7 @@ $(document).ready(function(){
 			$("#giturl").html(cc.git_url);
 		}
 		
-		for(var i in cc.func){																	//if no write() in cc then hide the ui
+		for(var i in cc.func){															//if no write() in cc then hide the ui
 			if(cc.func[i].toLowerCase() === 'write'){
 				$("#writeWrap").show();
 				return;
@@ -417,13 +409,13 @@ $(document).ready(function(){
 		$("#writeWrap").hide();
 	}
 	
-	function build_ccs(ccs){																	//build parsed chaincode options
+	function build_ccs(ccs){															//build parsed chaincode options
 		var html = '';
 		//console.log('building cc', ccs);
 		for(var i in ccs){
 			var pos = ccs[i].details.git_url.lastIndexOf('/');
-			var text = ccs[i].details.git_url.substring(pos + 1).substring(0, 8);				//lets make a better short name
-			var timestamp = Date.now();															//if no date, just make it today
+			var text = ccs[i].details.git_url.substring(pos + 1).substring(0, 8);		//lets make a better short name
+			var timestamp = Date.now();													//if no date, just make it today
 			if(ccs[i].details.timestamp) timestamp = ccs[i].details.timestamp;
 			text += " " + formatDate(timestamp, '%M/%d');
 			text += " " + ccs[i].details.deployed_name.substring(0, 6);
@@ -438,9 +430,9 @@ $(document).ready(function(){
 		$("#chaincodes").html(html);
 	}
 	
-	function build_peer_options(peers){															//peer select options
+	function build_peer_options(peers){													//peer select options
 		if(peers){
-			peers.sort(function(a, b) {															//alpha sort me
+			peers.sort(function(a, b) {													//alpha sort me
 				var textA = a.id.toUpperCase();
 				var textB = b.id.toUpperCase();
 				return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
@@ -453,7 +445,7 @@ $(document).ready(function(){
 		}
 	}
 	
-	function build_user_options(users){															//user select options
+	function build_user_options(users){													//user select options
 		var html  = '';
 		if(users){
 			for(var i in users){
@@ -467,15 +459,14 @@ $(document).ready(function(){
 	
 	function toggle_panel(me){															//open/close the panel for this nav
 		if($(me).hasClass("toolClosed")){
-			showPanel(me);
+			showPanel(me);																//show this panel
 		}
 		else{
 			$(me).removeClass("toolOpen").addClass("toolClosed");
 			$(me).find(".toollegendOpen").removeClass("toollegendOpen").addClass("toollegendClosed");
-			$("#" + $(me).attr("show")).hide();
+			$("#" + $(me).attr("show")).hide();											//hide the panel
 			$(me).find(".stepNumberOpen").removeClass("stepNumberOpen").addClass("stepNumberClosed");
-			
-			$(me).css('height', 'initial').css('line-height', 'initial');
+			$(me).css('height', 'initial').css('line-height', 'initial');				//change height back
 		}
 	}
 	
@@ -492,8 +483,9 @@ $(document).ready(function(){
 			var height = $("#" + $(me).attr("show")).css('height');
 			var pos = height.indexOf('px');
 			height = height.substring(0, pos);
-			if(height > 100) height = height - 92;
-			console.log('resize', height);
+			if(height > 100) height = height - 92;										//for some reason this helps
+			
+			//console.log('resize', height);
 			$(me).css('height', height).css('line-height', height + 'px');
 		}
 	}
@@ -544,7 +536,7 @@ $(document).ready(function(){
 	}
 });
 
-function pretty_print(str){
+function pretty_print(str){															//json pretty print if obj
 	if(str.constructor === Object || str.constructor === Array){
 		return JSON.stringify(str, null, 4);
 	}
@@ -553,7 +545,7 @@ function pretty_print(str){
 	}
 }
 
-var log = 	{
+var log = 	{																		//append text to log panel
 				log: function log(str1, str2, str3){
 					if(str1 && str2 && str3) console.log(str1, str2, str3);
 					else if(str1 && str2) console.log(str1, str2);
@@ -570,7 +562,7 @@ var log = 	{
 			}
 };
 
-function copyDetails2InputArea(cc){
+function copyDetails2InputArea(cc){													//copy only need stuff over
 	for(var i in cc.details.peers){
 		if(cc.details.peers[i].ssl) cc.details.peers[i].api_url = 'https://';
 		else  cc.details.peers[i].api_url = 'http://';
