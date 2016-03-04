@@ -41,8 +41,8 @@ body{
 }
 .ccSummary, .loadButton{
 	width:85px;
-	height: 85px;
-	font-size: 35px;
+	height: 58px;
+	font-size: 16px;
 	font-family: Courier New;
 	background:$main_bg2;
 	border: 1px $acc_color2 solid;
@@ -50,10 +50,10 @@ body{
 	margin-right: 10px;
 	vertical-align:middle;
 	text-align: center;
-	line-height:85px;
 	color: $acc_color4;
 	border-radius: 3px;
 	position: relative;
+	padding-top:20px;
 }
 .loadButton{
 	line-height: initial;

@@ -440,13 +440,20 @@ $(document).ready(function(){
 		$("#writeWrap").hide();
 	}
 	
-	function build_ccs(ccs){																	//chaincode select options
+	function build_ccs(ccs){																	//build parsed chaincode options
 		var html = '';
 		//console.log('building cc', ccs);
 		for(var i in ccs){
+			var pos = ccs[i].details.git_url.lastIndexOf('/');
+			var text = ccs[i].details.git_url.substring(pos + 1).substring(0, 8);				//lets make a better short name
+			var timestamp = Date.now();															//if no date, just make it today
+			if(ccs[i].details.timestamp) timestamp = ccs[i].details.timestamp;
+			text += " " + formatDate(timestamp, '%M/%d');
+			text += " " + ccs[i].details.deployed_name.substring(0, 6);
+			
 			if(ccs[i].details){
 				html += '<div class="ccSummary" hash="' + ccs[i].details.deployed_name +'" title="' + ccs[i].details.git_url +'">';
-				html += 		ccs[i].details.deployed_name.substring(0, 3);
+				html += 		text;
 				html +=		'<div class="delcc fa fa-remove" title="remove chaincode"></div>';
 				html += '</div>';
 			}

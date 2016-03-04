@@ -253,8 +253,8 @@ body {
 
 .ccSummary, .loadButton {
   width: 85px;
-  height: 85px;
-  font-size: 35px;
+  height: 58px;
+  font-size: 16px;
   font-family: Courier New;
   background: #111;
   border: 1px #646B73 solid;
@@ -262,10 +262,10 @@ body {
   margin-right: 10px;
   vertical-align: middle;
   text-align: center;
-  line-height: 85px;
   color: limegreen;
   border-radius: 3px;
-  position: relative; }
+  position: relative;
+  padding-top: 20px; }
 
 .loadButton {
   line-height: initial;
