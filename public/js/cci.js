@@ -145,10 +145,10 @@ $(document).ready(function(){
 				
 				if(!$("#jsonarea").is(":visible") && !$("#sdkJsonArea").is(":visible")){	//hold off on closing if these are open
 					//$(this).addClass("selectedCC");
-					setTimeout(function(){
+					//setTimeout(function(){
 						toggle_panel($("#loadPanelNav"));
 						showPanel($("#chaincodePanelNav"));
-					}, 300);
+					//}, 300);
 				}
 				break;
 			}
@@ -414,7 +414,7 @@ $(document).ready(function(){
 			for(var i in cc.func){
 				if(!in_array(cc.func[i].toLowerCase(), skip)){
 					html += '<div class="func">' + cc.func[i] + '([ ' + field + ']);';
-						html += '<button type="button" class="runButton" func="' + cc.func[i] + '"> Run <span class="fa fa-fire"></span> </button>&nbsp;&nbsp;';
+						html += '<button type="button" class="runButton" func="' + cc.func[i] + '"> Run&nbsp;<span class="fa fa-arrow-right"></span> </button>&nbsp;&nbsp;';
 					html += '</div>';
 				}
 			}
