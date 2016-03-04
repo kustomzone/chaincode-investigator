@@ -441,7 +441,7 @@ $(document).ready(function(){
 			if(ccs[i].details){
 				html += '<div class="ccSummary" hash="' + ccs[i].details.deployed_name +'">';
 				html += 		ccs[i].details.deployed_name.substring(0, 3);
-				html +=		'<div class="delcc fa fa-remove"></div>';
+				html +=		'<div class="delcc fa fa-remove" title="remove chaincode"></div>';
 				html += '</div>';
 			}
 		}
@@ -527,7 +527,7 @@ function pretty_print(str){
 
 var log = 	{
 				log: function log(str1, str2, str3){
-					if(str1 && str2 && str3) console.log(str1, str2, str3);		//stupid print
+					if(str1 && str2 && str3) console.log(str1, str2, str3);
 					else if(str1 && str2) console.log(str1, str2);
 					else console.log(str1);
 					

@@ -432,7 +432,8 @@ body {
   color: #fff;
   font-family: Courier New, Courier, monospace;
   padding: 5px;
-  overflow-y: auto; }
+  overflow-y: auto;
+  word-wrap: break-word; }
 
 #blockWrap {
   position: relative;
