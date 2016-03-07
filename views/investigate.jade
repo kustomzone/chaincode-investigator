@@ -50,8 +50,10 @@ block content
 		#chaincodeDetailsWrap(hidden)
 			br
 			br
-			span Chaincode Summary File from Text:&nbsp;
-			span.hint (you can also click prev chaincode above to edit its details here)
+			p(style="text-align:center;")
+				span Paste Chaincode Summary File Below
+				br
+				span.hint (you can also click prev chaincode above to edit its details here)
 			button(type="button" style="margin-bottom:5px;")#loadjson Load JSON
 			br
 			br
@@ -60,11 +62,21 @@ block content
 				
 		#sdkInputWrap(hidden)
 			br
-			br
-			span SDK Options:&nbsp;
-			span.hint (you can also click prev chaincode above to copy its details here)
-			button(type="button" style="margin-bottom:5px;")#sendjson Send to SDK
-			br
+			
+			p(style="text-align:center;")
+				span Fill Out SDK Options Below&nbsp;
+				br
+				span.hint (you can also click prev chaincode above to copy its details here)
+				
+			p
+			
+				span Deploy Function
+				input(type="text" placeholder="function name" name="deploy_function")
+				span ([
+				input(type="text" placeholder="array of strings" name="deploy_arg")
+				span ]);&nbsp;&nbsp;&nbsp;&nbsp;
+				
+				button(type="button" style="margin-bottom:5px;")#sendjson Send to SDK
 			br
 			textarea#sdkJsonArea(autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false") {}
 			

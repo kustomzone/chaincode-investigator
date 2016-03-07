@@ -351,7 +351,9 @@ $(document).ready(function(){
 		var data = $("#sdkJsonArea").val();
 		
 		try{
-			JSON.parse(data);												//check if input is valid JSON
+			data = JSON.parse(data);												//check if input is valid JSON
+			data.deploy_function = $("input[name='deploy_function']").val();
+			data.deploy_arg = JSON.parse('[' + $("input[name='deploy_arg']").val().toString() + ']');
 		}
 		catch(e){
 			log.log("Error - Input is not JSON, go fish", e);
@@ -362,9 +364,11 @@ $(document).ready(function(){
 		$.ajax({
 			method: 'POST',
 			url: window.location.origin + '/chaincode',
-			data: data,
+			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
+				json.deploy_function = $("input[name='deploy_function']").val();
+				json.deploy_arg = JSON.parse('[' + $("input[name='deploy_arg']").val() + ']');
 				log.log('Success - sending chaincode to sdk', json);
 				$("#sdkLoading").fadeOut();
 				hide_sdk_json_area();
@@ -581,4 +585,10 @@ function copyDetails2InputArea(cc){													//copy only need stuff over
 			};
 	if(cc.details.deployed_name) temp.chaincode.deployed_name = cc.details.deployed_name;
 	$("#sdkJsonArea").val(JSON.stringify(temp, null, 4));
+	
+	if(cc.deploy_function) $("input[name='deploy_function']").val(cc.deploy_function);
+	if(cc.deploy_arg){
+		var str = JSON.stringify(cc.deploy_arg);
+		$("input[name='deploy_arg']").val(str.substring(1, str.length-1));
+	}
 }

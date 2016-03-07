@@ -48,7 +48,7 @@ router.route("/chaincode").post(function(req, res){
 		else{
 			chaincode = cc;
 			if(!cc.details.deployed_name || cc.details.deployed_name === ""){					//decide if i need to deploy
-				cc.deploy('init', ['99'], null, cb_deployed);
+				cc.deploy(req.body.deploy_function, req.body.deploy_arg, null, cb_deployed);
 			}
 			else{
 				console.log('chaincode summary file indicates chaincode has been previously deployed');
