@@ -413,6 +413,8 @@ $(document).ready(function(){
 		var skip = ['write'];
 		var html = '';
 		var field = '<input class="arginput" type="text" placeholder="array of strings"/>';
+		$("input").val("");
+		
 		if(cc && cc.func){
 			for(var i in cc.func){
 				if(!in_array(cc.func[i].toLowerCase(), skip)){
