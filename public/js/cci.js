@@ -116,9 +116,11 @@ $(document).ready(function(){
 	$("#loadjson").click(function(){												//load chaincode summary file from textarea
 		try{
 			bag.cc = JSON.parse($("#jsonarea").val());
+			$("#jsonarea").removeClass('errorBorder');
 		}
 		catch(e){
 			console.log('Error, invalid json');
+			$("#jsonarea").addClass('errorBorder');
 			return;
 		}
 		store_to_ls(bag.cc);
@@ -131,7 +133,22 @@ $(document).ready(function(){
 	});
 	
 	$("#sendjson").click(function(){												//send json to SDK for parsing
-		rest_post_chaincode();
+		var errors = false;
+		if($("input[name='deploy_function']").val() == '') {						//check if empty, error
+			errors = true;
+			$("input[name='deploy_function']").addClass('errorBorder');
+		}
+		if($("input[name='deploy_arg']").val() == '') {
+			errors = true;
+			$("input[name='deploy_arg']").addClass('errorBorder');
+		}
+		
+		console.log(errors, $("input[name='deploy_function']").val(), $("input[name='deploy_arg']").val());
+		if(!errors){
+			$("input[name='deploy_function']").removeClass('errorBorder');
+			$("input[name='deploy_arg']").removeClass('errorBorder');
+			rest_post_chaincode();
+		}
 	});
 	
 	$(document).on("click", ".ccSummary", function(){								//load the selected cc
@@ -354,9 +371,12 @@ $(document).ready(function(){
 			data = JSON.parse(data);												//check if input is valid JSON
 			data.deploy_function = $("input[name='deploy_function']").val();
 			data.deploy_arg = JSON.parse('[' + $("input[name='deploy_arg']").val().toString() + ']');
+			$("#sdkJsonArea").removeClass('errorBorder');
 		}
 		catch(e){
 			log.log("Error - Input is not JSON, go fish", e);
+			$("#sdkLoading").fadeOut();
+			$("#sdkJsonArea").addClass('errorBorder');
 			return;
 		}
 		//console.log(data);
