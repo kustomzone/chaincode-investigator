@@ -1,3 +1,4 @@
+/* global formatDate */
 /* global $ */
 /* global in_array */
 /* global bag */
