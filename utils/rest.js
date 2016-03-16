@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* global Buffer */
 /*******************************************************************************
  * Copyright (c) 2015 IBM Corp.
@@ -9,8 +9,8 @@
  *   David Huffman - Initial implementation
  *******************************************************************************/
 /*
-	Version: 0.6.2
-	Updated: 11/16/2015
+	Version: 0.6.3
+	Updated: 3/16/2016
 	-----------------------------------------------------------------
 	Use:	var rest = require('./rest');
 			rest.init({quiet: false});						//set default values here for all calls of 'rest'
@@ -60,8 +60,8 @@
 	include_headers: If true the response argument will be {"response":<response>, "headers":<headers>} 
 */
 
-var https_mod = require("https");
-var http_mod = require("http");
+var https_mod = require('https');
+var http_mod = require('http');
 var default_options = 	{
 							quiet: false,
 							ssl: true,
@@ -148,7 +148,7 @@ function http(options, parameters, body){
 	//// Handle Request ////
 	if(typeof parameters == 'object') options.path += '?' + querystring.stringify(parameters);		//should be a json object
 	var request = http.request(options, function(resp) {
-		var str = "", temp, chunks = 0;
+		var str = '', temp, chunks = 0;
 		if(!options.quiet) console.log(http_txt + ' Status code: ' + resp.statusCode);
 		
 		resp.setEncoding('utf8');
@@ -207,7 +207,7 @@ function http(options, parameters, body){
 		request.destroy();
 	});
 	
-	if(body && body != '' && !isEmpty(body)){
+	if(body && body !== '' && !isEmpty(body)){
 		request.write(body);
 	}
 	request.end();																					//send the request

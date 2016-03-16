@@ -1,6 +1,5 @@
-"use strict";
-/* global process */
-/* global __dirname */
+'use strict';
+/* global process, __dirname */
 /*******************************************************************************
  * Copyright (c) 2015 IBM Corp.
  *
@@ -23,10 +22,8 @@ var bodyParser = require('body-parser');
 var http = require('http');
 var app = express();
 var url = require('url');
-var async = require('async');
 var setup = require('./setup');
-var cors = require("cors");
-var fs = require("fs");
+var cors = require('cors');
 
 //// Set Server Parameters ////
 var host = setup.SERVER.HOST;
@@ -59,7 +56,6 @@ app.use(function(req, res, next){
 	console.log('------------------------------------------ incoming request ------------------------------------------');
 	console.log('New ' + req.method + ' request for', req.url);
 	req.bag = {};											//create my object for my stuff
-	req.session.count = eval(req.session.count) + 1;
 	req.bag.session = req.session;
 	
 	var url_parts = url.parse(req.url, true);
@@ -83,12 +79,12 @@ app.use(function(req, res, next) {
 	next(err);
 });
 app.use(function(err, req, res, next) {		// = development error handler, print stack trace
-	console.log("Error Handeler -", req.url);
+	console.log('Error Handeler -', req.url);
 	var errorCode = err.status || 500;
 	res.status(errorCode);
 	if(!req.bag) req.bag = {};
 	req.bag.error = {msg:err.stack, status:errorCode};
-	if(req.bag.error.status == 404) req.bag.error.msg = "Sorry, I cannot locate that file";
+	if(req.bag.error.status == 404) req.bag.error.msg = 'Sorry, I cannot locate that file';
 	res.render('template/error', {bag:req.bag});
 });
 
@@ -96,7 +92,7 @@ app.use(function(err, req, res, next) {		// = development error handler, print s
 // 														Launch Webserver
 // ============================================================================================================================
 var server = http.createServer(app).listen(port, function() {});
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.NODE_ENV = 'production';
 server.timeout = 240000;																							// Ta-da.
 console.log('------------------------------------------ Server Up - ' + host + ':' + port + ' ------------------------------------------');

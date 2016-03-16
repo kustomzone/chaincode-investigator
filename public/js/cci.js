@@ -1,16 +1,29 @@
-/* global formatDate */
-/* global $ */
-/* global in_array */
-/* global bag */
-var ledger = [];
+/* global formatDate, $, document, window, in_array, bag */
 var selectedPeer = 0;
 var lsKey = 'cc_investigator';
+var logger = 	{																		//append text to log panel
+				log: function log(str1, str2, str3){
+					if(str1 && str2 && str3) console.log(str1, str2, str3);
+					else if(str1 && str2) console.log(str1, str2);
+					else console.log(str1);
+					
+					var style = 'color: limegreen;';
+					if(str1.toLowerCase().indexOf('error') >= 0) style= 'color: #cc0000;';
+					
+					$('#logs').append('<br/>');
+					if(str1) $('#logs').append('<span style="' + style + '">' + pretty_print(str1) + '</span>');
+					if(str2) $('#logs').append(pretty_print(str2));
+					if(str3) $('#logs').append(pretty_print(str3));
+					$('#logs').scrollTop($('#logs')[0].scrollHeight);
+			}
+};
+
 
 $(document).ready(function(){
 	// ===============================================================================================================
 	// 												On Start Up
 	// ================================================================================================================
-	sizeMe($("#logPanelNav"));
+	sizeMe($('#logPanelNav'));
 	lets_do_this();
 	//localStorage.clear();
 	
@@ -22,77 +35,77 @@ $(document).ready(function(){
 			build_peer_options(bag.cc.details.peers);											//populate drop down peer select box
 			build_user_options(bag.cc.details.users);
 			
-			$("#peer").html(bag.cc.details.peers[selectedPeer].name).css("background", "#32CD32");//populate status panel
-			setTimeout(function(){$("#peer").css("background", "initial");}, 2000);
-			$("#name").html(bag.cc.details.deployed_name.substring(0,32) + '...');
+			$('#peer').html(bag.cc.details.peers[selectedPeer].name).css('background', '#32CD32');//populate status panel
+			setTimeout(function(){$('#peer').css('background', 'initial');}, 2000);
+			$('#name').html(bag.cc.details.deployed_name.substring(0,32) + '...');
 		}
 	}
 	
 	// ===============================================================================================================
 	// 												jQuery Events
 	// ================================================================================================================
-	$(document).on("click", ".runButton", function(){								//invoke chaincode function
+	$(document).on('click', '.runButton', function(){								//invoke chaincode function
 		var func = $(this).attr('func').toLowerCase();
 		var args = $(this).prev().val();
 		var temp = '';
 		try{																		//test if its at least JSON
-			temp = JSON.parse("[" + args + "]");
+			temp = JSON.parse('[' + args + ']');
 		}
 		catch(e){
-			log.log('ERROR you done messed up - body was not vaild json');
+			logger.log('ERROR you done messed up - body was not vaild json');
 			return false;
 		}
 		
 		var data = {																//build our body up
-						"chaincodeSpec": {
-							"type": "GOLANG",
-							"chaincodeID": {
+						'chaincodeSpec': {
+							'type': 'GOLANG',
+							'chaincodeID': {
 								name: bag.cc.details.deployed_name,
 							},
-							"ctorMsg": {
-								"function": func,
-								"args": temp
+							'ctorMsg': {
+								'function': func,
+								'args': temp
 							},
-							"secureContext": $("select[name='membershipUser']").val()
+							'secureContext': $('select[name="membershipUser"]').val()
 						}
 					};
 		
-		log.log("invoking func", func, data);
+		logger.log('invoking func', func, data);
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + $("select[name='peer']").val() + '/devops/invoke',
+			url: 'http://' + $('select[name="peer"]').val() + '/devops/invoke',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
-				log.log('Success', json);
+				logger.log('Success', json);
 			},
 			error: function(e){
-				log.log('Error', e);
+				logger.log('Error', e);
 			}
 		});
 	});
 	
-	$("#read").click(function(){
-		rest_read([$("input[name='read_name']").val()]);
+	$('#read').click(function(){
+		rest_read([$('input[name="read_name"]').val()]);
 	});
 	
-	$("#readall").click(function(){													//read on all the things
-		rest_read_all_peers([$("input[name='read_name']").val()]);
+	$('#readall').click(function(){													//read on all the things
+		rest_read_all_peers([$('input[name="read_name"]').val()]);
 	});
 	
-	$("#query").click(function(){
-		rest_read(JSON.parse('[' + $("input[name='query_name']").val() + ']'));
+	$('#query').click(function(){
+		rest_read(JSON.parse('[' + $('input[name="query_name"]').val() + ']'));
 	});
 	
-	$("#queryall").click(function(){												//query on all the things
-		rest_read_all_peers(JSON.parse('[' + $("input[name='query_name']").val() + ']'));
+	$('#queryall').click(function(){												//query on all the things
+		rest_read_all_peers(JSON.parse('[' + $('input[name="query_name"]').val() + ']'));
 	});
 	
-	$("#write").click(function(){
-		rest_write($("input[name='write_name']").val(), $("input[name='write_val']").val());
+	$('#write').click(function(){
+		rest_write($('input[name="write_name"]').val(), $('input[name="write_val"]').val());
 	});
 	
-	$(document).on("click", ".delcc", function(){									//delete this cc from local storage
+	$(document).on('click', '.delcc', function(){									//delete this cc from local storage
 		delete_from_ls($(this).parent().attr('hash'));
 		console.log('deleted cc');
 		bag.cc = {};
@@ -100,7 +113,7 @@ $(document).ready(function(){
 		return false;
 	});
 	
-	$("#peers").change(function(){													//select correct memership user for this peer
+	$('#peers').change(function(){													//select correct memership user for this peer
 		selectedPeer = 0;
 		for(var i in bag.cc.details.peers){
 			if(bag.cc.details.peers[i].api_host + ':' + bag.cc.details.peers[i].api_port == $(this).val()){
@@ -108,85 +121,85 @@ $(document).ready(function(){
 				break;
 			}
 		}
-		$("#peer").html(bag.cc.details.peers[selectedPeer].name).css("background", "#32CD32");//populate status panel
-		setTimeout(function(){$("#peer").css("background", "initial");}, 2000);		//flashy flashy
+		$('#peer').html(bag.cc.details.peers[selectedPeer].name).css('background', '#32CD32');//populate status panel
+		setTimeout(function(){$('#peer').css('background', 'initial');}, 2000);		//flashy flashy
 		build_user_options(bag.cc.details.users);
 		console.log('Selected peer: ', bag.cc.details.peers[selectedPeer].name);
 	});
 	
-	$("#loadjson").click(function(){												//load chaincode summary file from textarea
+	$('#loadjson').click(function(){												//load chaincode summary file from textarea
 		try{
-			bag.cc = JSON.parse($("#jsonarea").val());
-			$("#jsonarea").removeClass('errorBorder');
+			bag.cc = JSON.parse($('#jsonarea').val());
+			$('#jsonarea').removeClass('errorBorder');
 		}
 		catch(e){
 			console.log('Error, invalid json');
-			$("#jsonarea").addClass('errorBorder');
+			$('#jsonarea').addClass('errorBorder');
 			return;
 		}
 		store_to_ls(bag.cc);
 		lets_do_this();
-		$("#chaincodeDetailsWrap").hide();
+		$('#chaincodeDetailsWrap').hide();
 	});
 	
-	$("#barebones").click(function(){												//custom invoke function that SDK did not pick up
+	$('#barebones').click(function(){												//custom invoke function that SDK did not pick up
 		rest_barebones();
 	});
 	
-	$("#sendjson").click(function(){												//send json to SDK for parsing
+	$('#sendjson').click(function(){												//send json to SDK for parsing
 		var errors = false;
-		if($("input[name='deploy_function']").val() == '') {						//check if empty, error
+		if($('input[name="deploy_function"]').val() === '') {						//check if empty, error
 			errors = true;
-			$("input[name='deploy_function']").addClass('errorBorder');
+			$('input[name="deploy_function"]').addClass('errorBorder');
 		}
-		if($("input[name='deploy_arg']").val() == '') {
+		if($('input[name="deploy_arg"]').val() === '') {
 			errors = true;
-			$("input[name='deploy_arg']").addClass('errorBorder');
+			$('input[name="deploy_arg"]').addClass('errorBorder');
 		}
 		
-		console.log(errors, $("input[name='deploy_function']").val(), $("input[name='deploy_arg']").val());
+		console.log(errors, $('input[name="deploy_function"]').val(), $('input[name="deploy_arg"]').val());
 		if(!errors){
-			$("input[name='deploy_function']").removeClass('errorBorder');
-			$("input[name='deploy_arg']").removeClass('errorBorder');
+			$('input[name="deploy_function"]').removeClass('errorBorder');
+			$('input[name="deploy_arg"]').removeClass('errorBorder');
 			rest_post_chaincode();
 		}
 	});
 	
-	$(document).on("click", ".ccSummary", function(){								//load the selected cc
-		var hash = $(this).attr("hash");
+	$(document).on('click', '.ccSummary', function(){								//load the selected cc
+		var hash = $(this).attr('hash');
 		console.log('Selected cc: ', hash);
 		for(var i in bag.ls){
 			if(i == hash){
 				bag.cc = bag.ls[i];
 				lets_do_this();
-				$("#jsonarea").html(JSON.stringify(bag.cc, null, 4));
+				$('#jsonarea').html(JSON.stringify(bag.cc, null, 4));
 				copyDetails2InputArea(bag.cc);
 				
-				if(!$("#jsonarea").is(":visible") && !$("#sdkJsonArea").is(":visible")){	//hold off on closing if these are open
-					toggle_panel($("#loadPanelNav"));
-					showPanel($("#chaincodePanelNav"));
+				if(!$('#jsonarea').is(':visible') && !$('#sdkJsonArea').is(':visible')){	//hold off on closing if these are open
+					toggle_panel($('#loadPanelNav'));
+					showPanel($('#chaincodePanelNav'));
 				}
 				break;
 			}
 		}
 	});
 	
-	$(document).on("click", "#showCreateTextarea", function(){								//show SDK input and init textarea
-		if($("#sdkInputWrap").is(":visible")){
+	$(document).on('click', '#showCreateTextarea', function(){								//show SDK input and init textarea
+		if($('#sdkInputWrap').is(':visible')){
 			hide_sdk_json_area();
 		}
 		else{
 			var temp = 	{
 							network:{
 								peers:   [{
-									"api_host": "xxx.xxx.xxx.xxx",
-									"api_port": "xxxxx",
-									"id": "xxxxxx-xxxx-xxx-xxx-xxxxxxxxxxxx_vpx",
-									"api_url": "http://xxx.xxx.xxx.xxx:xxxxx"
+									'api_host': 'xxx.xxx.xxx.xxx',
+									'api_port': 'xxxxx',
+									'id': 'xxxxxx-xxxx-xxx-xxx-xxxxxxxxxxxx_vpx',
+									'api_url': 'http://xxx.xxx.xxx.xxx:xxxxx'
 								}],
 								users:  [{
-									"username": "user0_type0_xxxx",
-									"secret": "xxxxxxxx"
+									'username': 'user0_type0_xxxx',
+									'secret': 'xxxxxxxx'
 								}]
 							},
 							chaincode:{
@@ -195,120 +208,120 @@ $(document).ready(function(){
 								git_url: 'https://github.com/ibm-blockchain/marbles-chaincode/part2',
 							}
 						};
-			$("#chaincodeDetailsWrap").hide();
-			$("#sdkInputWrap").fadeIn();
-			$("#sdkJsonArea").val(JSON.stringify(temp, null, 4));
+			$('#chaincodeDetailsWrap').hide();
+			$('#sdkInputWrap').fadeIn();
+			$('#sdkJsonArea').val(JSON.stringify(temp, null, 4));
 		}
 		
-		sizeMe($("#loadPanelNav"));
+		sizeMe($('#loadPanelNav'));
 	});
 	
-	$(document).on("click", "#showCCsummaryTextarea", function(){						//show chaincode summary input and init textarea
-		if($("#chaincodeDetailsWrap").is(":visible")){
-			$("#chaincodeDetailsWrap").hide();
+	$(document).on('click', '#showCCsummaryTextarea', function(){						//show chaincode summary input and init textarea
+		if($('#chaincodeDetailsWrap').is(':visible')){
+			$('#chaincodeDetailsWrap').hide();
 		}
 		else{
-			$("#jsonarea").html('paste json here!');
+			$('#jsonarea').html('paste json here!');
 			hide_sdk_json_area();
-			$("#chaincodeDetailsWrap").fadeIn();
+			$('#chaincodeDetailsWrap').fadeIn();
 		}
 		
-		sizeMe($("#loadPanelNav"));
+		sizeMe($('#loadPanelNav'));
 	});
 	
-	$(".tool").click(function(){														//open/close this nav's panel
+	$('.tool').click(function(){														//open/close this nav's panel
 		toggle_panel(this);
 	});
 	
-	$("#clearLogs").click(function(){													//wipe it out
-		$("#logs").html("");
+	$('#clearLogs').click(function(){													//wipe it out
+		$('#logs').html('');
 	});
 	
 	$(window).resize(function() {														//resize nav
-		sizeMe($("#loadPanelNav"));
-		sizeMe($("#chaincodePanelNav"));
+		sizeMe($('#loadPanelNav'));
+		sizeMe($('#chaincodePanelNav'));
 	});
 	
 	// ===============================================================================================================
 	// 												HTTP Functions
 	// ================================================================================================================
 	function rest_read(arg, cb){
-		log.log("Reading var", arg);
+		logger.log('Reading var', arg);
 		var data = {
-						"chaincodeSpec": {
-							"type": "GOLANG",
-							"chaincodeID": {
+						'chaincodeSpec': {
+							'type': 'GOLANG',
+							'chaincodeID': {
 								name: bag.cc.details.deployed_name,
 							},
-							"ctorMsg": {
-								"function": "query",
-								"args": arg
+							'ctorMsg': {
+								'function': 'query',
+								'args': arg
 							},
-							"secureContext": $("select[name='membershipUser']").val()
+							'secureContext': $('select[name="membershipUser"]').val()
 						}
 					};
 		console.log(data);
 		
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + $("select[name='peer']").val() + '/devops/query',
+			url: 'http://' + $('select[name="peer"]').val() + '/devops/query',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
-				log.log('Success - read', JSON.stringify(json));
+				logger.log('Success - read', JSON.stringify(json));
 				if(cb) cb(null, json);
 			},
 			error: function(e){
-				log.log('Error - read', e);
+				logger.log('Error - read', e);
 				if(cb) cb(e, null);
 			}
 		});
 	}
 	
 	function rest_write(name, value, cb){
-		log.log("Writing var", name);
+		logger.log('Writing var', name);
 		var data = {
-						"chaincodeSpec": {
-							"type": "GOLANG",
-							"chaincodeID": {
+						'chaincodeSpec': {
+							'type': 'GOLANG',
+							'chaincodeID': {
 								name: bag.cc.details.deployed_name,
 							},
-							"ctorMsg": {
-								"function": "write",
-								"args": [name, value]
+							'ctorMsg': {
+								'function': 'write',
+								'args': [name, value]
 							},
-							"secureContext": $("select[name='membershipUser']").val()
+							'secureContext': $('select[name="membershipUser"]').val()
 						}
 					};
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + $("select[name='peer']").val() + '/devops/invoke',
+			url: 'http://' + $('select[name="peer"]').val() + '/devops/invoke',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
-				log.log('Success - write', json);
+				logger.log('Success - write', json);
 				if(cb) cb(null, json);
 			},
 			error: function(e){
-				log.log('Error - write', e);
+				logger.log('Error - write', e);
 				if(cb) cb(e, null);
 			}
 		});
 	}
 	
 	function rest_read_all_peers(arg, lvl, cb){
-		log.log("Reading var", arg);
+		logger.log('Reading var', arg);
 		var data = {
-						"chaincodeSpec": {
-							"type": "GOLANG",
-							"chaincodeID": {
+						'chaincodeSpec': {
+							'type': 'GOLANG',
+							'chaincodeID': {
 								name: bag.cc.details.deployed_name,
 							},
-							"ctorMsg": {
-								"function": "query",
-								"args": arg
+							'ctorMsg': {
+								'function': 'query',
+								'args': arg
 							},
-							"secureContext": 'set later'										//set this in the loop
+							'secureContext': 'set later'										//set this in the loop
 						}
 					};
 		//console.log(data);
@@ -322,11 +335,11 @@ $(document).ready(function(){
 				peer_name: bag.cc.details.peers[i].name,
 				contentType: 'application/json',
 				success: function(json){
-					log.log('Success - read all', this.peer_name, JSON.stringify(json));
+					logger.log('Success - read all', this.peer_name, JSON.stringify(json));
 					if(cb) cb(null, json);
 				},
 				error: function(e){
-					log.log('Error - read all', this.peer_name, e);
+					logger.log('Error - read all', this.peer_name, e);
 					if(cb) cb(e, null);
 				}
 			});
@@ -334,50 +347,50 @@ $(document).ready(function(){
 	}
 	
 	function rest_barebones(){
-		log.log("Invoking Function " + $("input[name='func_name']").val());
+		logger.log('Invoking Function ' + $('input[name="func_name"]').val());
 		var data = {
-						"chaincodeSpec": {
-							"type": "GOLANG",
-							"chaincodeID": {
+						'chaincodeSpec': {
+							'type': 'GOLANG',
+							'chaincodeID': {
 								name: bag.cc.details.deployed_name,
 							},
-							"ctorMsg": {
-								"function": $("input[name='func_name']").val(),
-								"args": JSON.parse("[" + $("input[name='func_val']").val() + "]")
+							'ctorMsg': {
+								'function': $('input[name="func_name"]').val(),
+								'args': JSON.parse('[' + $('input[name="func_val"]').val() + ']')
 							},
-							"secureContext": $("select[name='membershipUser']").val()
+							'secureContext': $('select[name="membershipUser"]').val()
 						}
 					};
 
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + $("select[name='peer']").val() + '/devops/invoke',
+			url: 'http://' + $('select[name="peer"]').val() + '/devops/invoke',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
-				log.log('Success', json);
+				logger.log('Success', json);
 			},
 			error: function(e){
-				log.log('Error', e);
+				logger.log('Error', e);
 			}
 		});
 	}
 	
 	function rest_post_chaincode(cb){
-		log.log("Sending chaincode to SDK");
-		$("#sdkLoading").fadeIn();
-		var data = $("#sdkJsonArea").val();
+		logger.log('Sending chaincode to SDK');
+		$('#sdkLoading').fadeIn();
+		var data = $('#sdkJsonArea').val();
 		
 		try{
 			data = JSON.parse(data);												//check if input is valid JSON
-			data.deploy_function = $("input[name='deploy_function']").val();
-			data.deploy_arg = JSON.parse('[' + $("input[name='deploy_arg']").val().toString() + ']');
-			$("#sdkJsonArea").removeClass('errorBorder');
+			data.deploy_function = $('input[name="deploy_function"]').val();
+			data.deploy_arg = JSON.parse('[' + $('input[name="deploy_arg"]').val().toString() + ']');
+			$('#sdkJsonArea').removeClass('errorBorder');
 		}
 		catch(e){
-			log.log("Error - Input is not JSON, go fish", e);
-			$("#sdkLoading").fadeOut();
-			$("#sdkJsonArea").addClass('errorBorder');
+			logger.log('Error - Input is not JSON, go fish', e);
+			$('#sdkLoading').fadeOut();
+			$('#sdkJsonArea').addClass('errorBorder');
 			return;
 		}
 		//console.log(data);
@@ -388,18 +401,18 @@ $(document).ready(function(){
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
-				json.deploy_function = $("input[name='deploy_function']").val();
-				json.deploy_arg = JSON.parse('[' + $("input[name='deploy_arg']").val() + ']');
-				log.log('Success - sending chaincode to sdk', json);
-				$("#sdkLoading").fadeOut();
+				json.deploy_function = $('input[name="deploy_function"]').val();
+				json.deploy_arg = JSON.parse('[' + $('input[name="deploy_arg"]').val() + ']');
+				logger.log('Success - sending chaincode to sdk', json);
+				$('#sdkLoading').fadeOut();
 				hide_sdk_json_area();
 				store_to_ls(json);
 				lets_do_this();
 				if(cb) cb(null, json);
 			},
 			error: function(e){
-				log.log('Error - sending chaincode to sdk', e);
-				$("#sdkLoading").fadeOut();
+				logger.log('Error - sending chaincode to sdk', e);
+				$('#sdkLoading').fadeOut();
 				hide_sdk_json_area();
 				if(cb) cb(e, null);
 			}
@@ -412,28 +425,29 @@ $(document).ready(function(){
 	function buildGoFunc(cc){
 		var skip = ['write'];
 		var html = '';
+		var i = 0;
 		var field = '<input class="arginput" type="text" placeholder="array of strings"/>';
-		$("input").val("");
+		$('input').val('');
 		
 		if(cc && cc.func){
-			for(var i in cc.func){
+			for(i in cc.func){
 				if(!in_array(cc.func[i].toLowerCase(), skip)){
 					html += '<div class="func">' + cc.func[i] + '([ ' + field + ']);';
 						html += '<button type="button" class="runButton" func="' + cc.func[i] + '"> Run&nbsp;<span class="fa fa-arrow-right"></span> </button>&nbsp;&nbsp;';
 					html += '</div>';
 				}
 			}
-			$("#customgowrap").html(html);
-			$("#giturl").html(cc.git_url);
+			$('#customgowrap').html(html);
+			$('#giturl').html(cc.git_url);
 		}
 		
-		for(var i in cc.func){															//if no write() in cc then hide the ui
+		for(i in cc.func){															//if no write() in cc then hide the ui
 			if(cc.func[i].toLowerCase() === 'write'){
-				$("#writeWrap").show();
+				$('#writeWrap').show();
 				return;
 			}
 		}
-		$("#writeWrap").hide();
+		$('#writeWrap').hide();
 	}
 	
 	function build_ccs(ccs){															//build parsed chaincode options
@@ -444,17 +458,17 @@ $(document).ready(function(){
 			var text = ccs[i].details.git_url.substring(pos + 1).substring(0, 8);		//lets make a better short name
 			var timestamp = Date.now();													//if no date, just make it today
 			if(ccs[i].details.timestamp) timestamp = ccs[i].details.timestamp;
-			text += " " + formatDate(timestamp, '%M/%d');
-			text += " " + ccs[i].details.deployed_name.substring(0, 6);
+			text += ' ' + formatDate(timestamp, '%M/%d');
+			text += ' ' + ccs[i].details.deployed_name.substring(0, 6);
 			
 			if(ccs[i].details){
-				html += '<div class="ccSummary" hash="' + ccs[i].details.deployed_name +'" title="' + ccs[i].details.git_url +'">';
+				html += '<div class="ccSummary" hash="' + ccs[i].details.deployed_name + '" title="' + ccs[i].details.git_url + '">';
 				html += 		text;
 				html +=		'<div class="delcc fa fa-remove" title="remove chaincode"></div>';
 				html += '</div>';
 			}
 		}
-		$("#chaincodes").html(html);
+		$('#chaincodes').html(html);
 	}
 	
 	function build_peer_options(peers){													//peer select options
@@ -466,9 +480,9 @@ $(document).ready(function(){
 			});
 			var html = '';
 			for(var i in peers){
-				html += '<option value="' + peers[i].api_host +':' + peers[i].api_port +'">' + peers[i].name + '</option>';
+				html += '<option value="' + peers[i].api_host + ':' + peers[i].api_port + '">' + peers[i].name + '</option>';
 			}
-			$("#peers").html(html);
+			$('#peers').html(html);
 		}
 	}
 	
@@ -481,33 +495,33 @@ $(document).ready(function(){
 				html += '<option ' + selected + '>' + users[i].username + '</option>';
 			}
 		}
-		$("#users").html(html);
+		$('#users').html(html);
 	}
 	
 	function toggle_panel(me){															//open/close the panel for this nav
-		if($(me).hasClass("toolClosed")){
+		if($(me).hasClass('toolClosed')){
 			showPanel(me);																//show this panel
 		}
 		else{
-			$(me).removeClass("toolOpen").addClass("toolClosed");
-			$(me).find(".toollegendOpen").removeClass("toollegendOpen").addClass("toollegendClosed");
-			$("#" + $(me).attr("show")).hide();											//hide the panel
-			$(me).find(".stepNumberOpen").removeClass("stepNumberOpen").addClass("stepNumberClosed");
+			$(me).removeClass('toolOpen').addClass('toolClosed');
+			$(me).find('.toollegendOpen').removeClass('toollegendOpen').addClass('toollegendClosed');
+			$('#' + $(me).attr('show')).hide();											//hide the panel
+			$(me).find('.stepNumberOpen').removeClass('stepNumberOpen').addClass('stepNumberClosed');
 			$(me).css('height', 'initial').css('line-height', 'initial');				//change height back
 		}
 	}
 	
 	function showPanel(me){																//show the panel for this nav
-		$(me).removeClass("toolClosed").addClass("toolOpen");
-		$(me).find(".toollegendClosed").removeClass("toollegendClosed").addClass("toollegendOpen");
-		$("#" + $(me).attr("show")).fadeIn().css("display","inline-block");
-		$(me).find(".stepNumberClosed").removeClass("stepNumberClosed").addClass("stepNumberOpen");
+		$(me).removeClass('toolClosed').addClass('toolOpen');
+		$(me).find('.toollegendClosed').removeClass('toollegendClosed').addClass('toollegendOpen');
+		$('#' + $(me).attr('show')).fadeIn().css('display','inline-block');
+		$(me).find('.stepNumberClosed').removeClass('stepNumberClosed').addClass('stepNumberOpen');
 		sizeMe(me);
 	}
 	
 	function sizeMe(me){
-		if($(me).hasClass("toolOpen")){													//only resize if its open
-			var height = $("#" + $(me).attr("show")).css('height');
+		if($(me).hasClass('toolOpen')){													//only resize if its open
+			var height = $('#' + $(me).attr('show')).css('height');
 			var pos = height.indexOf('px');
 			height = height.substring(0, pos);
 			if(height > 100) height = height - 92;										//for some reason this helps
@@ -522,8 +536,8 @@ $(document).ready(function(){
 // 												Helper Fun
 // ===============================================================================================================
 	function hide_sdk_json_area(){
-		$("#sdkInputWrap").hide();
-		sizeMe($("#loadPanelNav"));
+		$('#sdkInputWrap').hide();
+		sizeMe($('#loadPanelNav'));
 	}
 	
 	function load_from_ls(){
@@ -568,26 +582,9 @@ function pretty_print(str){															//json pretty print if obj
 		return JSON.stringify(str, null, 4);
 	}
 	else{
-		return str + " ";
+		return str + ' ';
 	}
 }
-
-var log = 	{																		//append text to log panel
-				log: function log(str1, str2, str3){
-					if(str1 && str2 && str3) console.log(str1, str2, str3);
-					else if(str1 && str2) console.log(str1, str2);
-					else console.log(str1);
-					
-					var style = "color: limegreen;";
-					if(str1.toLowerCase().indexOf('error') >= 0) style= "color: #cc0000;";
-					
-					$("#logs").append("<br/>");
-					if(str1) $("#logs").append('<span style="' + style +'">' + pretty_print(str1) + '</span>');
-					if(str2) $("#logs").append(pretty_print(str2));
-					if(str3) $("#logs").append(pretty_print(str3));
-					$("#logs").scrollTop($("#logs")[0].scrollHeight);
-			}
-};
 
 function copyDetails2InputArea(cc){													//copy only need stuff over
 	for(var i in cc.details.peers){
@@ -596,22 +593,22 @@ function copyDetails2InputArea(cc){													//copy only need stuff over
 		cc.details.peers[i].api_url += cc.details.peers[i].api_host + ':' + cc.details.peers[i].api_port;
 	}
 	var temp = {
-				"network": {
-					"peers": cc.details.peers,
-					"users": cc.details.users
+				'network': {
+					'peers': cc.details.peers,
+					'users': cc.details.users
 				},
-				"chaincode": {
-					"zip_url": cc.details.zip_url,
-					"unzip_dir": cc.details.unzip_dir,
-					"git_url": cc.details.git_url
+				'chaincode': {
+					'zip_url': cc.details.zip_url,
+					'unzip_dir': cc.details.unzip_dir,
+					'git_url': cc.details.git_url
 				}
 			};
 	if(cc.details.deployed_name) temp.chaincode.deployed_name = cc.details.deployed_name;
-	$("#sdkJsonArea").val(JSON.stringify(temp, null, 4));
+	$('#sdkJsonArea').val(JSON.stringify(temp, null, 4));
 	
-	if(cc.deploy_function) $("input[name='deploy_function']").val(cc.deploy_function);
+	if(cc.deploy_function) $('input[name="deploy_function"]').val(cc.deploy_function);
 	if(cc.deploy_arg){
 		var str = JSON.stringify(cc.deploy_arg);
-		$("input[name='deploy_arg']").val(str.substring(1, str.length-1));
+		$('input[name="deploy_arg"]').val(str.substring(1, str.length-1));
 	}
 }

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /*******************************************************************************
  * Copyright (c) 2015 IBM Corp.
  *
@@ -9,33 +9,29 @@
  *******************************************************************************/
 var express = require('express');
 var router = express.Router();
-var fs = require("fs");
 var setup = require('../setup.js');
-var path = require('path');
 
 // Load our modules.
-var aux     = require("./site_aux.js");
-var rest    = require("../utils/rest.js");
 var Ibc1 	= require('ibm-blockchain-js');
 
 // ============================================================================================================================
 // Home
 // ============================================================================================================================
-router.route("/").get(function(req, res){
+router.route('/').get(function(req, res){
 	res.redirect('/cci');
 });
 
 // ============================================================================================================================
 // Chaincode Investigator
 // ============================================================================================================================
-router.route("/cci").get(function(req, res){
+router.route('/cci').get(function(req, res){
 	res.render('investigate', {title: 'Chaincode Investigator', bag: {setup: setup}} );
 });
 
 // ============================================================================================================================
 // POST /chaincode
 // ============================================================================================================================
-router.route("/chaincode").post(function(req, res){
+router.route('/chaincode').post(function(req, res){
 	var ibc = new Ibc1();
 	var chaincode = {};
 	ibc.load(req.body, cb_ready);																//parse/load chaincode
@@ -47,7 +43,7 @@ router.route("/chaincode").post(function(req, res){
 		}
 		else{
 			chaincode = cc;
-			if(!cc.details.deployed_name || cc.details.deployed_name === ""){					//decide if i need to deploy
+			if(!cc.details.deployed_name || cc.details.deployed_name === ''){					//decide if i need to deploy
 				cc.deploy(req.body.deploy_function, req.body.deploy_arg, null, cb_deployed);
 			}
 			else{
