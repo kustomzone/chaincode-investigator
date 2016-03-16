@@ -1,8 +1,8 @@
 ---
 applications:
 - disk_quota: 1024M
-  host: cci
-  name: cci
+  host: cc-i
+  name: cc-i
   command: "node app.js"
   path: "."
   instances: 1

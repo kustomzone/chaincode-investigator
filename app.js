@@ -25,10 +25,6 @@ var url = require('url');
 var setup = require('./setup');
 var cors = require('cors');
 
-//// Set Server Parameters ////
-var host = setup.SERVER.HOST;
-var port = setup.SERVER.PORT;
-
 ////////  Pathing and Module Setup  ////////
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -91,10 +87,10 @@ app.use(function(err, req, res, next) {		// = development error handler, print s
 // ============================================================================================================================
 // 														Launch Webserver
 // ============================================================================================================================
-var server = http.createServer(app).listen(port, function() {});
+var server = http.createServer(app).listen(setup.SERVER.PORT, function() {});
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.NODE_ENV = 'production';
 server.timeout = 240000;																							// Ta-da.
-console.log('------------------------------------------ Server Up - ' + host + ':' + port + ' ------------------------------------------');
+console.log('------------------------------------------ Server Up - ' + setup.SERVER.HOST + ':' + setup.SERVER.PORT + ' ------------------------------------------');
 if(process.env.PRODUCTION) console.log('Running using Production settings');
 else console.log('Running using Developer settings');
