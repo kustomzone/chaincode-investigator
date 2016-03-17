@@ -251,7 +251,7 @@ body {
 #ccWrap {
   max-width: 700px; }
 
-.ccSummary, .loadButton {
+.ccSummary, .loadButton, .testSummary {
   width: 85px;
   height: 58px;
   font-size: 16px;
@@ -274,7 +274,7 @@ body {
   font-family: inherit;
   float: none; }
 
-.selectedCC, .ccSummary:hover {
+.selectedCC, .ccSummary:hover, .testSummary:hover {
   cursor: pointer;
   border: 1px #41719C solid; }
 
@@ -289,14 +289,14 @@ body {
 .newInput {
   width: 100%; }
 
-.delcc {
+.delcc, .deltest {
   position: absolute;
   top: -2px;
   right: -6px;
   padding: 5px 4px 5px 8px;
   font-size: 12px; }
 
-.delcc:hover {
+.delcc:hover, .deltest:hover {
   cursor: pointer;
   color: #fff; }
 
@@ -410,7 +410,7 @@ body {
   padding: 5px;
   border-radius: 8px; }
 
-#loadPanel, #networkPanel, #chaincodePanel {
+#loadPanel, #networkPanel, #chaincodePanel, #testPanel {
   display: none; }
 
 #chaincodePanel {
@@ -449,6 +449,15 @@ body {
 
 .errorBorder {
   border-color: #cc0000 !important; }
+
+.subPanel {
+  min-height: 100px; }
+
+.recordButtonActive {
+  background: #fff;
+  font-weight: bold;
+  color: #36A8FD;
+  width: 170px; }
 
 #blockWrap {
   position: relative;

@@ -240,6 +240,20 @@ $(document).ready(function(){
 	$(window).resize(function() {														//resize nav
 		sizeMe($('#loadPanelNav'));
 		sizeMe($('#chaincodePanelNav'));
+		sizeMe($('#testPanelNav'));
+	});
+	
+	$('#recordButton').click(function(){
+		if($(this).hasClass('recordButtonActive')){
+			$(this).removeClass('recordButtonActive');
+			$('#recordText').html('Record New Test');
+			$('#recordNumber').html('');
+		}
+		else{
+			$(this).addClass('recordButtonActive');
+			$('#recordText').html('Stop Recording - ');
+			$('#recordNumber').html('0');
+		}
 	});
 	
 	// ===============================================================================================================
@@ -524,11 +538,55 @@ $(document).ready(function(){
 			var height = $('#' + $(me).attr('show')).css('height');
 			var pos = height.indexOf('px');
 			height = height.substring(0, pos);
+			
 			if(height > 100) height = height - 92;										//for some reason this helps
 			
-			//console.log('resize', height);
 			$(me).css('height', height).css('line-height', height + 'px');
 		}
+	}
+	
+	/*
+	tests : [
+		{
+			name: "abc",
+			story:[
+				{
+					
+				}
+			],
+			timestamp:
+		}
+	]
+	*/
+	var temp =  [
+		{
+			name: 'abc',
+			story:[
+				{
+					function_name: 'init_marble',
+					args: 'stuff'
+				}
+			],
+			timestamp: Date.now()
+		}
+	];
+	build_tests(temp);
+	function build_tests(tests){														//build parsed chaincode options
+		var html = '';
+		//console.log('building cc', ccs);
+		for(var i in tests){
+			var text = tests[i].name.substr(0, 8);
+			var timestamp = Date.now();													//if no date, just make it today
+			if(tests[i].timestamp) timestamp = tests[i].timestamp;
+			text += '<br/>' + formatDate(timestamp, '%M/%d');
+			text += '<br/>(' + tests[i].story.length + ')';
+		
+			html += '<div class="testSummary" name="' + tests[i].name+ '" title="' + tests[i].name + '">';
+			html += 		text;
+			html +=		'<div class="deltest fa fa-remove" title="remove test"></div>';
+			html += '</div>';
+		}
+		$('#testsList').html(html);
 	}
 	
 	

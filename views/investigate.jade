@@ -99,6 +99,19 @@ block content
 			span.hint select a membership user
 	
 	
+	// ---------------- Record Test Panel ----------------- //
+	.tool.toolClosed.accent(show='testPanel')#testPanelNav
+		span.fa.fa-youtube-play
+		.toollegend.toollegendClosed Tests
+		.stepNumberClosed *
+		
+	#testPanel.subPanel.ready
+		span#testsList
+		button(type="button").loadButton#recordButton 
+			span#recordText Record New Test
+			span#recordNumber
+
+	
 	// ---------------- Chaincode Panel ----------------- //
 	.tool.toolClosed(show='chaincodePanel')#chaincodePanelNav
 		span.fa.fa-terminal
