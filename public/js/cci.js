@@ -47,12 +47,12 @@ $(document).ready(function(){
 	$(document).on('click', '.runButton', function(){								//invoke chaincode function
 		var func = $(this).attr('func').toLowerCase();
 		var args = $(this).prev().val();
-		var temp = '';
-		try{																		//test if its at least JSON
-			temp = JSON.parse('[' + args + ']');
+		var temp = null;
+		try{
+			temp = try_to_parse(args);
 		}
 		catch(e){
-			logger.log('ERROR you done messed up - body was not vaild json');
+			logger.log('Error - Input could not be stringified', e);
 			return false;
 		}
 		
@@ -69,7 +69,6 @@ $(document).ready(function(){
 							'secureContext': $('select[name="membershipUser"]').val()
 						}
 					};
-		
 		logger.log('invoking func', func, data);
 		$.ajax({
 			method: 'POST',
@@ -85,24 +84,12 @@ $(document).ready(function(){
 		});
 	});
 	
-	$('#read').click(function(){
-		rest_read([$('input[name="read_name"]').val()]);
-	});
-	
-	$('#readall').click(function(){													//read on all the things
-		rest_read_all_peers([$('input[name="read_name"]').val()]);
-	});
-	
 	$('#query').click(function(){
-		rest_read(JSON.parse('[' + $('input[name="query_name"]').val() + ']'));
+		rest_read($('input[name="query_name"]').val());
 	});
 	
 	$('#queryall').click(function(){												//query on all the things
-		rest_read_all_peers(JSON.parse('[' + $('input[name="query_name"]').val() + ']'));
-	});
-	
-	$('#write').click(function(){
-		rest_write($('input[name="write_name"]').val(), $('input[name="write_val"]').val());
+		rest_read_all_peers($('input[name="query_name"]').val());
 	});
 	
 	$(document).on('click', '.delcc', function(){									//delete this cc from local storage
@@ -262,7 +249,16 @@ $(document).ready(function(){
 	// 												HTTP Functions
 	// ================================================================================================================
 	function rest_read(arg, cb){
+		try{
+			arg = try_to_parse(arg);
+		}
+		catch(e){
+			logger.log('Reading var', arg);
+			logger.log('Error - Input could not be stringified', e);
+			return false;
+		}
 		logger.log('Reading var', arg);
+		
 		var data = {
 						'chaincodeSpec': {
 							'type': 'GOLANG',
@@ -294,39 +290,17 @@ $(document).ready(function(){
 		});
 	}
 	
-	function rest_write(name, value, cb){
-		logger.log('Writing var', name);
-		var data = {
-						'chaincodeSpec': {
-							'type': 'GOLANG',
-							'chaincodeID': {
-								name: bag.cc.details.deployed_name,
-							},
-							'ctorMsg': {
-								'function': 'write',
-								'args': [name, value]
-							},
-							'secureContext': $('select[name="membershipUser"]').val()
-						}
-					};
-		$.ajax({
-			method: 'POST',
-			url: 'http://' + $('select[name="peer"]').val() + '/devops/invoke',
-			data: JSON.stringify(data),
-			contentType: 'application/json',
-			success: function(json){
-				logger.log('Success - write', json);
-				if(cb) cb(null, json);
-			},
-			error: function(e){
-				logger.log('Error - write', e);
-				if(cb) cb(e, null);
-			}
-		});
-	}
-	
-	function rest_read_all_peers(arg, lvl, cb){
+	function rest_read_all_peers(arg, lvl, cb){		
+		try{
+			arg = try_to_parse(arg);
+		}
+		catch(e){
+			logger.log('Reading var', arg);
+			logger.log('Error - Input could not be stringified', e);
+			return false;
+		}
 		logger.log('Reading var', arg);
+		
 		var data = {
 						'chaincodeSpec': {
 							'type': 'GOLANG',
@@ -364,6 +338,15 @@ $(document).ready(function(){
 	
 	function rest_barebones(){
 		logger.log('Invoking Function ' + $('input[name="func_name"]').val());
+		var arg = $('input[name="func_val"]').val();
+		try{
+			arg = try_to_parse(arg);
+		}
+		catch(e){
+			logger.log('Error - Input could not be stringified', e);
+			return false;
+		}
+		
 		var data = {
 						'chaincodeSpec': {
 							'type': 'GOLANG',
@@ -372,7 +355,7 @@ $(document).ready(function(){
 							},
 							'ctorMsg': {
 								'function': $('input[name="func_name"]').val(),
-								'args': JSON.parse('[' + $('input[name="func_val"]').val() + ']')
+								'args': arg
 							},
 							'secureContext': $('select[name="membershipUser"]').val()
 						}
@@ -439,7 +422,6 @@ $(document).ready(function(){
 	// 												Build UI Fun
 	// ===============================================================================================================
 	function buildGoInvokeFunc(cc){
-		var skip = ['write'];
 		var html = '';
 		var i = 0;
 		var field = '<input class="arginput" type="text" placeholder="array of strings"/>';
@@ -447,23 +429,13 @@ $(document).ready(function(){
 		
 		if(cc && cc.func && cc.func.invoke){
 			for(i in cc.func.invoke){
-				if(!in_array(cc.func.invoke[i].toLowerCase(), skip)){
-					html += '<div class="func">Invoke - ' + cc.func.invoke[i] + '([ ' + field + ']);';
-						html += '<button type="button" class="runButton" func="' + cc.func.invoke[i] + '"> Run&nbsp;<span class="fa fa-arrow-right"></span> </button>&nbsp;&nbsp;';
-					html += '</div>';
-				}
+				html += '<div class="func">Invoke - ' + cc.func.invoke[i] + '([ ' + field + ']);';
+				html += 	'<button type="button" class="runButton" func="' + cc.func.invoke[i] + '"> Run&nbsp;<span class="fa fa-arrow-right"></span> </button>&nbsp;&nbsp;';
+				html += '</div>';
 			}
 			$('#customgowrap').html(html);
 			$('#giturl').html(cc.git_url);
 		}
-		
-		for(i in cc.func.invoke){														//if no write() in cc then hide the ui
-			if(cc.func.invoke[i].toLowerCase() === 'write'){
-				$('#writeWrap').show();
-				return;
-			}
-		}
-		$('#writeWrap').hide();
 	}
 	
 	function build_ccs(ccs){															//build parsed chaincode options
@@ -671,4 +643,28 @@ function copyDetails2InputArea(cc){													//copy only need stuff over
 		var str = JSON.stringify(cc.deploy_arg);
 		$('input[name="deploy_arg"]').val(str.substring(1, str.length-1));
 	}
+}
+
+//things that should pass: null, "test", test, 9, "9", true, {"hi":"there"}
+function try_to_parse(str){
+	var ret = [];
+	
+	if(str !== 'null'){
+		try{
+			ret = JSON.parse('[' + str.toString() + ']');		//try this first
+		}
+		catch(e){
+			ret = JSON.parse('["' + str.toString() + '"]');		//now try this one
+		}
+		
+		for(var i in ret){
+			if(typeof ret[i] === 'object'){
+				ret[i] = JSON.stringify(ret[i]);
+			}
+			else{
+				ret[i] = ret[i].toString();						//everything must be a string
+			}
+		}
+	}
+	return ret;
 }
