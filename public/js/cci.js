@@ -31,7 +31,7 @@ $(document).ready(function(){
 		load_from_ls();
 		build_ccs(bag.ls);
 		if(bag && bag.cc && bag.cc.details) {
-			buildGoFunc(bag.cc.details);														//populate custom go functions panel
+			buildGoInvokeFunc(bag.cc.details);														//populate custom go functions panel
 			build_peer_options(bag.cc.details.peers);											//populate drop down peer select box
 			build_user_options(bag.cc.details.users);
 			
@@ -248,11 +248,13 @@ $(document).ready(function(){
 			$(this).removeClass('recordButtonActive');
 			$('#recordText').html('Record New Test');
 			$('#recordNumber').html('');
+			bag.recording = false;
 		}
 		else{
 			$(this).addClass('recordButtonActive');
 			$('#recordText').html('Stop Recording - ');
 			$('#recordNumber').html('0');
+			bag.recording = true;
 		}
 	});
 	
@@ -341,7 +343,7 @@ $(document).ready(function(){
 		//console.log(data);
 		
 		for(var i in bag.cc.details.peers){
-			data.chaincodeSpec.secureContext = bag.cc.details.peers[i].user;					//get the right user for this peer
+			data.chaincodeSpec.secureContext = bag.cc.details.peers[i].enrollID;					//get the right user for this peer
 			$.ajax({
 				method: 'POST',
 				url: 'http://' + bag.cc.details.peers[i].api_host + ':' + bag.cc.details.peers[i].api_port + '/devops/query',
@@ -436,18 +438,18 @@ $(document).ready(function(){
 	// ===============================================================================================================
 	// 												Build UI Fun
 	// ===============================================================================================================
-	function buildGoFunc(cc){
+	function buildGoInvokeFunc(cc){
 		var skip = ['write'];
 		var html = '';
 		var i = 0;
 		var field = '<input class="arginput" type="text" placeholder="array of strings"/>';
 		$('input').val('');
 		
-		if(cc && cc.func){
-			for(i in cc.func){
-				if(!in_array(cc.func[i].toLowerCase(), skip)){
-					html += '<div class="func">' + cc.func[i] + '([ ' + field + ']);';
-						html += '<button type="button" class="runButton" func="' + cc.func[i] + '"> Run&nbsp;<span class="fa fa-arrow-right"></span> </button>&nbsp;&nbsp;';
+		if(cc && cc.func && cc.func.invoke){
+			for(i in cc.func.invoke){
+				if(!in_array(cc.func.invoke[i].toLowerCase(), skip)){
+					html += '<div class="func">Invoke - ' + cc.func.invoke[i] + '([ ' + field + ']);';
+						html += '<button type="button" class="runButton" func="' + cc.func.invoke[i] + '"> Run&nbsp;<span class="fa fa-arrow-right"></span> </button>&nbsp;&nbsp;';
 					html += '</div>';
 				}
 			}
@@ -455,8 +457,8 @@ $(document).ready(function(){
 			$('#giturl').html(cc.git_url);
 		}
 		
-		for(i in cc.func){															//if no write() in cc then hide the ui
-			if(cc.func[i].toLowerCase() === 'write'){
+		for(i in cc.func.invoke){														//if no write() in cc then hide the ui
+			if(cc.func.invoke[i].toLowerCase() === 'write'){
 				$('#writeWrap').show();
 				return;
 			}
@@ -505,7 +507,7 @@ $(document).ready(function(){
 		if(users){
 			for(var i in users){
 				var selected = '';
-				if(bag.cc.details.peers[selectedPeer].user == users[i].username) selected= 'selected="selected"';
+				if(bag.cc.details.peers[selectedPeer].enrollID == users[i].username) selected= 'selected="selected"';
 				html += '<option ' + selected + '>' + users[i].username + '</option>';
 			}
 		}

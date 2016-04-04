@@ -9,8 +9,8 @@
  *   David Huffman - Initial implementation
  *******************************************************************************/
 /*
-	Version: 0.6.3
-	Updated: 3/16/2016
+	Version: 0.6.4
+	Updated: 4/01/2015
 	-----------------------------------------------------------------
 	Use:	var rest = require('./rest');
 			rest.init({quiet: false});						//set default values here for all calls of 'rest'
@@ -83,7 +83,7 @@ function mergeBtoA(b, a){
 	for(var i in b){
 		if(a[i] === undefined) {
 			//console.log(' - copying');
-			a[i] = b[i];
+			a[i] = JSON.parse(JSON.stringify(b[i]));
 		}
 		//else console.log(' - not copying');
 	}
@@ -118,7 +118,7 @@ function http(options, parameters, body){
 		http = http_mod;																		//if options.ssl == false use http
 		http_txt = '[http ' + options.method + ' - ' + id + ']';
 	}
-	if(!options.quiet) console.log(http_txt + ' ' + options.path);	
+	if(!options.quiet) console.log(http_txt + ' ' + options.path);
 	
 	//// Sanitize Inputs ////
 	var querystring = require('querystring');													//convert all header keys to lower-case for easier parsing
@@ -130,11 +130,12 @@ function http(options, parameters, body){
 		}
 	}
 	
-	if(typeof body == 'object'){
+	if(typeof body === 'object'){
 		if(options.headers) options.headers['content-type'] = 'application/json';
 		else options.headers = {'content-type': 'application/json'};
 		body = JSON.stringify(body);																//stringify body
-	}	
+	}
+	
 	if(options.headers && options.headers['accept'] && options.headers['accept'].toLowerCase().indexOf('json') >= 0) acceptJson = true;
 	if(options.success && options.failure) jQuery = true;
 	else if(options.cb) nodeJs = true;
@@ -143,8 +144,12 @@ function http(options, parameters, body){
 		if(options.headers) options.headers['content-length'] = Buffer.byteLength(body);
 		else options.headers = {'content-lenght': Buffer.byteLength(body)};
 	}
-	//console.log('?', options);
+	else if(options.headers['content-length']) delete options.headers['content-length'];			//we don't need you
 	
+	if(!options.quiet && options.method.toLowerCase() !== 'get') {
+		console.log('  body:', body);
+	}
+		
 	//// Handle Request ////
 	if(typeof parameters == 'object') options.path += '?' + querystring.stringify(parameters);		//should be a json object
 	var request = http.request(options, function(resp) {
@@ -216,7 +221,7 @@ function http(options, parameters, body){
 //load new default option values
 module.exports.init = function(opt){
 	for(var i in opt){
-		default_options[i] = opt[i];
+		default_options[i] = JSON.parse(JSON.stringify(opt[i]));
 	}
 };
 

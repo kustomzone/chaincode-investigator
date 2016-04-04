@@ -76,6 +76,7 @@ app.use(function(req, res, next) {
 });
 app.use(function(err, req, res, next) {		// = development error handler, print stack trace
 	console.log('Error Handeler -', req.url);
+	if(err.stack) console.log(err.stack);
 	var errorCode = err.status || 500;
 	res.status(errorCode);
 	if(!req.bag) req.bag = {};

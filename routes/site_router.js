@@ -34,6 +34,7 @@ router.route('/cci').get(function(req, res){
 router.route('/chaincode').post(function(req, res){
 	var ibc = new Ibc1();
 	var chaincode = {};
+	console.log('received post to /chaincode');
 	ibc.load(req.body, cb_ready);																//parse/load chaincode
 
 	function cb_ready(err, cc){																	//response has chaincode functions
