@@ -121,18 +121,6 @@ block content
 	#chaincodePanel.subPanel.ready
 		form#ccWrap
 			.func 
-				span `Read (
-				input(type="text" name="read_name" placeholder="var name")
-				span ); 
-				span.hint aka Query(["abc"])
-				button(type="button")#read 
-					span Run&nbsp;
-					span.fa.fa-arrow-right
-				button(type="button" style="margin-right:10px;")#readall
-					span Run All&nbsp;
-					span.fa.fa-random
-					
-			.func 
 				span Query ([
 				input(type="text" name="query_name" placeholder="array of strings")
 				span ]); 
@@ -142,15 +130,6 @@ block content
 				button(type="button" style="margin-right:10px;")#queryall
 					span Run All&nbsp;
 					span.fa.fa-random
-			
-			.func#writeWrap
-				span `Write (
-				input(type="text" name="write_name" placeholder="var name")
-				input(type="text" name="write_val" placeholder="value")
-				span ); 
-				button(type="button")#write
-					span Run&nbsp;
-					span.fa.fa-arrow-right
 			
 			.func 
 				span Invoke
