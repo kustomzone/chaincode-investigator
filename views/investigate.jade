@@ -33,8 +33,6 @@ block content
 		
 	#loadPanel.subPanel
 		span#chaincodes
-		button(type="button").loadButton#showCCsummaryTextarea Load Chaincode<br/>JSON Summary
-		//button(type="button").loadButton#loadFile Load Summary<br/>from File
 		button(type="button").loadButton#showCreateTextarea Create Chaincode<br/>JSON Summary 
 		
 		#sdkLoading
@@ -46,19 +44,6 @@ block content
 				span
 				div 
 			.hint(style="vertical-align:bottom; display:inline-block; margin-bottom:20px; margin-left:8px;") may take up to 1 minute
-		
-		#chaincodeDetailsWrap(hidden)
-			br
-			br
-			p(style="text-align:center;")
-				span Paste Chaincode Summary File Below
-				br
-				span.hint (you can also click prev chaincode above to edit its details here)
-			button(type="button" style="margin-bottom:5px;")#loadjson Load JSON
-			br
-			br
-			textarea#jsonarea(autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false") {}
-				
 				
 		#sdkInputWrap(hidden)
 			br

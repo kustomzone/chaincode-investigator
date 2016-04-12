@@ -126,7 +126,6 @@ $(document).ready(function(){
 		}
 		store_to_ls(bag.cc);
 		lets_do_this();
-		$('#chaincodeDetailsWrap').hide();
 	});
 	
 	$('#barebones').click(function(){												//custom invoke function that SDK did not pick up
@@ -195,22 +194,8 @@ $(document).ready(function(){
 								git_url: 'https://github.com/ibm-blockchain/marbles-chaincode/part2',
 							}
 						};
-			$('#chaincodeDetailsWrap').hide();
 			$('#sdkInputWrap').fadeIn();
 			$('#sdkJsonArea').val(JSON.stringify(temp, null, 4));
-		}
-		
-		sizeMe($('#loadPanelNav'));
-	});
-	
-	$(document).on('click', '#showCCsummaryTextarea', function(){						//show chaincode summary input and init textarea
-		if($('#chaincodeDetailsWrap').is(':visible')){
-			$('#chaincodeDetailsWrap').hide();
-		}
-		else{
-			$('#jsonarea').html('paste json here!');
-			hide_sdk_json_area();
-			$('#chaincodeDetailsWrap').fadeIn();
 		}
 		
 		sizeMe($('#loadPanelNav'));
@@ -266,7 +251,7 @@ $(document).ready(function(){
 								name: bag.cc.details.deployed_name,
 							},
 							'ctorMsg': {
-								'function': 'query',
+								'function': 'read',
 								'args': arg
 							},
 							'secureContext': $('select[name="membershipUser"]').val()
@@ -308,7 +293,7 @@ $(document).ready(function(){
 								name: bag.cc.details.deployed_name,
 							},
 							'ctorMsg': {
-								'function': 'query',
+								'function': 'read',
 								'args': arg
 							},
 							'secureContext': 'set later'										//set this in the loop
@@ -645,7 +630,7 @@ function copyDetails2InputArea(cc){													//copy only need stuff over
 	}
 }
 
-//things that should pass: null, "test", test, 9, "9", true, {"hi":"there"}
+//things that should pass: null, "test", test, 9, "9", true, {"hi":"there"}, [0,9]
 function try_to_parse(str){
 	var ret = [];
 	
