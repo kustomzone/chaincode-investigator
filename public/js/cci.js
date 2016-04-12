@@ -45,15 +45,15 @@ $(document).ready(function(){
 	// 												jQuery Events
 	// ================================================================================================================
 	$(document).on('click', '.invokeButton', function(){							//invoke chaincode function
-		rest_invoke_peer($(this).attr('func').toLowerCase(), $(this).prev().val());
+		rest_invoke_peer($(this).attr('func'), $(this).prev().val());
 	});
 	
 	$(document).on('click', '.queryButton', function(){
-		rest_query_peer($(this).attr('func').toLowerCase(), $(this).prev().val());
+		rest_query_peer($(this).attr('func'), $(this).prev().val());
 	});
 	
 	$(document).on('click', '.queryAllButton', function(){							//query on all the things
-		rest_query_all_peers($(this).attr('func').toLowerCase(), $(this).prev().val());
+		rest_query_all_peers($(this).attr('func'), $(this).prev().val());
 	});
 	
 	$(document).on('click', '.delcc', function(){									//delete this cc from local storage
@@ -197,6 +197,23 @@ $(document).ready(function(){
 	// ===============================================================================================================
 	// 												HTTP Functions
 	// ================================================================================================================
+	//format body
+	function build_rest_body(func, args){
+		return 	{																		//build our body up
+					'chaincodeSpec': {
+						'type': 'GOLANG',
+						'chaincodeID': {
+							name: bag.cc.details.deployed_name,
+						},
+						'ctorMsg': {
+							'function': func,
+							'args': args
+						},
+						'secureContext': $('select[name="membershipUser"]').val()		//use the user in select dropdown
+					}
+				};
+	}
+	
 	//invoke 1 peer
 	function rest_invoke_peer(func, args, cb){
 		var temp = null;
@@ -208,19 +225,7 @@ $(document).ready(function(){
 			return false;
 		}
 		
-		var data = {																//build our body up
-						'chaincodeSpec': {
-							'type': 'GOLANG',
-							'chaincodeID': {
-								name: bag.cc.details.deployed_name,
-							},
-							'ctorMsg': {
-								'function': func,
-								'args': temp
-							},
-							'secureContext': $('select[name="membershipUser"]').val()
-						}
-					};
+		var data = build_rest_body(func, args);
 		logger.log('invoking func', func, data);
 		$.ajax({
 			method: 'POST',
@@ -247,19 +252,7 @@ $(document).ready(function(){
 			return false;
 		}
 		
-		var data = {																//build our body up
-						'chaincodeSpec': {
-							'type': 'GOLANG',
-							'chaincodeID': {
-								name: bag.cc.details.deployed_name,
-							},
-							'ctorMsg': {
-								'function': func,
-								'args': temp
-							},
-							'secureContext': $('select[name="membershipUser"]').val()
-						}
-					};
+		var data = build_rest_body(func, args);
 		logger.log('querying func', func, data);
 		
 		$.ajax({
@@ -280,8 +273,6 @@ $(document).ready(function(){
 	
 	//query all the peers
 	function rest_query_all_peers(func, args, cb){
-		//var func = $(this).attr('func').toLowerCase();
-		//var args = $(this).prev().val();
 		var temp = null;
 		try{
 			temp = try_to_parse(args);
@@ -291,22 +282,10 @@ $(document).ready(function(){
 			return false;
 		}
 		
-		var data = {																//build our body up
-						'chaincodeSpec': {
-							'type': 'GOLANG',
-							'chaincodeID': {
-								name: bag.cc.details.deployed_name,
-							},
-							'ctorMsg': {
-								'function': func,
-								'args': temp
-							},
-							'secureContext': $('select[name="membershipUser"]').val()
-						}
-					};
+		var data = build_rest_body(func, args);
 		logger.log('querying func', func, data);
 		
-		for(var i in bag.cc.details.peers){
+		for(var i in bag.cc.details.peers){															//iter over all the peers
 			data.chaincodeSpec.secureContext = bag.cc.details.peers[i].enrollID;					//get the right user for this peer
 			$.ajax({
 				method: 'POST',
@@ -329,29 +308,16 @@ $(document).ready(function(){
 	//invoke barebones
 	function rest_barebones(){
 		logger.log('Invoking Function ' + $('input[name="func_name"]').val());
-		var arg = $('input[name="func_val"]').val();
+		var args = $('input[name="func_val"]').val();
 		try{
-			arg = try_to_parse(arg);
+			args = try_to_parse(args);
 		}
 		catch(e){
 			logger.log('Error - Input could not be stringified', e);
 			return false;
 		}
 		
-		var data = {
-						'chaincodeSpec': {
-							'type': 'GOLANG',
-							'chaincodeID': {
-								name: bag.cc.details.deployed_name,
-							},
-							'ctorMsg': {
-								'function': $('input[name="func_name"]').val(),
-								'args': arg
-							},
-							'secureContext': $('select[name="membershipUser"]').val()
-						}
-					};
-
+		var data = build_rest_body($('input[name="func_name"]').val(), args);
 		$.ajax({
 			method: 'POST',
 			url: 'http://' + $('select[name="peer"]').val() + '/devops/invoke',
