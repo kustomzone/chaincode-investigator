@@ -459,6 +459,9 @@ body {
   color: #36A8FD;
   width: 170px; }
 
+.queryAllButton {
+  margin-right: 10px; }
+
 #blockWrap {
   position: relative;
   margin: 15px 25px; }
