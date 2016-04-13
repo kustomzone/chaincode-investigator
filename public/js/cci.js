@@ -203,9 +203,21 @@ $(document).ready(function(){
 	});
 	
 	var selectedRecording = {};
+	$('#playButton').hide();
 	$('.testSummary').click(function(){
-		selectedRecording = bag.ls.all_recordings[$(this).attr('pos')];
-		console.log('selected', selectedRecording);
+		if($(this).hasClass('selectedRecording')){
+			console.log('unselecting');
+			selectedRecording = {};
+			$(this).removeClass('selectedRecording');
+			$('#playButton').fadeOut();
+		}
+		else{
+			selectedRecording = bag.ls.all_recordings[$(this).attr('pos')];
+			$('.selectedRecording').removeClass('selectedRecording');
+			$(this).addClass('selectedRecording');
+			$('#playButton').fadeIn();
+			console.log('selected', selectedRecording);
+		}
 	});
 	
 	$('#playButton').click(function(){

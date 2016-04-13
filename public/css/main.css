@@ -462,6 +462,12 @@ body {
 .queryAllButton {
   margin-right: 10px; }
 
+.selectedRecording {
+  border-color: #fff !important; }
+
+#playButton {
+  display: inline-block; }
+
 #blockWrap {
   position: relative;
   margin: 15px 25px; }
