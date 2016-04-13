@@ -202,6 +202,17 @@ $(document).ready(function(){
 		}
 	});
 	
+	var selectedRecording = {};
+	$('.testSummary').click(function(){
+		selectedRecording = bag.ls.all_recordings[$(this).attr('pos')];
+		console.log('selected', selectedRecording);
+	});
+	
+	$('#playButton').click(function(){
+		console.log('playing', selectedRecording);
+		rest_play_recording(selectedRecording, 0);
+	});
+	
 	// ===============================================================================================================
 	// 												HTTP Functions
 	// ================================================================================================================
@@ -419,6 +430,28 @@ $(document).ready(function(){
 		});
 	}
 	
+	//play the recording - recursive!
+	function rest_play_recording(recording, pos){
+		var data = recording.story[pos].data;
+		console.log('Playing back recording', recording, pos, data);
+		logger.log('Playing back recording', data);
+
+		$.ajax({
+			method: recording.story[pos].method,
+			url: recording.story[pos].url,
+			data: JSON.stringify(data),
+			contentType: 'application/json',
+			success: function(json){
+				logger.log('Success', json);
+				if(recording.story[++pos]) rest_play_recording(recording, pos);		//we must go deeper
+			},
+			error: function(e){
+				logger.log('Error', e);
+				if(recording.story[++pos]) rest_play_recording(recording, pos);		//we must go deeper
+			}
+		});
+	}
+	
 	// ===============================================================================================================
 	// 												Build UI Fun
 	// ===============================================================================================================
@@ -538,21 +571,8 @@ $(document).ready(function(){
 			$(me).css('height', height).css('line-height', height + 'px');
 		}
 	}
-	
 
-	/*var temp =  [
-		{
-			name: 'abc',
-			story:[
-				{
-					function_name: 'init_marble',
-					args: 'stuff'
-				}
-			],
-			timestamp: Date.now()
-		}
-	];
-	build_recordings(temp);*/
+	//build html for recording icons
 	function build_recordings(tests){														//build parsed chaincode options
 		var html = '';
 		//console.log('building cc', ccs);
@@ -571,22 +591,24 @@ $(document).ready(function(){
 		$('#testsList').html(html);
 	}
 	
+	
+// ===============================================================================================================
+// 												Helper Fun
+// ===============================================================================================================
 	function clearRecording(){
 		console.log('clearing recording');
 		recordedActions = {name: '', story: []};
 	}
 	
+	//remember the http request for this recording
 	function recordRest(method, url, data){
 		if(bag.recording){
 			recordedActions.story.push({method: method, url: url, data: data});
+			$('#recordNumber').html(recordedActions.story.length);
 			console.log('recorded actions', recordedActions);
 		}
 	}
 	
-	
-// ===============================================================================================================
-// 												Helper Fun
-// ===============================================================================================================
 	function hide_sdk_json_area(){
 		$('#sdkInputWrap').hide();
 		sizeMe($('#loadPanelNav'));
