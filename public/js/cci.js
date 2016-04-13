@@ -1,4 +1,4 @@
-/* global formatDate, $, document, window, in_array, bag */
+/* global formatDate, $, document, window, bag */
 var selectedPeer = 0;
 var lsKey = 'cc_investigator';
 var logger = 	{																		//append text to log panel
@@ -53,7 +53,7 @@ $(document).ready(function(){
 	});
 	
 	$(document).on('click', '.queryAllButton', function(){							//query on all the things
-		rest_query_all_peers($(this).attr('func'), $(this).prev().val());
+		rest_query_all_peers($(this).attr('func'), $(this).prev().prev().val());
 	});
 	
 	$(document).on('click', '.delcc', function(){									//delete this cc from local storage
@@ -92,8 +92,12 @@ $(document).ready(function(){
 		lets_do_this();
 	});
 	
-	$('#barebones').click(function(){												//custom invoke function that SDK did not pick up
-		rest_barebones();
+	$('#invoke_barebones').click(function(){												//custom invoke function that SDK did not pick up
+		rest_invoke_barebones();
+	});
+	
+	$('#query_barbones').click(function(){												//custom invoke function that SDK did not pick up
+		rest_query_barebones();
 	});
 	
 	$('#sendjson').click(function(){												//send json to SDK for parsing
@@ -252,7 +256,7 @@ $(document).ready(function(){
 		
 		var data = build_rest_body(func, args);
 		logger.log('querying func', func, data);
-				
+		
 		$.ajax({
 			method: 'POST',
 			url: 'http://' + $('select[name="peer"]').val() + '/devops/query',
@@ -303,9 +307,9 @@ $(document).ready(function(){
 	}
 	
 	//invoke barebones
-	function rest_barebones(){
-		logger.log('Invoking Function ' + $('input[name="func_name"]').val());
-		var args = $('input[name="func_val"]').val();
+	function rest_invoke_barebones(){
+		var func = $('input[name="invoke_func_name"]').val();
+		var args = $('input[name="invoke_func_val"]').val();
 		try{
 			args = try_to_parse(args);
 		}
@@ -314,10 +318,41 @@ $(document).ready(function(){
 			return false;
 		}
 		
-		var data = build_rest_body($('input[name="func_name"]').val(), args);
+		var data = build_rest_body(func, args);
+		logger.log('Invoking Function ' + func, data);
+		
 		$.ajax({
 			method: 'POST',
 			url: 'http://' + $('select[name="peer"]').val() + '/devops/invoke',
+			data: JSON.stringify(data),
+			contentType: 'application/json',
+			success: function(json){
+				logger.log('Success', json);
+			},
+			error: function(e){
+				logger.log('Error', e);
+			}
+		});
+	}
+	
+	//invoke barebones
+	function rest_query_barebones(){
+		var func = $('input[name="query_func_name"]').val();
+		var args = $('input[name="query_func_val"]').val();
+		try{
+			args = try_to_parse(args);
+		}
+		catch(e){
+			logger.log('Error - Input could not be stringified', e);
+			return false;
+		}
+		
+		var data = build_rest_body(func, args);
+		logger.log('Querying Function ' + func, data);
+
+		$.ajax({
+			method: 'POST',
+			url: 'http://' + $('select[name="peer"]').val() + '/devops/query',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){

@@ -106,25 +106,24 @@ block content
 	#chaincodePanel.subPanel.ready
 		form#ccWrap
 			.func 
-				span Query ([
-				input(type="text" name="query_name" placeholder="array of strings")
+				span Query 
+				input(type="text" name="query_func_name" placeholder="func name")
+				span ([
+				input(type="text" name="query_func_val" placeholder="array of strings")
 				span ]); 
-				button(type="button")#query 
+				button(type="button")#query_barbones 
 					span Run&nbsp;
 					span.fa.fa-arrow-right
-				button(type="button" style="margin-right:10px;")#queryall
-					span Run All&nbsp;
-					span.fa.fa-random
-			
 			.func 
 				span Invoke
-				input(type="text" name="func_name" placeholder="func name")
+				input(type="text" name="invoke_func_name" placeholder="func name")
 				span ([
-				input(type="text" name="func_val" placeholder="array of strings")
+				input(type="text" name="invoke_func_val" placeholder="array of strings")
 				span ]); 
-				button(type="button")#barebones
+				button(type="button")#invoke_barebones
 					span Run&nbsp;
 					span.fa.fa-arrow-right
+			hr
 
 			#customgowrap
 	
