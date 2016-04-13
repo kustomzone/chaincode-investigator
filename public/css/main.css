@@ -289,14 +289,14 @@ body {
 .newInput {
   width: 100%; }
 
-.delcc, .deltest {
+.delcc, .delrecord {
   position: absolute;
   top: -2px;
   right: -6px;
   padding: 5px 4px 5px 8px;
   font-size: 12px; }
 
-.delcc:hover, .deltest:hover {
+.delcc:hover, .delrecord:hover {
   cursor: pointer;
   color: #fff; }
 

@@ -1,6 +1,7 @@
 /* global formatDate, $, document, window, bag */
 var selectedPeer = 0;
 var lsKey = 'cc_investigator';
+var recordedActions = {};
 var logger = 	{																		//append text to log panel
 				log: function log(str1, str2, str3){
 					if(str1 && str2 && str3) console.log(str1, str2, str3);
@@ -18,7 +19,6 @@ var logger = 	{																		//append text to log panel
 			}
 };
 
-
 $(document).ready(function(){
 	// ===============================================================================================================
 	// 												On Start Up
@@ -29,7 +29,8 @@ $(document).ready(function(){
 	
 	function lets_do_this(){																		//load from ls and build up ui
 		load_from_ls();
-		build_ccs(bag.ls);
+		build_ccs(bag.ls.ccs);
+		build_recordings(bag.ls.all_recordings);
 		if(bag && bag.cc && bag.cc.details) {
 			buildGoQueryFunc(bag.cc.details);														//populate custom go functions panel
 			build_peer_options(bag.cc.details.peers);												//populate drop down peer select box
@@ -64,11 +65,19 @@ $(document).ready(function(){
 		rest_query_barebones();
 	});
 	
-	//remove thing from local storage
+	//remove cc from local storage
 	$(document).on('click', '.delcc', function(){									//delete this cc from local storage
 		delete_from_ls($(this).parent().attr('hash'));
 		console.log('deleted cc');
 		bag.cc = {};
+		lets_do_this();
+		return false;
+	});
+	
+	//remove recording from local storage
+	$(document).on('click', '.delrecord', function(){									//delete this cc from local storage
+		delete_recording_from_ls($(this).parent().attr('pos'));
+		console.log('deleted recording');
 		lets_do_this();
 		return false;
 	});
@@ -112,9 +121,9 @@ $(document).ready(function(){
 	$(document).on('click', '.ccSummary', function(){								//load the selected cc
 		var hash = $(this).attr('hash');
 		console.log('Selected cc: ', hash);
-		for(var i in bag.ls){
+		for(var i in bag.ls.ccs){
 			if(i == hash){
-				bag.cc = bag.ls[i];
+				bag.cc = bag.ls.ccs[i];
 				lets_do_this();
 				$('#jsonarea').html(JSON.stringify(bag.cc, null, 4));
 				copyDetails2InputArea(bag.cc);
@@ -174,14 +183,18 @@ $(document).ready(function(){
 		sizeMe($('#testPanelNav'));
 	});
 	
+	//record actions
 	$('#recordButton').click(function(){
 		if($(this).hasClass('recordButtonActive')){
 			$(this).removeClass('recordButtonActive');
 			$('#recordText').html('Record New Test');
 			$('#recordNumber').html('');
 			bag.recording = false;
+			console.log('i see', recordedActions);
+			store_recoding_to_ls(recordedActions);
 		}
 		else{
+			clearRecording();
 			$(this).addClass('recordButtonActive');
 			$('#recordText').html('Stop Recording - ');
 			$('#recordNumber').html('0');
@@ -220,10 +233,13 @@ $(document).ready(function(){
 		}
 		
 		var data = build_rest_body(func, args);
+		var url = 'http://' + $('select[name="peer"]').val() + '/devops/invoke';
+		recordRest('POST', url, data);
 		logger.log('invoking func', func, data);
+		
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + $('select[name="peer"]').val() + '/devops/invoke',
+			url: url,
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
@@ -246,11 +262,13 @@ $(document).ready(function(){
 		}
 		
 		var data = build_rest_body(func, args);
+		var url = 'http://' + $('select[name="peer"]').val() + '/devops/query';
+		recordRest('POST', url, data);
 		logger.log('querying func', func, data);
 		
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + $('select[name="peer"]').val() + '/devops/query',
+			url: url,
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
@@ -275,13 +293,15 @@ $(document).ready(function(){
 		}
 		
 		var data = build_rest_body(func, args);
+		var url = 'http://' + bag.cc.details.peers[i].api_host + ':' + bag.cc.details.peers[i].api_port + '/devops/query';
+		recordRest('POST', url, data);
 		logger.log('querying func', func, data);
-		
+
 		for(var i in bag.cc.details.peers){															//iter over all the peers
 			data.chaincodeSpec.secureContext = bag.cc.details.peers[i].enrollID;					//get the right user for this peer
 			$.ajax({
 				method: 'POST',
-				url: 'http://' + bag.cc.details.peers[i].api_host + ':' + bag.cc.details.peers[i].api_port + '/devops/query',
+				url: url,
 				data: JSON.stringify(data),
 				peer_name: bag.cc.details.peers[i].name,
 				contentType: 'application/json',
@@ -386,7 +406,7 @@ $(document).ready(function(){
 				logger.log('Success - sending chaincode to sdk', json);
 				$('#sdkLoading').fadeOut();
 				hide_sdk_json_area();
-				store_to_ls(json);
+				store_cc_to_ls(json);
 				lets_do_this();
 				if(cb) cb(null, json);
 			},
@@ -519,20 +539,8 @@ $(document).ready(function(){
 		}
 	}
 	
-	/*
-	tests : [
-		{
-			name: "abc",
-			story:[
-				{
-					
-				}
-			],
-			timestamp:
-		}
-	]
-	*/
-	var temp =  [
+
+	/*var temp =  [
 		{
 			name: 'abc',
 			story:[
@@ -544,8 +552,8 @@ $(document).ready(function(){
 			timestamp: Date.now()
 		}
 	];
-	build_tests(temp);
-	function build_tests(tests){														//build parsed chaincode options
+	build_recordings(temp);*/
+	function build_recordings(tests){														//build parsed chaincode options
 		var html = '';
 		//console.log('building cc', ccs);
 		for(var i in tests){
@@ -555,12 +563,24 @@ $(document).ready(function(){
 			text += '<br/>' + formatDate(timestamp, '%M/%d');
 			text += '<br/>(' + tests[i].story.length + ')';
 		
-			html += '<div class="testSummary" name="' + tests[i].name+ '" title="' + tests[i].name + '">';
+			html += '<div class="testSummary" pos="' + i + '" title="' + tests[i].name + '">';
 			html += 		text;
-			html +=		'<div class="deltest fa fa-remove" title="remove test"></div>';
+			html +=		'<div class="delrecord fa fa-remove" title="remove test"></div>';
 			html += '</div>';
 		}
 		$('#testsList').html(html);
+	}
+	
+	function clearRecording(){
+		console.log('clearing recording');
+		recordedActions = {name: '', story: []};
+	}
+	
+	function recordRest(method, url, data){
+		if(bag.recording){
+			recordedActions.story.push({method: method, url: url, data: data});
+			console.log('recorded actions', recordedActions);
+		}
 	}
 	
 	
@@ -573,6 +593,9 @@ $(document).ready(function(){
 	}
 	
 	function load_from_ls(){
+		if(!bag) bag = {};
+		if(!bag.ls) bag.ls = {};
+		
 		if(window.localStorage) {
 			var str = window.localStorage.getItem(lsKey);
 			if(str){
@@ -583,33 +606,51 @@ $(document).ready(function(){
 		}
 	}
 	
-	function store_to_ls(cc){
+	function store_cc_to_ls(cc){
 		if(!bag) bag = {};
 		if(!bag.ls) bag.ls = {};
-		console.log('?');
+		if(!bag.ls.ccs) bag.ls.ccs = {};
 					
-		load_from_ls();
+		//load_from_ls();
 		if(cc.details && cc.details.deployed_name){
 			console.log('saving local storage');
-			bag.ls[cc.details.deployed_name] = cc;									//store this cc
+			bag.ls.ccs[cc.details.deployed_name] = cc;									//store this cc
+			window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save new one
 		}
-		window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save new one
+	}
+	
+	function store_recoding_to_ls(recording){
+		if(!bag) bag = {};
+		if(!bag.ls) bag.ls = {};
+		if(!bag.ls.all_recordings) bag.ls.all_recordings = [];
+					
+		if(recording.story.length > 0){
+			console.log('saving new recording to local storage', recording, bag.ls.all_recordings);
+			bag.ls.all_recordings.push(recording);										//store this recording
+			window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save new one
+		}
 	}
 	
 	function delete_from_ls(deployed_name){
-		if(!bag) bag = {};
-		if(!bag.ls) bag.ls = {};
-		
 		load_from_ls();
-		if(bag.ls && deployed_name){
+		if(bag.ls && bag.ls.ccs && deployed_name){
 			console.log('removing', deployed_name);
-			delete bag.ls[deployed_name];											//remove this cc
+			delete bag.ls.ccs[deployed_name];											//remove this cc
+			window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save
 		}
-		window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save
+	}
+	
+	function delete_recording_from_ls(pos){
+		load_from_ls();
+		if(bag.ls && bag.ls.all_recordings && bag.ls.all_recordings[pos]){
+			console.log('removing', pos);
+			bag.ls.all_recordings.splice(pos, 1);										//remove this cc
+			window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save
+		}
 	}
 });
 
-function pretty_print(str){															//json pretty print if obj
+function pretty_print(str){																//json pretty print if obj
 	if(str.constructor === Object || str.constructor === Array){
 		return JSON.stringify(str, null, 4);
 	}
