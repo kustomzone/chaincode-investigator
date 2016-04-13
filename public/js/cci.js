@@ -185,7 +185,7 @@ $(document).ready(function(){
 	
 	//record actions
 	$('#recordButton').click(function(){
-		if($(this).hasClass('recordButtonActive')){
+		if($(this).hasClass('recordButtonActive')){					//stop recording and store
 			$(this).removeClass('recordButtonActive');
 			$('#recordText').html('Record New Test');
 			$('#recordNumber').html('');
@@ -193,11 +193,12 @@ $(document).ready(function(){
 			console.log('i see', recordedActions);
 			store_recoding_to_ls(recordedActions);
 		}
-		else{
+		else{														//start recording
 			clearRecording();
 			$(this).addClass('recordButtonActive');
 			$('#recordText').html('Stop Recording - ');
 			$('#recordNumber').html('0');
+			$('input[name="recording_name"]').fadeIn();
 			bag.recording = true;
 		}
 	});
@@ -206,16 +207,15 @@ $(document).ready(function(){
 	$('#playButton').hide();
 	$('.testSummary').click(function(){
 		if($(this).hasClass('selectedRecording')){
-			console.log('unselecting');
-			selectedRecording = {};
-			$(this).removeClass('selectedRecording');
-			$('#playButton').fadeOut();
+			stop_playback();
 		}
 		else{
 			selectedRecording = bag.ls.all_recordings[$(this).attr('pos')];
 			$('.selectedRecording').removeClass('selectedRecording');
+			$('input[name="recording_name"]').val(selectedRecording.name);
 			$(this).addClass('selectedRecording');
 			$('#playButton').fadeIn();
+			$('input[name="recording_name"]').fadeIn();
 			console.log('selected', selectedRecording);
 		}
 	});
@@ -224,6 +224,25 @@ $(document).ready(function(){
 		console.log('playing', selectedRecording);
 		rest_play_recording(selectedRecording, 0);
 	});
+	
+	
+	$('input[name="recording_name"]').keyup(function(){
+		if(bag.recording){													//create name for test we are recording
+			recordedActions.name = $(this).val();
+		}
+		else{																//overwrite name for test
+			selectedRecording.name = $(this).val();
+			store_recoding_to_ls(selectedRecording, $('.selectedRecording').attr('pos'));
+		}
+	});
+	
+	function stop_playback(){
+		console.log('unselecting');
+		selectedRecording = {};
+		$('.selectedRecording').removeClass('selectedRecording');
+		$('#playButton').fadeOut();
+		$('input[name="recording_name"]').fadeOut();
+	}
 	
 	// ===============================================================================================================
 	// 												HTTP Functions
@@ -456,10 +475,12 @@ $(document).ready(function(){
 			success: function(json){
 				logger.log('Success', json);
 				if(recording.story[++pos]) rest_play_recording(recording, pos);		//we must go deeper
+				else stop_playback();
 			},
 			error: function(e){
 				logger.log('Error', e);
 				if(recording.story[++pos]) rest_play_recording(recording, pos);		//we must go deeper
+				else stop_playback();
 			}
 		});
 	}
@@ -653,14 +674,15 @@ $(document).ready(function(){
 		}
 	}
 	
-	function store_recoding_to_ls(recording){
+	function store_recoding_to_ls(recording, pos){
 		if(!bag) bag = {};
 		if(!bag.ls) bag.ls = {};
 		if(!bag.ls.all_recordings) bag.ls.all_recordings = [];
 					
 		if(recording.story.length > 0){
-			console.log('saving new recording to local storage', recording, bag.ls.all_recordings);
-			bag.ls.all_recordings.push(recording);										//store this recording
+			console.log('saving new recording to local storage', recording);
+			if(!isNaN(pos)) bag.ls.all_recordings[pos] = recording;						//overwite recording
+			else bag.ls.all_recordings.push(recording);									//store new recording
 			window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save new one
 		}
 	}
