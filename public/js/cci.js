@@ -216,9 +216,8 @@ $(document).ready(function(){
 	
 	//invoke 1 peer
 	function rest_invoke_peer(func, args, cb){
-		var temp = null;
 		try{
-			temp = try_to_parse(args);
+			args = try_to_parse(args);
 		}
 		catch(e){
 			logger.log('Error - Input could not be stringified', e);
@@ -243,9 +242,8 @@ $(document).ready(function(){
 	
 	//query 1 peer
 	function rest_query_peer(func, args, cb){
-		var temp = null;
 		try{
-			temp = try_to_parse(args);
+			args = try_to_parse(args);
 		}
 		catch(e){
 			logger.log('Error - Input could not be stringified', e);
@@ -254,7 +252,7 @@ $(document).ready(function(){
 		
 		var data = build_rest_body(func, args);
 		logger.log('querying func', func, data);
-		
+				
 		$.ajax({
 			method: 'POST',
 			url: 'http://' + $('select[name="peer"]').val() + '/devops/query',
@@ -273,9 +271,8 @@ $(document).ready(function(){
 	
 	//query all the peers
 	function rest_query_all_peers(func, args, cb){
-		var temp = null;
 		try{
-			temp = try_to_parse(args);
+			args = try_to_parse(args);
 		}
 		catch(e){
 			logger.log('Error - Input could not be stringified', e);
@@ -622,26 +619,84 @@ function copyDetails2InputArea(cc){													//copy only need stuff over
 	}
 }
 
-//things that should pass: null, "test", test, 9, "9", true, {"hi":"there"}, [0,9]
+/*things that should pass:
+ null				- 0
+ "test"				- 1st and 6th attempt
+ test				- 3rd attempt
+ 9					- 1st and 5th attempt
+ "9"				- 1st and 5th attempt
+ true				- 1st and 5th attempt
+ {"hi":"there"}		- 2nd attempt
+ [0,9]				- 2nd attempt
+ 66, 77				- 2nd attempt
+ abc, test			- 3rd attempt
+ "test", "test"		- 2nd attempt
+ "abc", 100			- 2nd attempt
+ ["asdf", 9]		- 2nd attempt
+*/
+
 function try_to_parse(str){
 	var ret = [];
+	var i;
 	
 	if(str !== 'null'){
+		
+		// ------------- First Pass --------------- //
 		try{
-			ret = JSON.parse('[' + str.toString() + ']');		//try this first
+			var temp = JSON.parse(str.toString());					//try this one
+			if(typeof temp !== 'object' ){
+				ret = temp;											//only use this one for strings/numeric, skip array/obj
+				console.log('1st attempt', ret);
+			}
+			else{
+				throw 'keep looking';
+			}
 		}
 		catch(e){
-			ret = JSON.parse('["' + str.toString() + '"]');		//now try this one
+			try{
+				ret = JSON.parse('[' + str.toString() + ']');		//now try this one
+				console.log('2nd attempt', ret);
+			}
+			catch(e){												//last chanc bucko
+				var subFields = str.split(',');
+				for(var x in subFields) ret.push(subFields[x].trim());
+				console.log('3rd attempt', ret);
+			}
 		}
 		
-		for(var i in ret){
+		// ------------- Second Pass --------------- //
+		if(ret.constructor !== Array){								//not done, make it an array
+			try{
+				if(typeof ret === 'object'){
+					ret = JSON.stringify(ret);
+					console.log('4th attempt', ret);
+				}
+				else{
+					ret = JSON.parse('[' + ret.toString() + ']');	//now try this one
+					console.log('5th attempt', ret);
+				}
+			}
+			catch(e){
+				ret = JSON.parse('["' + ret.toString() + '"]');		//last chance bucko
+				console.log('6th attempt', ret);
+			}
+		}
+
+		// ----------- String it Up ---------------- //
+		for(i in ret){			
 			if(typeof ret[i] === 'object'){
 				ret[i] = JSON.stringify(ret[i]);
 			}
 			else{
-				ret[i] = ret[i].toString();						//everything must be a string
+				ret[i] = ret[i].toString();							//everything must be a string
 			}
 		}
 	}
+	
+	if(ret.constructor !== Array){									//error out
+		throw 'error could not make it into array of strings';
+	}
+	
+	console.log('ret', ret);
 	return ret;
 }
