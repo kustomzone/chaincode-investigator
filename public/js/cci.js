@@ -56,6 +56,15 @@ $(document).ready(function(){
 		rest_query_all_peers($(this).attr('func'), $(this).prev().prev().val());
 	});
 	
+	$('#invoke_barebones').click(function(){												//custom invoke function that SDK did not pick up
+		rest_invoke_barebones();
+	});
+	
+	$('#query_barbones').click(function(){												//custom invoke function that SDK did not pick up
+		rest_query_barebones();
+	});
+	
+	//remove thing from local storage
 	$(document).on('click', '.delcc', function(){									//delete this cc from local storage
 		delete_from_ls($(this).parent().attr('hash'));
 		console.log('deleted cc');
@@ -64,6 +73,7 @@ $(document).ready(function(){
 		return false;
 	});
 	
+	//peer manual selection from dropdown
 	$('#peers').change(function(){													//select correct memership user for this peer
 		selectedPeer = 0;
 		for(var i in bag.cc.details.peers){
@@ -78,28 +88,7 @@ $(document).ready(function(){
 		console.log('Selected peer: ', bag.cc.details.peers[selectedPeer].name);
 	});
 	
-	$('#loadjson').click(function(){												//load chaincode summary file from textarea
-		try{
-			bag.cc = JSON.parse($('#jsonarea').val());
-			$('#jsonarea').removeClass('errorBorder');
-		}
-		catch(e){
-			console.log('Error, invalid json');
-			$('#jsonarea').addClass('errorBorder');
-			return;
-		}
-		store_to_ls(bag.cc);
-		lets_do_this();
-	});
-	
-	$('#invoke_barebones').click(function(){												//custom invoke function that SDK did not pick up
-		rest_invoke_barebones();
-	});
-	
-	$('#query_barbones').click(function(){												//custom invoke function that SDK did not pick up
-		rest_query_barebones();
-	});
-	
+	//load json in textarea and send to sdk
 	$('#sendjson').click(function(){												//send json to SDK for parsing
 		var errors = false;
 		if($('input[name="deploy_function"]').val() === '') {						//check if empty, error
@@ -119,6 +108,7 @@ $(document).ready(function(){
 		}
 	});
 	
+	//load selected chaincode icon
 	$(document).on('click', '.ccSummary', function(){								//load the selected cc
 		var hash = $(this).attr('hash');
 		console.log('Selected cc: ', hash);
@@ -138,6 +128,7 @@ $(document).ready(function(){
 		}
 	});
 	
+	//show/hide json text area panel
 	$(document).on('click', '#showCreateTextarea', function(){								//show SDK input and init textarea
 		if($('#sdkInputWrap').is(':visible')){
 			hide_sdk_json_area();
