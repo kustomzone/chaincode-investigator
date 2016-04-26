@@ -129,7 +129,7 @@ $(document).ready(function(){
 				$('#jsonarea').html(JSON.stringify(bag.ls.ccs[selectedCChash], null, 4));
 				copyDetails2InputArea(bag.ls.ccs[selectedCChash]);
 				
-				if(!$('#jsonarea').is(':visible') && !$('#sdkJsonArea').is(':visible')){	//hold off on closing if these are open
+				if(!$('#jsonarea').is(':visible') && !$('#sdkJsonArea').is(':visible')){//hold off on closing if these are open
 					toggle_panel($('#loadPanelNav'));
 					showPanel($('#chaincodePanelNav'));
 				}
@@ -139,7 +139,7 @@ $(document).ready(function(){
 	});
 	
 	//show/hide json text area panel
-	$(document).on('click', '#showCreateTextarea', function(){								//show SDK input and init textarea
+	$(document).on('click', '#showCreateTextarea', function(){							//show SDK input and init textarea
 		if($('#sdkInputWrap').is(':visible')){
 			hide_sdk_json_area();
 		}
@@ -186,7 +186,7 @@ $(document).ready(function(){
 	
 	//record actions
 	$('#recordButton').click(function(){
-		if($(this).hasClass('recordButtonActive')){					//stop recording and store
+		if($(this).hasClass('recordButtonActive')){										//stop recording and store
 			$(this).removeClass('recordButtonActive');
 			$('#recordText').html('Record New Test');
 			$('#recordNumber').html('');
@@ -194,7 +194,7 @@ $(document).ready(function(){
 			console.log('i see', recordedActions);
 			store_recoding_to_ls(recordedActions);
 		}
-		else{														//start recording
+		else{																			//start recording
 			clearRecording();
 			$(this).addClass('recordButtonActive');
 			$('#recordText').html('Stop Recording - ');
@@ -230,13 +230,15 @@ $(document).ready(function(){
 	
 	
 	$('input[name="recording_name"]').keyup(function(){
-		if(bag.recording){													//create name for test we are recording
+		if(bag.recording){													//create name for test we are recording right now
 			recordedActions.name = $(this).val();
 		}
-		else{																//overwrite name for test
-			selectedRecording.name = $(this).val();
-			store_recoding_to_ls(selectedRecording, $('.selectedRecording').attr('pos'));
-		}
+	});
+	
+	$(document).on('keyup', '.recordingName', function(){					//overwrite name for test
+		selectedRecording = bag.ls.ccs[selectedCChash].recordings[$(this).parent().attr('pos')]; //select it first
+		selectedRecording.name = $(this).val();
+		store_recoding_to_ls(selectedRecording, $('.selectedRecording').attr('pos'));			//save it 
 	});
 	
 	function stop_playback(){
@@ -252,7 +254,7 @@ $(document).ready(function(){
 	// ================================================================================================================
 	//format body
 	function build_rest_body(type, func, args){
-		return 	{																		//build our body up
+		return 	{																			//build our body up
 					'jsonrpc': '2.0',
 					'method': type,
 						'params': {
@@ -264,7 +266,7 @@ $(document).ready(function(){
 							'function': func,
 								'args': args
 						},
-						'secureContext':  $('select[name="membershipUser"]').val()		//use the user in select dropdown
+						'secureContext':  $('select[name="membershipUser"]').val()			//use the user in select dropdown
 					},
 					'id': 1
 				};
