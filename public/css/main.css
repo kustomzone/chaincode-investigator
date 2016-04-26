@@ -158,7 +158,7 @@ input[type="submit"], input[type="button"], button {
   padding: 5px 15px;
   cursor: pointer;
   background: #111;
-  color: limegreen;
+  color: #36A8FD;
   transition: background-color 0.2s ease;
   min-width: 130px;
   border: 1px #7E90A0 solid;
@@ -256,13 +256,12 @@ body {
   height: 58px;
   font-size: 16px;
   font-family: Courier New;
-  background: #111;
+  background: #242829;
   border: 1px #646B73 solid;
   display: inline-block;
   margin-right: 10px;
   vertical-align: middle;
   text-align: center;
-  color: limegreen;
   border-radius: 3px;
   position: relative;
   padding-top: 20px; }
@@ -273,6 +272,9 @@ body {
   padding: 0;
   font-family: inherit;
   float: none; }
+
+.testSummary {
+  color: #C095FF; }
 
 .selectedCC, .ccSummary:hover, .testSummary:hover {
   cursor: pointer;
@@ -318,6 +320,9 @@ body {
 
 .accent {
   color: limegreen; }
+
+.accent2 {
+  color: #C095FF; }
 
 .toolOpen {
   width: 170px;
@@ -427,7 +432,7 @@ body {
 #logs {
   width: 90%;
   height: 400px;
-  background: #111;
+  background: #242829;
   border: 1px #555 solid;
   color: #fff;
   font-family: Courier New, Courier, monospace;

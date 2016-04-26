@@ -36,7 +36,7 @@ $(document).ready(function(){
 			build_peer_options(bag.cc.details.peers);												//populate drop down peer select box
 			build_user_options(bag.cc.details.users);
 			
-			$('#peer').html(bag.cc.details.peers[selectedPeer].name).css('background', '#32CD32');	//populate status panel
+			$('#peer').html(bag.cc.details.peers[selectedPeer].name);	//populate status panel
 			setTimeout(function(){$('#peer').css('background', 'initial');}, 2000);
 			$('#name').html(bag.cc.details.deployed_name.substring(0,32) + '...');
 		}
@@ -91,7 +91,7 @@ $(document).ready(function(){
 				break;
 			}
 		}
-		$('#peer').html(bag.cc.details.peers[selectedPeer].name).css('background', '#32CD32');//populate status panel
+		$('#peer').html(bag.cc.details.peers[selectedPeer].name);//populate status panel
 		setTimeout(function(){$('#peer').css('background', 'initial');}, 2000);		//flashy flashy
 		build_user_options(bag.cc.details.users);
 		console.log('Selected peer: ', bag.cc.details.peers[selectedPeer].name);
@@ -429,8 +429,8 @@ $(document).ready(function(){
 		
 		try{
 			data = JSON.parse(data);												//check if input is valid JSON
-			data.deploy_function = $('input[name="deploy_function"]').val();
-			data.deploy_arg = JSON.parse('[' + $('input[name="deploy_arg"]').val().toString() + ']');
+			data.deploy_function = try_to_parse($('input[name="deploy_function"]').val());
+			data.deploy_arg = try_to_parse( $('input[name="deploy_arg"]').val());
 			$('#sdkJsonArea').removeClass('errorBorder');
 		}
 		catch(e){

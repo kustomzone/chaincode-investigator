@@ -49,7 +49,8 @@ block content
 			br
 			
 			p(style="text-align:center;")
-				span Fill Out SDK Options Below&nbsp;
+				span Fill out the SDK's ibc.load() json options below&nbsp;
+				a.small(href="https://github.com/IBM-Blockchain/ibm-blockchain-js" target="_blank") documentation 
 				br
 				span.hint (you can also click prev chaincode above to copy its details here)
 				
@@ -60,6 +61,8 @@ block content
 				span ([
 				input(type="text" placeholder="array of strings" name="deploy_arg")
 				span ]);&nbsp;&nbsp;&nbsp;&nbsp;
+				
+				.hint &nbsp;&nbsp;&nbsp; example: "init", "1234"
 				
 				button(type="button" style="margin-bottom:5px;")#sendjson Send to SDK
 			br
@@ -85,7 +88,7 @@ block content
 	
 	
 	// ---------------- Record Test Panel ----------------- //
-	.tool.toolClosed.accent(show='testPanel')#testPanelNav
+	.tool.toolClosed.accent2(show='testPanel')#testPanelNav
 		span.fa.fa-youtube-play
 		.toollegend.toollegendClosed Tests
 		.stepNumberClosed *
