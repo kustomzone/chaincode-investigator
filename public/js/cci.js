@@ -1,6 +1,6 @@
 /* global formatDate, $, document, window, bag */
 var selectedPeerIndex = 0;
-var selectedCCindex = -1;
+var selectedCChash = '';
 var lsKey = 'cc_investigator';
 var recordedActions = {};
 var logger = 	{																		//append text to log panel
@@ -31,15 +31,15 @@ $(document).ready(function(){
 	function lets_do_this(){																		//load from ls and build up ui
 		load_from_ls();
 		build_ccs(bag.ls.ccs);
-		build_recordings(bag.ls.all_recordings);
-		if(selectedCCindex !== -1 && bag && bag.ls && bag.ls.ccs && bag.ls.ccs[selectedCCindex]) {
-			buildGoQueryFunc(bag.ls.ccs[selectedCCindex].details);														//populate custom go functions panel
-			build_peer_options(bag.ls.ccs[selectedCCindex].details.peers);												//populate drop down peer select box
-			build_user_options(bag.ls.ccs[selectedCCindex].details.users);
+		if(bag.ls.ccs && bag.ls.ccs[selectedCChash]) build_recordings(bag.ls.ccs[selectedCChash].recordings);
+		if(selectedCChash !== '' && bag && bag.ls && bag.ls.ccs && bag.ls.ccs[selectedCChash]) {
+			buildGoQueryFunc(bag.ls.ccs[selectedCChash].details);														//populate custom go functions panel
+			build_peer_options(bag.ls.ccs[selectedCChash].details.peers);												//populate drop down peer select box
+			build_user_options(bag.ls.ccs[selectedCChash].details.users);
 			
-			$('#peer').html(bag.ls.ccs[selectedCCindex].details.peers[selectedPeerIndex].name);	//populate status panel
+			$('#peer').html(bag.ls.ccs[selectedCChash].details.peers[selectedPeerIndex].name);	//populate status panel
 			setTimeout(function(){$('#peer').css('background', 'initial');}, 2000);
-			$('#name').html(bag.ls.ccs[selectedCCindex].details.deployed_name.substring(0,32) + '...');
+			$('#name').html(bag.ls.ccs[selectedCChash].details.deployed_name.substring(0,32) + '...');
 		}
 	}
 	
@@ -70,7 +70,7 @@ $(document).ready(function(){
 	$(document).on('click', '.delcc', function(){									//delete this cc from local storage
 		delete_from_ls($(this).parent().attr('hash'));
 		console.log('deleted cc');
-		selectedCCindex = -1;
+		selectedCChash = '';
 		lets_do_this();
 		return false;
 	});
@@ -86,16 +86,16 @@ $(document).ready(function(){
 	//peer manual selection from dropdown
 	$('#peers').change(function(){													//select correct memership user for this peer
 		selectedPeerIndex = 0;
-		for(var i in bag.ls.ccs[selectedCCindex].details.peers){
-			if(bag.ls.ccs[selectedCCindex].details.peers[i].api_host + ':' + bag.ls.ccs[selectedCCindex].details.peers[i].api_port == $(this).val()){
+		for(var i in bag.ls.ccs[selectedCChash].details.peers){
+			if(bag.ls.ccs[selectedCChash].details.peers[i].api_host + ':' + bag.ls.ccs[selectedCChash].details.peers[i].api_port == $(this).val()){
 				selectedPeerIndex = i;
 				break;
 			}
 		}
-		$('#peer').html(bag.ls.ccs[selectedCCindex].details.peers[selectedPeerIndex].name);//populate status panel
+		$('#peer').html(bag.ls.ccs[selectedCChash].details.peers[selectedPeerIndex].name);//populate status panel
 		setTimeout(function(){$('#peer').css('background', 'initial');}, 2000);		//flashy flashy
-		build_user_options(bag.ls.ccs[selectedCCindex].details.users);
-		console.log('Selected peer: ', bag.ls.ccs[selectedCCindex].details.peers[selectedPeerIndex].name);
+		build_user_options(bag.ls.ccs[selectedCChash].details.users);
+		console.log('Selected peer: ', bag.ls.ccs[selectedCChash].details.peers[selectedPeerIndex].name);
 	});
 	
 	//load json in textarea and send to sdk
@@ -124,10 +124,10 @@ $(document).ready(function(){
 		console.log('Selected cc: ', hash);
 		for(var i in bag.ls.ccs){
 			if(i == hash){
-				selectedCCindex = i;
+				selectedCChash = i;
 				lets_do_this();
-				$('#jsonarea').html(JSON.stringify(bag.ls.ccs[selectedCCindex], null, 4));
-				copyDetails2InputArea(bag.ls.ccs[selectedCCindex]);
+				$('#jsonarea').html(JSON.stringify(bag.ls.ccs[selectedCChash], null, 4));
+				copyDetails2InputArea(bag.ls.ccs[selectedCChash]);
 				
 				if(!$('#jsonarea').is(':visible') && !$('#sdkJsonArea').is(':visible')){	//hold off on closing if these are open
 					toggle_panel($('#loadPanelNav'));
@@ -213,7 +213,7 @@ $(document).ready(function(){
 		}
 		else{
 			console.log('loading playback');
-			selectedRecording = bag.ls.all_recordings[$(this).attr('pos')];
+			selectedRecording = bag.ls.ccs[selectedCChash].recordings[$(this).attr('pos')];
 			$('.selectedRecording').removeClass('selectedRecording');
 			$('input[name="recording_name"]').val(selectedRecording.name);
 			$(this).addClass('selectedRecording');
@@ -258,7 +258,7 @@ $(document).ready(function(){
 						'params': {
 						'type': 1,
 						'chaincodeID': {
-							'name': bag.ls.ccs[selectedCCindex].details.deployed_name
+							'name': bag.ls.ccs[selectedCChash].details.deployed_name
 						},
 						'ctorMsg': {
 							'function': func,
@@ -343,16 +343,16 @@ $(document).ready(function(){
 		var data = build_rest_body('query', func, args);
 		logger.log('querying func', func, data);
 
-		for(var i in bag.ls.ccs[selectedCCindex].details.peers){															//iter over all the peers
-			var url = 'http://' + bag.ls.ccs[selectedCCindex].details.peers[i].api_host + ':' + bag.ls.ccs[selectedCCindex].details.peers[i].api_port + '/chaincode';
+		for(var i in bag.ls.ccs[selectedCChash].details.peers){															//iter over all the peers
+			var url = 'http://' + bag.ls.ccs[selectedCChash].details.peers[i].api_host + ':' + bag.ls.ccs[selectedCChash].details.peers[i].api_port + '/chaincode';
 			recordRest('POST', url, data);
 		
-			data.chaincodeSpec.secureContext = bag.ls.ccs[selectedCCindex].details.peers[i].enrollID;					//get the right user for this peer
+			data.chaincodeSpec.secureContext = bag.ls.ccs[selectedCChash].details.peers[i].enrollID;					//get the right user for this peer
 			$.ajax({
 				method: 'POST',
 				url: url,
 				data: JSON.stringify(data),
-				peer_name: bag.ls.ccs[selectedCCindex].details.peers[i].name,
+				peer_name: bag.ls.ccs[selectedCChash].details.peers[i].name,
 				contentType: 'application/json',
 				success: function(json){
 					logger.log('Success - read all', this.peer_name, JSON.stringify(json));
@@ -573,7 +573,7 @@ $(document).ready(function(){
 		if(users){
 			for(var i in users){
 				var selected = '';
-				if(bag.ls.ccs[selectedCCindex].details.peers[selectedPeerIndex].enrollID == users[i].username) selected= 'selected="selected"';
+				if(bag.ls.ccs[selectedCChash].details.peers[selectedPeerIndex].enrollID == users[i].username) selected= 'selected="selected"';
 				html += '<option ' + selected + '>' + users[i].username + '</option>';
 			}
 		}
@@ -620,17 +620,17 @@ $(document).ready(function(){
 	}
 
 	//build html for recording icons
-	function build_recordings(tests){														//build parsed chaincode options
+	function build_recordings(recordings){												//build parsed chaincode options
 		var html = '';
-		//console.log('building cc', ccs);
-		for(var i in tests){
-			var text = tests[i].name.substr(0, 8);
+		console.log('building recordings', recordings);
+		for(var i in recordings){
+			var text = recordings[i].name.substr(0, 8);
 			var timestamp = Date.now();													//if no date, just make it today
-			if(tests[i].timestamp) timestamp = tests[i].timestamp;
+			if(recordings[i].timestamp) timestamp = recordings[i].timestamp;
 			text += '<br/>' + formatDate(timestamp, '%M/%d');
-			text += '<br/>(' + tests[i].story.length + ')';
+			text += '<br/>(' + recordings[i].story.length + ')';
 		
-			html += '<div class="testSummary" pos="' + i + '" title="' + tests[i].name + '">';
+			html += '<div class="testSummary" pos="' + i + '" title="' + recordings[i].name + '">';
 			html += 		text;
 			html +=		'<div class="delrecord fa fa-remove" title="remove test"></div>';
 			html += '</div>';
@@ -691,12 +691,13 @@ $(document).ready(function(){
 	function store_recoding_to_ls(recording, pos){
 		if(!bag) bag = {};
 		if(!bag.ls) bag.ls = {};
-		if(!bag.ls.all_recordings) bag.ls.all_recordings = [];
+		if(!bag.ls.ccs[selectedCChash].recordings) bag.ls.ccs[selectedCChash].recordings = [];
 					
 		if(recording.story.length > 0){
 			console.log('saving new recording to local storage', recording);
-			if(!isNaN(pos)) bag.ls.all_recordings[pos] = recording;						//overwite recording
-			else bag.ls.all_recordings.push(recording);									//store new recording
+			if(!isNaN(pos)) bag.ls.ccs[selectedCChash].recordings[pos] = recording;	//overwite recording
+			else bag.ls.ccs[selectedCChash].recordings.push(recording);				//store new recording
+			console.log('?', selectedCChash, bag.ls.ccs[selectedCChash].recordings);
 			window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save new one
 		}
 	}
@@ -712,9 +713,9 @@ $(document).ready(function(){
 	
 	function delete_recording_from_ls(pos){
 		load_from_ls();
-		if(bag.ls && bag.ls.all_recordings && bag.ls.all_recordings[pos]){
+		if(bag.ls.ccs && bag.ls.ccs[selectedCChash].recordings && bag.ls.ccs[selectedCChash].recordings[pos]){
 			console.log('removing', pos);
-			bag.ls.all_recordings.splice(pos, 1);										//remove this cc
+			bag.ls.ccs[selectedCChash].recordings.splice(pos, 1);										//remove this cc
 			window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save
 		}
 	}

@@ -13,4 +13,6 @@ come back later!
 - [x] load spin when deploying
 - [x] better naming of chaincode
 - [x] clear button in log panel
-- [ ] move test/playback to under cc summary
+- [x] move test/playback to under cc summary
+- [ ] naming/renaming recordings is akward
+- [ ] add more directional text?
