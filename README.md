@@ -15,4 +15,5 @@ come back later!
 - [x] clear button in log panel
 - [x] move test/playback to under cc summary
 - [ ] naming/renaming recordings is akward
+- [ ] rename cc summary, auto populates as is with cc repo name, but user can overide
 - [ ] add more directional text?

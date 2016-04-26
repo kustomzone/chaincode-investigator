@@ -499,7 +499,7 @@ $(document).ready(function(){
 		var html = '';
 		var i = 0;
 		var field = '<input class="arginput" type="text" placeholder="array of strings"/>';
-		$('input').val('');
+		$('.arginput').val('');
 		
 		if(cc && cc.func && cc.func.query){
 			for(i in cc.func.query){
@@ -519,7 +519,7 @@ $(document).ready(function(){
 		var html = '';
 		var i = 0;
 		var field = '<input class="arginput" type="text" placeholder="array of strings"/>';
-		$('input').val('');
+		$('.arginput').val('');
 		$('.toolDisalbed').removeClass('toolDisalbed');
 		
 		if(cc && cc.func && cc.func.invoke){
@@ -624,7 +624,7 @@ $(document).ready(function(){
 		var html = '';
 		console.log('building recordings', recordings);
 		for(var i in recordings){
-			var text = recordings[i].name.substr(0, 8);
+			var text = '<input type="text" class="recordingName" value="' + recordings[i].name.substring(0, 8) +'" placeholder="name here">';
 			var timestamp = Date.now();													//if no date, just make it today
 			if(recordings[i].timestamp) timestamp = recordings[i].timestamp;
 			text += '<br/>' + formatDate(timestamp, '%M/%d');

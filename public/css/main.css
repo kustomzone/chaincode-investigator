@@ -252,8 +252,8 @@ body {
   max-width: 700px; }
 
 .ccSummary, .loadButton, .testSummary {
-  width: 85px;
-  height: 58px;
+  width: 90px;
+  height: 60px;
   font-size: 16px;
   font-family: Courier New;
   background: #242829;
@@ -476,6 +476,20 @@ body {
 
 #playButton {
   display: inline-block; }
+
+input[type=text].recordingName {
+  width: 92%;
+  margin: 0 auto;
+  margin-bottom: 8px;
+  padding: 0;
+  color: #C095FF;
+  font-family: Courier New;
+  min-width: 10px;
+  text-align: center;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  border-color: #C095FF; }
 
 #blockWrap {
   position: relative;
