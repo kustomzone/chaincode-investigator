@@ -1,5 +1,5 @@
 /* global formatDate, $, document, window, bag */
-var selectedPeer = 0;
+var selectedPeerIndex = 0;
 var selectedChaincodeIndex = -1;
 var lsKey = 'cc_investigator';
 var recordedActions = {};
@@ -37,7 +37,7 @@ $(document).ready(function(){
 			build_peer_options(bag.ls.ccs[selectedChaincodeIndex].details.peers);												//populate drop down peer select box
 			build_user_options(bag.ls.ccs[selectedChaincodeIndex].details.users);
 			
-			$('#peer').html(bag.ls.ccs[selectedChaincodeIndex].details.peers[selectedPeer].name);	//populate status panel
+			$('#peer').html(bag.ls.ccs[selectedChaincodeIndex].details.peers[selectedPeerIndex].name);	//populate status panel
 			setTimeout(function(){$('#peer').css('background', 'initial');}, 2000);
 			$('#name').html(bag.ls.ccs[selectedChaincodeIndex].details.deployed_name.substring(0,32) + '...');
 		}
@@ -85,17 +85,17 @@ $(document).ready(function(){
 	
 	//peer manual selection from dropdown
 	$('#peers').change(function(){													//select correct memership user for this peer
-		selectedPeer = 0;
+		selectedPeerIndex = 0;
 		for(var i in bag.ls.ccs[selectedChaincodeIndex].details.peers){
 			if(bag.ls.ccs[selectedChaincodeIndex].details.peers[i].api_host + ':' + bag.ls.ccs[selectedChaincodeIndex].details.peers[i].api_port == $(this).val()){
-				selectedPeer = i;
+				selectedPeerIndex = i;
 				break;
 			}
 		}
-		$('#peer').html(bag.ls.ccs[selectedChaincodeIndex].details.peers[selectedPeer].name);//populate status panel
+		$('#peer').html(bag.ls.ccs[selectedChaincodeIndex].details.peers[selectedPeerIndex].name);//populate status panel
 		setTimeout(function(){$('#peer').css('background', 'initial');}, 2000);		//flashy flashy
 		build_user_options(bag.ls.ccs[selectedChaincodeIndex].details.users);
-		console.log('Selected peer: ', bag.ls.ccs[selectedChaincodeIndex].details.peers[selectedPeer].name);
+		console.log('Selected peer: ', bag.ls.ccs[selectedChaincodeIndex].details.peers[selectedPeerIndex].name);
 	});
 	
 	//load json in textarea and send to sdk
@@ -573,7 +573,7 @@ $(document).ready(function(){
 		if(users){
 			for(var i in users){
 				var selected = '';
-				if(bag.ls.ccs[selectedChaincodeIndex].details.peers[selectedPeer].enrollID == users[i].username) selected= 'selected="selected"';
+				if(bag.ls.ccs[selectedChaincodeIndex].details.peers[selectedPeerIndex].enrollID == users[i].username) selected= 'selected="selected"';
 				html += '<option ' + selected + '>' + users[i].username + '</option>';
 			}
 		}
