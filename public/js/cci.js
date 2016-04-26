@@ -517,6 +517,7 @@ $(document).ready(function(){
 		var i = 0;
 		var field = '<input class="arginput" type="text" placeholder="array of strings"/>';
 		$('input').val('');
+		$('.toolDisalbed').removeClass('toolDisalbed');
 		
 		if(cc && cc.func && cc.func.invoke){
 			for(i in cc.func.invoke){
@@ -577,6 +578,8 @@ $(document).ready(function(){
 	}
 	
 	function toggle_panel(me){															//open/close the panel for this nav
+		if($(me).hasClass('toolDisalbed')) return false;
+		
 		if($(me).hasClass('toolClosed')){
 			showPanel(me);																//show this panel
 		}

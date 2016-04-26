@@ -124,6 +124,11 @@ body{
 }
 
 
+.toolDisalbed:hover{
+	border:solid 1px #555;
+	cursor:default;
+}
+
 
 // open tool
 .toolOpen{

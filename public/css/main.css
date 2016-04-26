@@ -176,7 +176,7 @@ input[type="text"], input[type="password"], select {
   margin: 5px;
   color: #fff;
   border: 1px solid #7E90A0;
-  background: #343D48;
+  background: #242829;
   min-width: 120px; }
 
 textarea {
@@ -323,6 +323,10 @@ body {
 
 .accent2 {
   color: #C095FF; }
+
+.toolDisalbed:hover {
+  border: solid 1px #555;
+  cursor: default; }
 
 .toolOpen {
   width: 170px;
