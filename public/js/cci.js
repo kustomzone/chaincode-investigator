@@ -1,6 +1,6 @@
 /* global formatDate, $, document, window, bag */
 var selectedPeerIndex = 0;
-var selectedChaincodeIndex = -1;
+var selectedCCindex = -1;
 var lsKey = 'cc_investigator';
 var recordedActions = {};
 var logger = 	{																		//append text to log panel
@@ -32,14 +32,14 @@ $(document).ready(function(){
 		load_from_ls();
 		build_ccs(bag.ls.ccs);
 		build_recordings(bag.ls.all_recordings);
-		if(selectedChaincodeIndex !== -1 && bag && bag.ls && bag.ls.ccs && bag.ls.ccs[selectedChaincodeIndex]) {
-			buildGoQueryFunc(bag.ls.ccs[selectedChaincodeIndex].details);														//populate custom go functions panel
-			build_peer_options(bag.ls.ccs[selectedChaincodeIndex].details.peers);												//populate drop down peer select box
-			build_user_options(bag.ls.ccs[selectedChaincodeIndex].details.users);
+		if(selectedCCindex !== -1 && bag && bag.ls && bag.ls.ccs && bag.ls.ccs[selectedCCindex]) {
+			buildGoQueryFunc(bag.ls.ccs[selectedCCindex].details);														//populate custom go functions panel
+			build_peer_options(bag.ls.ccs[selectedCCindex].details.peers);												//populate drop down peer select box
+			build_user_options(bag.ls.ccs[selectedCCindex].details.users);
 			
-			$('#peer').html(bag.ls.ccs[selectedChaincodeIndex].details.peers[selectedPeerIndex].name);	//populate status panel
+			$('#peer').html(bag.ls.ccs[selectedCCindex].details.peers[selectedPeerIndex].name);	//populate status panel
 			setTimeout(function(){$('#peer').css('background', 'initial');}, 2000);
-			$('#name').html(bag.ls.ccs[selectedChaincodeIndex].details.deployed_name.substring(0,32) + '...');
+			$('#name').html(bag.ls.ccs[selectedCCindex].details.deployed_name.substring(0,32) + '...');
 		}
 	}
 	
@@ -70,7 +70,7 @@ $(document).ready(function(){
 	$(document).on('click', '.delcc', function(){									//delete this cc from local storage
 		delete_from_ls($(this).parent().attr('hash'));
 		console.log('deleted cc');
-		selectedChaincodeIndex = -1;
+		selectedCCindex = -1;
 		lets_do_this();
 		return false;
 	});
@@ -86,16 +86,16 @@ $(document).ready(function(){
 	//peer manual selection from dropdown
 	$('#peers').change(function(){													//select correct memership user for this peer
 		selectedPeerIndex = 0;
-		for(var i in bag.ls.ccs[selectedChaincodeIndex].details.peers){
-			if(bag.ls.ccs[selectedChaincodeIndex].details.peers[i].api_host + ':' + bag.ls.ccs[selectedChaincodeIndex].details.peers[i].api_port == $(this).val()){
+		for(var i in bag.ls.ccs[selectedCCindex].details.peers){
+			if(bag.ls.ccs[selectedCCindex].details.peers[i].api_host + ':' + bag.ls.ccs[selectedCCindex].details.peers[i].api_port == $(this).val()){
 				selectedPeerIndex = i;
 				break;
 			}
 		}
-		$('#peer').html(bag.ls.ccs[selectedChaincodeIndex].details.peers[selectedPeerIndex].name);//populate status panel
+		$('#peer').html(bag.ls.ccs[selectedCCindex].details.peers[selectedPeerIndex].name);//populate status panel
 		setTimeout(function(){$('#peer').css('background', 'initial');}, 2000);		//flashy flashy
-		build_user_options(bag.ls.ccs[selectedChaincodeIndex].details.users);
-		console.log('Selected peer: ', bag.ls.ccs[selectedChaincodeIndex].details.peers[selectedPeerIndex].name);
+		build_user_options(bag.ls.ccs[selectedCCindex].details.users);
+		console.log('Selected peer: ', bag.ls.ccs[selectedCCindex].details.peers[selectedPeerIndex].name);
 	});
 	
 	//load json in textarea and send to sdk
@@ -124,10 +124,10 @@ $(document).ready(function(){
 		console.log('Selected cc: ', hash);
 		for(var i in bag.ls.ccs){
 			if(i == hash){
-				selectedChaincodeIndex = i;
+				selectedCCindex = i;
 				lets_do_this();
-				$('#jsonarea').html(JSON.stringify(bag.ls.ccs[selectedChaincodeIndex], null, 4));
-				copyDetails2InputArea(bag.ls.ccs[selectedChaincodeIndex]);
+				$('#jsonarea').html(JSON.stringify(bag.ls.ccs[selectedCCindex], null, 4));
+				copyDetails2InputArea(bag.ls.ccs[selectedCCindex]);
 				
 				if(!$('#jsonarea').is(':visible') && !$('#sdkJsonArea').is(':visible')){	//hold off on closing if these are open
 					toggle_panel($('#loadPanelNav'));
@@ -258,7 +258,7 @@ $(document).ready(function(){
 						'params': {
 						'type': 1,
 						'chaincodeID': {
-							'name': bag.ls.ccs[selectedChaincodeIndex].details.deployed_name
+							'name': bag.ls.ccs[selectedCCindex].details.deployed_name
 						},
 						'ctorMsg': {
 							'function': func,
@@ -343,16 +343,16 @@ $(document).ready(function(){
 		var data = build_rest_body('query', func, args);
 		logger.log('querying func', func, data);
 
-		for(var i in bag.ls.ccs[selectedChaincodeIndex].details.peers){															//iter over all the peers
-			var url = 'http://' + bag.ls.ccs[selectedChaincodeIndex].details.peers[i].api_host + ':' + bag.ls.ccs[selectedChaincodeIndex].details.peers[i].api_port + '/chaincode';
+		for(var i in bag.ls.ccs[selectedCCindex].details.peers){															//iter over all the peers
+			var url = 'http://' + bag.ls.ccs[selectedCCindex].details.peers[i].api_host + ':' + bag.ls.ccs[selectedCCindex].details.peers[i].api_port + '/chaincode';
 			recordRest('POST', url, data);
 		
-			data.chaincodeSpec.secureContext = bag.ls.ccs[selectedChaincodeIndex].details.peers[i].enrollID;					//get the right user for this peer
+			data.chaincodeSpec.secureContext = bag.ls.ccs[selectedCCindex].details.peers[i].enrollID;					//get the right user for this peer
 			$.ajax({
 				method: 'POST',
 				url: url,
 				data: JSON.stringify(data),
-				peer_name: bag.ls.ccs[selectedChaincodeIndex].details.peers[i].name,
+				peer_name: bag.ls.ccs[selectedCCindex].details.peers[i].name,
 				contentType: 'application/json',
 				success: function(json){
 					logger.log('Success - read all', this.peer_name, JSON.stringify(json));
@@ -573,7 +573,7 @@ $(document).ready(function(){
 		if(users){
 			for(var i in users){
 				var selected = '';
-				if(bag.ls.ccs[selectedChaincodeIndex].details.peers[selectedPeerIndex].enrollID == users[i].username) selected= 'selected="selected"';
+				if(bag.ls.ccs[selectedCCindex].details.peers[selectedPeerIndex].enrollID == users[i].username) selected= 'selected="selected"';
 				html += '<option ' + selected + '>' + users[i].username + '</option>';
 			}
 		}
