@@ -248,19 +248,22 @@ $(document).ready(function(){
 	// 												HTTP Functions
 	// ================================================================================================================
 	//format body
-	function build_rest_body(func, args){
+	function build_rest_body(type, func, args){
 		return 	{																		//build our body up
-					'chaincodeSpec': {
-						'type': 'GOLANG',
+					'jsonrpc': '2.0',
+					'method': type,
+						'params': {
+						'type': 1,
 						'chaincodeID': {
-							name: bag.cc.details.deployed_name,
+							'name': bag.cc.details.deployed_name
 						},
 						'ctorMsg': {
 							'function': func,
-							'args': args
+								'args': args
 						},
-						'secureContext': $('select[name="membershipUser"]').val()		//use the user in select dropdown
-					}
+						'secureContext':  $('select[name="membershipUser"]').val()		//use the user in select dropdown
+					},
+					'id': 1
 				};
 	}
 	
@@ -274,8 +277,8 @@ $(document).ready(function(){
 			return false;
 		}
 		
-		var data = build_rest_body(func, args);
-		var url = 'http://' + $('select[name="peer"]').val() + '/devops/invoke';
+		var data = build_rest_body('invoke', func, args);
+		var url = 'http://' + $('select[name="peer"]').val() + '/chaincode';
 		recordRest('POST', url, data);
 		logger.log('invoking func', func, data);
 		
@@ -303,8 +306,8 @@ $(document).ready(function(){
 			return false;
 		}
 		
-		var data = build_rest_body(func, args);
-		var url = 'http://' + $('select[name="peer"]').val() + '/devops/query';
+		var data = build_rest_body('query', func, args);
+		var url = 'http://' + $('select[name="peer"]').val() + '/chaincode';
 		recordRest('POST', url, data);
 		logger.log('querying func', func, data);
 		
@@ -334,12 +337,13 @@ $(document).ready(function(){
 			return false;
 		}
 		
-		var data = build_rest_body(func, args);
-		var url = 'http://' + bag.cc.details.peers[i].api_host + ':' + bag.cc.details.peers[i].api_port + '/devops/query';
-		recordRest('POST', url, data);
+		var data = build_rest_body('query', func, args);
 		logger.log('querying func', func, data);
 
 		for(var i in bag.cc.details.peers){															//iter over all the peers
+			var url = 'http://' + bag.cc.details.peers[i].api_host + ':' + bag.cc.details.peers[i].api_port + '/chaincode';
+			recordRest('POST', url, data);
+		
 			data.chaincodeSpec.secureContext = bag.cc.details.peers[i].enrollID;					//get the right user for this peer
 			$.ajax({
 				method: 'POST',
@@ -371,12 +375,12 @@ $(document).ready(function(){
 			return false;
 		}
 		
-		var data = build_rest_body(func, args);
+		var data = build_rest_body('invoke', func, args);
 		logger.log('Invoking Function ' + func, data);
 		
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + $('select[name="peer"]').val() + '/devops/invoke',
+			url: 'http://' + $('select[name="peer"]').val() + '/chaincode',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
@@ -400,12 +404,12 @@ $(document).ready(function(){
 			return false;
 		}
 		
-		var data = build_rest_body(func, args);
+		var data = build_rest_body('query', func, args);
 		logger.log('Querying Function ' + func, data);
 
 		$.ajax({
 			method: 'POST',
-			url: 'http://' + $('select[name="peer"]').val() + '/devops/query',
+			url: 'http://' + $('select[name="peer"]').val() + '/chaincode',
 			data: JSON.stringify(data),
 			contentType: 'application/json',
 			success: function(json){
