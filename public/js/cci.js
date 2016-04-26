@@ -578,8 +578,12 @@ $(document).ready(function(){
 	}
 	
 	function toggle_panel(me){															//open/close the panel for this nav
-		if($(me).hasClass('toolDisalbed')) return false;
+		if($(me).hasClass('toolDisalbed')) {
+			$('#loadPanelNav').css('border-color', '#cc0000');
+			return false;
+		}
 		
+		$('#loadPanelNav').css('border-color', '#555');
 		if($(me).hasClass('toolClosed')){
 			showPanel(me);																//show this panel
 		}
