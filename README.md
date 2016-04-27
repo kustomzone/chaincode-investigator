@@ -17,3 +17,5 @@ come back later!
 - [ ] naming/renaming recordings is akward
 - [ ] rename cc summary, auto populates as is with cc repo name, but user can overide
 - [ ] add more directional text?
+- [ ] collaspe all on inital load, show logs when use executes chaincode
+- [ ] 
