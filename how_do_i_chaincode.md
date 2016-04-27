@@ -75,7 +75,7 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 	} else if function == "dummy_invoke" {									//deletes an entity from its state
 		return t.dummy_invoke(stub, args)
 	}
-	fmt.Println("invoke did not find func: " + function)						//error
+	fmt.Println("invoke did not find func: " + function)					//error
 
 	return nil, errors.New("Received unknown function invocation")
 }
@@ -93,25 +93,6 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 	return nil, errors.New("Received unknown function query")
 }
 
-// dummy_invoke - dummy invoke function
-func (t *SimpleChaincode) dummy_invoke(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting name of the var to query")
-	}
-	fmt.Println("test 1 function arg[0] has " + args[0])
-	
-	return nil, nil													//send it onward
-}
-
-// dummy_query - dummy query function
-func (t *SimpleChaincode) dummy_query(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting name of the var to query")
-	}
-	fmt.Println("test 2 function arg[0] has " + args[0])
-	
-	return nil, nil													//send it onward
-}
 ```
 
 ###Dependencies
@@ -131,7 +112,6 @@ In our example, we use Init to configure the initial state of one variables on t
 
 In our `chaincode.go` file lets change the `Init` function so that it stores the first element in the `args` argument to the key "hello_world".
 
-**Init Code**
 ```
 func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	if len(args) != 1 {
@@ -147,23 +127,123 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 }
 ```
 
-This is done by using `stub.PutState`. The first argument is the key as a string, and the second argument is the value as an array of bytes.
-
+This is done by using the shim function `stub.PutState`. 
+The first argument is the key as a string, and the second argument is the value as an array of bytes.
+This function may return an error which our code inspects and returns if present.
 
 ###Invoke
-Invoke is called when you invoke transactions on your chaincode.  Invocation transactions will actually be captured as blocks on the chain.  In the example, the invocation simply transfers a value between two given variables on the ledger.  The intent is that it be used to transfer between the variables that we created in Init.
+`Invoke` is called when you want to call chaincode functions to do real work. 
+Invocation transactions will be captured as blocks on the chain. 
+The structure of `Inovke` is simple. 
+It recieves a `function` argument and based on this argument calls Go functions in the chaincode.
 
-[pre of Invoke function]
+In our `chaincode.go` file lets change the `Invoke` function so that it calls a generic write function.
+
+```
+func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	fmt.Println("invoke is running " + function)
+
+	// Handle different functions
+	if function == "init" {
+		return t.Init(stub, "init", args)
+	} else if function == "write" {
+		return t.write(stub, args)
+	}
+	fmt.Println("invoke did not find func: " + function)
+
+	return nil, errors.New("Received unknown function invocation")
+}
+```
+
+Now that its looking for `write` lets make that function somehwere in our `chaincode.go` file.
+
+```
+func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	var name, value string
+	var err error
+	fmt.Println("running write()")
+
+	if len(args) != 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2. name of the variable and value to set")
+	}
+
+	name = args[0]                            //rename for funsies
+	value = args[1]
+	err = stub.PutState(name, []byte(value))  //write the variable into the chaincode state
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+```
+
+This `write` function should look similar to `Init` change we just did. 
+One major difference is that we can now set the key and value for `PutState`. 
+This function will now let us store any key/value pair we want into the blockchaing ledger. 
 
 ###Query
-As the name implies, Query is called whenever you query your chaincode.  Queries do not result in blocks being added to the chain.  In our example, Query is used to check the value of a given variable.
+As the name implies, Query is called whenever you query your chaincode state. 
+Queries do not result in blocks being added to the chain. 
+We can and will use Query to read the value of our chaincode state's key/value pairs. 
 
-[pre of Query function]
+In our `chaincode.go` file lets change the `Query` function so that it calls a generic read function.
 
-Finally, you need to create a short ‘main’ function that will execute when each peer deploys their instance of the chaincode.  It just starts the chaincode and registers it with the peer.  You don’t need to add any code here beyond what is in the example.
+```
+func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	fmt.Println("query is running " + function)
 
-[pre of the ‘main’ function]
-###Interacting with your chaincode
+	// Handle different functions
+	if function == "read" {                            //read a variable
+		return t.read(stub, args)
+	}
+	fmt.Println("query did not find func: " + function)
+
+	return nil, errors.New("Received unknown function query")
+}
+```
+
+Now that its looking for `read` lets make that function somehwere in our `chaincode.go` file.
+
+```
+func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	var name, jsonResp string
+	var err error
+
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting name of the var to query")
+	}
+
+	name = args[0]
+	valAsbytes, err := stub.GetState(name)
+	if err != nil {
+		jsonResp = "{\"Error\":\"Failed to get state for " + name + "\"}"
+		return nil, errors.New(jsonResp)
+	}
+
+	return valAsbytes, nil
+}
+```
+
+This `read` function is using the complement to `PutState` called `GetState`.
+This shim function just takes 1 string argument. 
+The argument is the name of the key to retrieve. 
+Next this function returns the value as an array of bytes back to `Query` who in turn sends it back to the REST handler.
+
+### Main
+Finally, you need to create a short `main` function that will execute when each peer deploys their instance of the chaincode.
+It just starts the chaincode and registers it with the peer. 
+You don’t need to add any code here beyond what was already in the example code.
+
+```
+func main() {
+	err := shim.Start(new(SimpleChaincode))
+	if err != nil {
+		fmt.Printf("Error starting Simple chaincode: %s", err)
+	}
+}
+```
+
+##Interacting with your chaincode
 The fastest way to test your chaincode is to use the rest interface on your peers.  We’ve included a Swagger UI in the dashboard for your service instance that allows you to experiment with deploying chaincode without needing to write any additional code.
 
 ###Logging in
