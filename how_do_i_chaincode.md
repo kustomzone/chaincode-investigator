@@ -2,15 +2,12 @@
 
 ##What is covered?
 We will be building up to a working chaincode that will be able to create generic assets. 
-Then we will show how to interact with the chaincode with Chaincode Investigator.
+Then we will show how to interact with the chaincode via the networks API.
 
 ##What is chaincode?
 Chaincode is a piece of code that lets you interact with a network's shared ledger.  Whenever you 'invoke' a transaction on the network, you are effectively calling a function in a piece of chaincode that read and writes values to the ledger.
 
 [Insert a nice diagram from sean or something]
-
-##What is Chaincode Investigator?
-Chaincode Investigator or CCI is just a tool you can use to deploy/test your chaincode.  It will be used towards the end of this tutorial.
 
 ***
 
@@ -243,49 +240,136 @@ func main() {
 }
 ```
 
-##Interacting with your chaincode
-The fastest way to test your chaincode is to use the rest interface on your peers.  We’ve included a Swagger UI in the dashboard for your service instance that allows you to experiment with deploying chaincode without needing to write any additional code.
+#Interacting With Your First Chaincode
+The fastest way to test your chaincode is to use the rest interface on your peers. 
+We’ve included a Swagger UI in the dashboard for your service instance that allows you to experiment with deploying chaincode without needing to write any additional code.
 
-###Logging in
-Calls to the /chaincode enpoint of the rest interface are secured.  This means that you must pass in a valid user_id from the service credentials in order for the deployment to be accepted.  The service credentials should already have an assortment of users to pick from:
+###Swagger API
+The first step is to find the api swagger page. 
+1. Login to [Bluemix](https://console.ng.bluemix.net/login)
+1. You probably landed on the Dashboard, but double check the top nav bar.  Click the "Dashboard" tab if you are not already there. 
+1. Also make sure you are in the same Bluemix "space" that contains your IBM Blockchain service. The space navigation is on the left. 
+1. There is a "Services" panel on this Bluemix dashboard near the bottom.  Look through your services and click your IBM Blockchain service square. 
+1. Now you should see a white page with the words "Welcome to the IBM Blockchain..." and there should be a teal "LAUNCH" button on the right, click it. 
+1. You are on the monitor page and you should see 2 tables, though the bottom one may be empty.
+	- Note worthy information on the network tab:
+		- **Peer Logs** will be found in the top table. Find the row for peer 1 and then click the file like icon in the last row.
+			- It should have opened a new window. Congratulations you found your peer logs!
+			- In addition to this static view we have live **streaming peer logs** in the "View Logs" tab near the top of the page
+		- **ChainCode Logs** will be found in the bottom table. There is one row for every chaincode and they are labeled using the same chaincode hash that was returned to you when it was deployed. Find the cc id you want, and then select the peer. Finally click the file like icon.
+			- It should have opened a new window. Congratulations you found your peer's chaincode's logs!
+	- **Swagger Tab** is the one labled **APIs**. Click it to see the API interactive documentation.
+		- You are now on your swagger api page.
 
-[ screenshot of the user list from the credentials object]
+###Secure Enrollment
+Calls to the `/chaincode` enpoint of the rest interface require a secure context ID. 
+This means that you must pass in a registered enrollID from the service credentials list in order for most REST calls to be accepted. 
+- Click the link "+ Network's Enroll IDs" to expand a list of enrollIDs and their secrets for your network. 
+- Expand the "Registrar" API section by clicking it
+- Expand the `POST /registrar` section by clicking it
+- Set the body's text field.  It should be JSON that contains an enrollID and secret from your list above. Example:
 
-Select one of the userID and secret pairs from your service’s credentials and sign them in using the /register endpoint.
-
+```
 [ screenshot of the /register endpoint in the swagger UI.  Have the information for the request filled in]
+```
 
-Now that we have logged a user, we can use this userID when deploying, invoking, and querying chaincode in the subsequent steps.
+Now that we have enrollID setup, we can use this ID when deploying, invoking, and querying chaincode in the subsequent steps.
 
-Deploying the chaincode
-In order to deploy chaincode through the rest interface, you will need to have the chaincode stored in a public git repository.  When you send a deploy request to a peer, you send it the url to you chaincode repository, as well as the parameters necessary to initialize the chaincode. For example:
+###Deploying the chaincode
+In order to deploy chaincode through the rest interface, you will need to have the chaincode stored in a public git repository. 
+When you send a deploy request to a peer, you send it the url to you chaincode repository, as well as the parameters necessary to initialize the chaincode. 
+- Expand the "Chaincode" API section by clicking it
+- Expand the `POST /chaincode` section by clicking it
+- Set the `DeploySpec` text field (make the other fields blank). Copy the example below but subsitute in your chaincode repo path. Also use the same enrollID you used in the `/registrar` step.
 
-[pre of a deploy body]
+	```
+	{
+		"jsonrpc": "2.0",
+		"method": "deploy",
+		"params": {
+			"type": "1",
+			"chaincodeID": {
+				"path": "https://github.com/ibm-blockchain/marbles-chaincode/hyperledger/part2"
+			},
+			"ctorMsg": {
+				"function": "init",
+				"args": [
+					"hi there"
+				]
+			},
+			"secureContext": "user_type1_xxxxxxxxx"
+		},
+		"id": 1
+	}
+	```
 
+The response should look like:
+
+```
 [pre of a successful deploy response]
+```
 
-The response for the deployment will contain an ID that is associated with this chaincode.  This is how you will reference the chaincode in any future invoke or query requests.
+The response for the deployment will contain an ID that is associated with this chaincode. 
+This is how you will reference the chaincode in any future invoke or query requests.
 
-Invoke
-Next, we invoke a transaction on the chaincode.  This transaction will be a transfer between the two variable sthat we created in the initialization phase.  See below:
+###Query
+Next, let’s query the chaincode for the value of te `hello_world` key we set with the `Init` function.
+- Expand the "Chaincode" API section by clicking it
+- Expand the `POST /chaincode` section by clicking it
+- Set the `QuerySpec` text field (make the other fields blank). Copy the example below but subsitute in your chaincode name (the hashed ID from deploy). Also use the same enrollID you used in the `/registrar` step.
 
-[pre’s of invoke body and response]
+	```
+	{
+		"jsonrpc": "2.0",
+		"method": "query",
+		"params": {
+			"type": 1,
+			"chaincodeID": {
+				"name": "CHAINCODE_HASH_HERE"
+			},
+			"ctorMsg": {
+				"function": "read",
+				"args": [
+					"hello_world"
+				]
+			},
+			"secureContext": "user_type1_xxxxxxxxx"
+		},
+		"id": 2
+	}
+	```
+	
+Hopefully you see that the value of `hello_world` is "hi there". 
+This was set when by the body of the deploy call we sent eariler. 
 
-The response for the invoke is the ID that was generated for this transaction.
-Query
-Finally, let’s query the chaincode for the values of the two variables. For the first value:
+###Invoke
+Next, we will call our generic write function with invoke. 
+Lets change the value of `hello_world` to "go away".
+- Expand the "Chaincode" API section by clicking it
+- Expand the `POST /chaincode` section by clicking it
+- Set the `InvokeSpec` text field (make the other fields blank). Copy the example below but subsitute in your chaincode name (the hashed ID from deploy). Also use the same enrollID you used in the `/registrar` step.
 
-[ pre’s of query body and response ]
+	```
+	{
+		"jsonrpc": "2.0",
+		"method": "invoke",
+		"params": {
+			"type": 1,
+			"chaincodeID": {
+				"name": "CHAINCODE_HASH_HERE"
+			},
+			"ctorMsg": {
+				"function": "write",
+				"args": [
+					"go away"
+				]
+			},
+			"secureContext": "user_type1_xxxxxxxxx"
+		},
+		"id": 3
+	}
+	```
 
-... and for the second:
+Now to test if it stuck lets re-run the query above. 
 
-[pre’s of query body and reponse]
-
-As you can see, the values have changed from what we initialized them to be.  If you don’t believe me, run the invoke again with different values and run the queries again.
-
-Using the SDK
-We already have pretty good documentation for getting started with the NodeJS SDK here.
-
-
-
-
+Thats all it takes to write basic chaincode. 
