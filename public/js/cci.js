@@ -254,6 +254,7 @@ $(document).ready(function(){
 	// ================================================================================================================
 	//format body
 	function build_rest_body(type, func, args){
+		showPanel($('#logPanelNav'));
 		return 	{																			//build our body up
 					'jsonrpc': '2.0',
 					'method': type,

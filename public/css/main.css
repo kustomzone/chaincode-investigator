@@ -419,7 +419,7 @@ body {
   padding: 5px;
   border-radius: 8px; }
 
-#loadPanel, #networkPanel, #chaincodePanel, #testPanel {
+#loadPanel, #networkPanel, #chaincodePanel, #testPanel, #logPanel {
   display: none; }
 
 #chaincodePanel {
