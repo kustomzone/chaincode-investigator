@@ -1,5 +1,5 @@
 # Chaincode Investigator
-This is a tool to help test/develop chaincode. 
+This is a tool in the form of a web app to help test/develop chaincode. 
 It is supposed to bridge the gap between developing your chaincode from scratch and having a working UI/app to test your chaincode. 
 
 It also has the ability to record APIs in a sequential flow. 
@@ -122,7 +122,7 @@ Tracking numbers helps us gadge interest. Deployment tracking can be disabled by
 - [x] super input parser
 - [x] sdk v1+ transition
 - [x] hyperleder transition
-- [ ] create publc repo
+- [x] create publc repo
 - [ ] create detailed tutorial
 - [x] cf tracking
 - [ ] move tests out from under a single deployed chaincode, make them either global or maybe organize them under the same github repo
