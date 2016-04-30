@@ -338,21 +338,11 @@ body {
 
 .toollegendOpen {
   position: absolute;
-  right: 8px;
-  bottom: 28px;
+  bottom: 10px;
   line-height: initial;
   font-size: 16px;
-  transform: rotate(-50deg);
-  /* Safari */
-  -webkit-transform: rotate(-50deg);
-  /* Firefox */
-  -moz-transform: rotate(-50deg);
-  /* IE */
-  -ms-transform: rotate(-50deg);
-  /* Opera */
-  -o-transform: rotate(-50deg);
-  /* Internet Explorer */
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3); }
+  width: 90%;
+  text-align: center; }
 
 .stepNumberOpen {
   position: absolute;
@@ -370,13 +360,7 @@ body {
 .toollegendClosed {
   display: inline-block;
   position: initial;
-  top: initial;
-  transform: rotate(0deg);
-  -webkit-transform: rotate(0deg);
-  -moz-transform: rotate(0deg);
-  -ms-transform: rotate(0deg);
-  -o-transform: rotate(0deg);
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0); }
+  top: initial; }
 
 .stepNumberClosed {
   position: absolute;
