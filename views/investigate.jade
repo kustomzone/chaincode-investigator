@@ -81,7 +81,8 @@ block content
 		.stepNumberClosed 2.
 		
 	#networkPanel.subPanel.ready
-		p.hint Select the peer and secure context ID to be used.
+		p.hint A valid enrollID/peer has already been selected.  You may overide it from here.
+		p.hint (the sdk registered 1 user with each peer listed in the chaincode json summary)
 		p
 			span.legend Peer:
 			select(name="peer" style="margin-left:0;")#peers
