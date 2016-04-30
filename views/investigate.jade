@@ -81,7 +81,7 @@ block content
 		.stepNumberClosed 2.
 		
 	#networkPanel.subPanel.ready
-		.hint Select the peer and secure context ID to be used
+		p.hint Select the peer and secure context ID to be used.
 		p
 			span.legend Peer:
 			select(name="peer" style="margin-left:0;")#peers
@@ -100,8 +100,11 @@ block content
 		.stepNumberClosed *
 		
 	#testPanel.subPanel.ready
-		.hint 1) To start recording API req click "Record New Test"
-		.hint 2) When finished click "Stop" the test will now be avaialbe for the selected chaincode
+		p.hint 1) To start recording API requests click "Record New Test".
+		p.hint 2) When finished click stop. The test will now be available for the selected chaincode.
+		
+		br
+		
 		span#testsList
 		button(type="button").loadButton#recordButton 
 			span#recordText Record New Test

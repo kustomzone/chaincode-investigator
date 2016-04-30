@@ -605,7 +605,7 @@ $(document).ready(function(){
 			var pos = height.indexOf('px');
 			height = height.substring(0, pos);
 			
-			if(height > 100) height = height - 92;										//for some reason this helps
+			if(height > 200) height = height - 92;										//for some reason this helps
 			
 			$(me).css('height', height).css('line-height', height + 'px');
 		}
