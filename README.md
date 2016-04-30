@@ -1,6 +1,9 @@
 # Chaincode Investigator
 This is a tool in the form of a web app to help test/develop chaincode. 
 It is supposed to bridge the gap between developing your chaincode from scratch and having a working UI/app to test your chaincode. 
+Simply create build-able chaincode and store it in GitHub.
+Then from this app deploy the cc and get a UI of your chaincode functions. 
+Now you can invoke/query chacincode directly from this webapp. 
 
 It also has the ability to record APIs in a sequential flow. 
 This allows for rapid testing of a complex flow.
