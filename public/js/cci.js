@@ -58,11 +58,11 @@ $(document).ready(function(){
 		rest_query_all_peers($(this).attr('func'), $(this).prev().prev().val());
 	});
 	
-	$('#invoke_barebones').click(function(){												//custom invoke function that SDK did not pick up
+	$('#invoke_barebones').click(function(){										//custom invoke function that SDK did not pick up
 		rest_invoke_barebones();
 	});
 	
-	$('#query_barbones').click(function(){												//custom invoke function that SDK did not pick up
+	$('#query_barbones').click(function(){											//custom invoke function that SDK did not pick up
 		rest_query_barebones();
 	});
 	
@@ -76,7 +76,7 @@ $(document).ready(function(){
 	});
 	
 	//remove recording from local storage
-	$(document).on('click', '.delrecord', function(){									//delete this cc from local storage
+	$(document).on('click', '.delrecord', function(){								//delete this cc from local storage
 		delete_recording_from_ls($(this).parent().attr('pos'));
 		console.log('deleted recording');
 		lets_do_this();
@@ -258,7 +258,7 @@ $(document).ready(function(){
 		return 	{																			//build our body up
 					'jsonrpc': '2.0',
 					'method': type,
-						'params': {
+					'params': {
 						'type': 1,
 						'chaincodeID': {
 							'name': bag.ls.ccs[selectedCChash].details.deployed_name
@@ -269,7 +269,7 @@ $(document).ready(function(){
 						},
 						'secureContext':  $('select[name="membershipUser"]').val()			//use the user in select dropdown
 					},
-					'id': 1
+					'id': Date.now()
 				};
 	}
 	
@@ -315,7 +315,7 @@ $(document).ready(function(){
 		var data = build_rest_body('query', func, args);
 		var url = 'http://' + $('select[name="peer"]').val() + '/chaincode';
 		recordRest('POST', url, data);
-		logger.log('querying func', func, data);
+		logger.log('Querying func "' + func + '"', bag.ls.ccs[selectedCChash].details.peers[selectedPeerIndex].name, data);
 		
 		$.ajax({
 			method: 'POST',
@@ -342,15 +342,15 @@ $(document).ready(function(){
 			logger.log('Error - Input could not be stringified', e);
 			return false;
 		}
-		
-		var data = build_rest_body('query', func, args);
-		logger.log('querying func', func, data);
+		var data = build_rest_body('query', func, args);														//secre context will be overwritten in loop
 
-		for(var i in bag.ls.ccs[selectedCChash].details.peers){															//iter over all the peers
+		for(var i in bag.ls.ccs[selectedCChash].details.peers){													//iter over all the peers
 			var url = 'http://' + bag.ls.ccs[selectedCChash].details.peers[i].api_host + ':' + bag.ls.ccs[selectedCChash].details.peers[i].api_port + '/chaincode';
 			recordRest('POST', url, data);
 		
-			data.chaincodeSpec.secureContext = bag.ls.ccs[selectedCChash].details.peers[i].enrollID;					//get the right user for this peer
+			data.params.secureContext = bag.ls.ccs[selectedCChash].details.peers[i].enrollID;					//get the right user for this peer
+			logger.log('Querying func "' + func + '"', bag.ls.ccs[selectedCChash].details.peers[i].name, data);
+
 			$.ajax({
 				method: 'POST',
 				url: url,
@@ -382,7 +382,7 @@ $(document).ready(function(){
 		}
 		
 		var data = build_rest_body('invoke', func, args);
-		logger.log('Invoking Function ' + func, data);
+		logger.log('Invoking Function "' + func + '"', data);
 		
 		$.ajax({
 			method: 'POST',
@@ -411,7 +411,7 @@ $(document).ready(function(){
 		}
 		
 		var data = build_rest_body('query', func, args);
-		logger.log('Querying Function ' + func, data);
+		logger.log('Querying Function "' + func + '"', data);
 
 		$.ajax({
 			method: 'POST',
@@ -435,7 +435,7 @@ $(document).ready(function(){
 		
 		try{
 			data = JSON.parse(data);												//check if input is valid JSON
-			data.deploy_function = try_to_parse($('input[name="deploy_function"]').val());
+			data.deploy_function = $('input[name="deploy_function"]').val();
 			data.deploy_arg = try_to_parse( $('input[name="deploy_arg"]').val());
 			$('#sdkJsonArea').removeClass('errorBorder');
 		}
