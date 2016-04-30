@@ -11,6 +11,7 @@
     "body-parser": "1.0.2",
     "compression": "1.4.4",
     "cookie-parser": "1.0.1",
+	"cf-deployment-tracker-client": "0.0.8",
     "cors": "2.5.3",
     "debug": "0.7.4",
     "express": "4.0.0",

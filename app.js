@@ -57,7 +57,7 @@ app.use(function(req, res, next){
 	var url_parts = url.parse(req.url, true);
 	req.parameters = url_parts.query;
 	keys = Object.keys(req.parameters);
-	if(req.parameters && keys.length > 0) console.log({parameters: req.parameters});		//print request parameters
+	if(req.parameters && keys.length > 0) console.log({parameters: req.parameters});	//print request parameters
 	keys = Object.keys(req.body);
 	if (req.body && keys.length > 0) console.log({body: req.body});						//print request body
 	next();
@@ -66,23 +66,8 @@ app.use(function(req, res, next){
 //// Router ////
 app.use('/', require('./routes/site_router'));
 
-////////////////////////////////////////////
-////////////// Error Handling //////////////
-////////////////////////////////////////////
-app.use(function(req, res, next) {
-	var err = new Error('Not Found');
-	err.status = 404;
-	next(err);
-});
-app.use(function(err, req, res, next) {		// = development error handler, print stack trace
-	console.log('Error Handeler -', req.url);
-	if(err.stack) console.log(err.stack);
-	var errorCode = err.status || 500;
-	res.status(errorCode);
-	if(!req.bag) req.bag = {};
-	req.bag.error = {msg:err.stack, status:errorCode};
-	if(req.bag.error.status == 404) req.bag.error.msg = 'Sorry, I cannot locate that file';
-	res.render('template/error', {bag:req.bag});
+app.use(function(req, res){
+	res.redirect('/cci');																//redirect back to saftey
 });
 
 // ============================================================================================================================
@@ -95,3 +80,9 @@ server.timeout = 240000;																							// Ta-da.
 console.log('------------------------------------------ Server Up - ' + setup.SERVER.HOST + ':' + setup.SERVER.PORT + ' ------------------------------------------');
 if(process.env.PRODUCTION) console.log('Running using Production settings');
 else console.log('Running using Developer settings');
+
+
+// ============================================================================================================================
+// 														Deployment Tracking
+// ============================================================================================================================
+require('cf-deployment-tracker-client').track();		//reports back to us, this helps us judge interest! feel free to remove it
