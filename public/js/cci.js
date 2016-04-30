@@ -150,7 +150,6 @@ $(document).ready(function(){
 									'api_host': 'xxx.xxx.xxx.xxx',
 									'api_port': 'xxxxx',
 									'id': 'xxxxxx-xxxx-xxx-xxx-xxxxxxxxxxxx_vpx',
-									'api_url': 'http://xxx.xxx.xxx.xxx:xxxxx'
 								}],
 								users:  [{
 									'username': 'user0_type0_xxxx',
@@ -159,8 +158,8 @@ $(document).ready(function(){
 							},
 							chaincode:{
 								zip_url: 'https://github.com/ibm-blockchain/marbles-chaincode/archive/master.zip',
-								unzip_dir: 'marbles-chaincode-master/part2',
-								git_url: 'https://github.com/ibm-blockchain/marbles-chaincode/part2',
+								unzip_dir: 'marbles-chaincode-master/hyperledger/part2',
+								git_url: 'https://github.com/ibm-blockchain/marbles-chaincode/hyperledger/part2',
 							}
 						};
 			$('#sdkInputWrap').fadeIn();
@@ -193,13 +192,13 @@ $(document).ready(function(){
 			bag.recording = false;
 			console.log('i see', recordedActions);
 			store_recoding_to_ls(recordedActions);
+			build_recordings(bag.ls.ccs[selectedCChash].recordings);
 		}
 		else{																			//start recording
 			clearRecording();
 			$(this).addClass('recordButtonActive');
 			$('#recordText').html('Stop Recording - ');
 			$('#recordNumber').html('0');
-			$('input[name="recording_name"]').fadeIn();
 			bag.recording = true;
 		}
 	});
@@ -215,10 +214,8 @@ $(document).ready(function(){
 			console.log('loading playback');
 			selectedRecording = bag.ls.ccs[selectedCChash].recordings[$(this).attr('pos')];
 			$('.selectedRecording').removeClass('selectedRecording');
-			$('input[name="recording_name"]').val(selectedRecording.name);
 			$(this).addClass('selectedRecording');
 			$('#playButton').fadeIn();
-			$('input[name="recording_name"]').fadeIn();
 			console.log('selected', selectedRecording);
 		}
 	});
@@ -226,13 +223,6 @@ $(document).ready(function(){
 	$('#playButton').click(function(){
 		console.log('playing', selectedRecording);
 		rest_play_recording(selectedRecording, 0);
-	});
-	
-	
-	$('input[name="recording_name"]').keyup(function(){
-		if(bag.recording){													//create name for test we are recording right now
-			recordedActions.name = $(this).val();
-		}
 	});
 	
 	$(document).on('keyup', '.recordingName', function(){					//overwrite name for test
@@ -246,7 +236,6 @@ $(document).ready(function(){
 		selectedRecording = {};
 		$('.selectedRecording').removeClass('selectedRecording');
 		$('#playButton').fadeOut();
-		$('input[name="recording_name"]').fadeOut();
 	}
 	
 	// ===============================================================================================================
@@ -698,8 +687,8 @@ $(document).ready(function(){
 					
 		if(recording.story.length > 0){
 			console.log('saving new recording to local storage', recording);
-			if(!isNaN(pos)) bag.ls.ccs[selectedCChash].recordings[pos] = recording;	//overwite recording
-			else bag.ls.ccs[selectedCChash].recordings.push(recording);				//store new recording
+			if(!isNaN(pos)) bag.ls.ccs[selectedCChash].recordings[pos] = recording;		//overwite recording
+			else bag.ls.ccs[selectedCChash].recordings.push(recording);					//store new recording
 			console.log('?', selectedCChash, bag.ls.ccs[selectedCChash].recordings);
 			window.localStorage.setItem(lsKey, JSON.stringify(bag.ls));					//save new one
 		}

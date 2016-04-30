@@ -67,7 +67,7 @@ block content
 				input(type="text" placeholder="array of strings" name="deploy_arg")
 				span ]);&nbsp;&nbsp;&nbsp;&nbsp;
 				
-				.hint &nbsp;&nbsp;&nbsp; example: "init", "1234"
+				.hint &nbsp;&nbsp;&nbsp; example: init, "1234"
 				
 				button(type="button" style="margin-bottom:5px;")#sendjson Send to SDK
 			br
@@ -81,6 +81,7 @@ block content
 		.stepNumberClosed 2.
 		
 	#networkPanel.subPanel.ready
+		.hint Select the peer and secure context ID to be used
 		p
 			span.legend Peer:
 			select(name="peer" style="margin-left:0;")#peers
@@ -89,7 +90,7 @@ block content
 		p
 			span.legend User:
 			select(name="membershipUser" style="margin-left:0;")#users
-			span.hint select a membership user
+			span.hint select an enroll ID
 	
 	
 	// ---------------- Record Test Panel ----------------- //
@@ -99,12 +100,13 @@ block content
 		.stepNumberClosed *
 		
 	#testPanel.subPanel.ready
+		.hint 1) To start recording API req click "Record New Test"
+		.hint 2) When finished click "Stop" the test will now be avaialbe for the selected chaincode
 		span#testsList
 		button(type="button").loadButton#recordButton 
 			span#recordText Record New Test
 			span#recordNumber
 		button(type="button").loadButton#playButton Play Test
-		input(type="text" placeholder="Recording Name" name="recording_name")(hidden)
 
 	
 	// ---------------- Chaincode Panel ----------------- //
