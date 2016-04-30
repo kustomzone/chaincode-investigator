@@ -3,7 +3,7 @@ This is a tool in the form of a web app to help test/develop chaincode.
 It is supposed to bridge the gap between developing your chaincode from scratch and having a working UI/app to test your chaincode. 
 Simply create build-able chaincode and store it in GitHub. 
 Then from this app deploy the cc to your IBM Blockchain network and get a UI to interact with your chaincode functions. 
-Now you can invoke/query chacincode directly from this webapp. 
+Now you can invoke/query chaincode directly from this web app. 
 
 It also has the ability to record and remember query/invoke sequences.
 This allows for rapid testing of a complex flow.
@@ -32,7 +32,7 @@ This allows for rapid testing of a complex flow.
 
 **A full tutorial is coming soon!** 
 Until then you can try my network/example below. 
-This is a working format that you can past into the text area that appears when you click "Create Chaincode JSON Summary".
+This is a working format that you can paste into the text area that appears when you click "Create Chaincode JSON Summary".
 
 Of course you can modify it to fit your own network. 
 You will find similar information about your own network from the service's Bluemix dashboard in the "Service Credentials" tab.
@@ -104,7 +104,7 @@ You will find similar information about your own network from the service's Blue
 ```
 		
 ### Deployment Tracking
-Tracking numbers helps us gadge interest. Deployment tracking can be disabled by deleting the 'Deployment Tracking' section towards the bottom app.js.
+Tracking numbers helps us judge interest. If you wish you may remove deployment tracking by deleting the 'Deployment Tracking' section towards the bottom app.js.
 
 ## ToDos:
 - [ ] CCI video
@@ -118,10 +118,10 @@ Tracking numbers helps us gadge interest. Deployment tracking can be disabled by
 - [x] clear button in log panel
 - [x] ability to record api flows and save into local memory
 - [x] move test/playback to under cc summary
-- [x] naming/renaming recordings is akward
-- [ ] rename cc summary, auto populates as is with cc repo name, but user can overide
+- [x] naming/renaming recordings is awkward
+- [ ] rename cc summary, auto populates as is with cc repo name, but user can override
 - [x] add helpful UI hints for user error/success paths (highlight invalid inputs, buttons, valid buttons)
-- [x] collaspe all on inital load, show logs when use executes chaincode
+- [x] collapse all on initial load, show logs when use executes chaincode
 - [x] super input parser
 - [x] sdk v1+ transition
 - [x] hyperleder transition
